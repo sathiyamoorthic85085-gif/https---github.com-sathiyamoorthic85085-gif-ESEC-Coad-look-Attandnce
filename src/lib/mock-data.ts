@@ -11,6 +11,7 @@ export const mockUsers: User[] = [
     { id: 'USR006', name: 'Emily Davis', email: 'emily.davis@example.com', password: 'password', role: 'Student', department: 'Electrical Engineering', imageUrl: 'https://picsum.photos/seed/USR006/100/100' },
     { id: 'USR007', name: 'Michael Wilson', email: 'michael.wilson@example.com', password: 'password', role: 'Faculty', department: 'Electrical Engineering', imageUrl: 'https://picsum.photos/seed/USR007/100/100' },
     { id: 'USR008', name: 'Sarah Martinez', email: 'sarah.martinez@example.com', password: 'password', role: 'HOD', department: 'Electrical Engineering', imageUrl: 'https://picsum.photos/seed/USR008/100/100' },
+    { id: 'USR009', name: 'David Lee', email: 'david.lee@example.com', password: 'password', role: 'Advisor', department: 'Computer Science', imageUrl: 'https://picsum.photos/seed/USR009/100/100' },
 ];
 
 export const mockAttendanceData: AttendanceRecord[] = [
@@ -85,6 +86,15 @@ export const mockAttendanceData: AttendanceRecord[] = [
     status: 'Pending',
     attendance: 'Absent',
     imageUrl: 'https://picsum.photos/seed/USR008/100/100',
+  },
+  {
+    id: 'ATT009',
+    userId: 'USR009',
+    name: 'David Lee',
+    date: staticDate,
+    status: 'Pending',
+    attendance: 'Absent',
+    imageUrl: 'https://picsum.photos/seed/USR009/100/100',
   },
 ];
 

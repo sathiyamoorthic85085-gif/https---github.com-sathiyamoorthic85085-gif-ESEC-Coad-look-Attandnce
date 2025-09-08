@@ -1,5 +1,6 @@
 "use client";
 import AdminDashboard from "@/components/AdminDashboard";
+import AdvisorDashboard from "@/components/AdvisorDashboard";
 import FacultyDashboard from "@/components/FacultyDashboard";
 import HodDashboard from "@/components/HodDashboard";
 import StudentDashboard from "@/components/StudentDashboard";
@@ -37,6 +38,8 @@ export default function DashboardPage() {
                 return <FacultyDashboard />;
             case 'Student':
                 return <StudentDashboard />;
+            case 'Advisor':
+                return <AdvisorDashboard />;
             default:
                  router.push('/login');
                  return null;
