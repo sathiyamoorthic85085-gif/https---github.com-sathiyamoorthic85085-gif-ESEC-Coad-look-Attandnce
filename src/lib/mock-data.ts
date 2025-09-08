@@ -1,18 +1,31 @@
-import type { AttendanceRecord, User, UserRole } from './types';
+import type { AttendanceRecord, User, Department, Class } from './types';
 
 const staticDate = new Date().toLocaleDateString('en-CA');
 
 export const mockUsers: User[] = [
-    { id: 'USR001', name: 'John Doe', email: 'john.doe@example.com', password: 'password', role: 'Student', department: 'Computer Science', imageUrl: 'https://picsum.photos/seed/USR001/100/100' },
-    { id: 'USR002', name: 'Jane Smith', email: 'jane.smith@example.com', password: 'password', role: 'Student', department: 'Computer Science', imageUrl: 'https://picsum.photos/seed/USR002/100/100' },
+    { id: 'USR001', name: 'John Doe', email: 'john.doe@example.com', password: 'password', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/USR001/100/100' },
+    { id: 'USR002', name: 'Jane Smith', email: 'jane.smith@example.com', password: 'password', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/USR002/100/100' },
     { id: 'USR003', name: 'Peter Jones', email: 'peter.jones@example.com', password: 'password', role: 'Faculty', department: 'Computer Science', imageUrl: 'https://picsum.photos/seed/USR003/100/100' },
     { id: 'USR004', name: 'Mary Williams', email: 'mary.williams@example.com', password: 'password', role: 'HOD', department: 'Computer Science', imageUrl: 'https://picsum.photos/seed/USR004/100/100' },
     { id: 'USR005', name: 'Admin User', email: 'sathiyamoorthi.c85085@gmail.com', password: '1234567890', role: 'Admin', department: 'Administration', imageUrl: 'https://picsum.photos/seed/USR005/100/100' },
-    { id: 'USR006', name: 'Emily Davis', email: 'emily.davis@example.com', password: 'password', role: 'Student', department: 'Electrical Engineering', imageUrl: 'https://picsum.photos/seed/USR006/100/100' },
+    { id: 'USR006', name: 'Emily Davis', email: 'emily.davis@example.com', password: 'password', role: 'Student', department: 'Electrical Engineering', classId: 'CLS02', imageUrl: 'https://picsum.photos/seed/USR006/100/100' },
     { id: 'USR007', name: 'Michael Wilson', email: 'michael.wilson@example.com', password: 'password', role: 'Faculty', department: 'Electrical Engineering', imageUrl: 'https://picsum.photos/seed/USR007/100/100' },
     { id: 'USR008', name: 'Sarah Martinez', email: 'sarah.martinez@example.com', password: 'password', role: 'HOD', department: 'Electrical Engineering', imageUrl: 'https://picsum.photos/seed/USR008/100/100' },
-    { id: 'USR009', name: 'David Lee', email: 'david.lee@example.com', password: 'password', role: 'Advisor', department: 'Computer Science', imageUrl: 'https://picsum.photos/seed/USR009/100/100' },
+    { id: 'USR009', name: 'David Lee', email: 'david.lee@example.com', password: 'password', role: 'Advisor', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/USR009/100/100' },
 ];
+
+export const mockDepartments: Department[] = [
+    { id: 'DPT01', name: 'Computer Science' },
+    { id: 'DPT02', name: 'Electrical Engineering' },
+    { id: 'DPT03', name: 'Mechanical Engineering' },
+    { id: 'DPT04', name: 'Civil Engineering' },
+];
+
+export const mockClasses: Class[] = [
+    { id: 'CLS01', name: 'II Year, Section A', departmentId: 'DPT01' },
+    { id: 'CLS02', name: 'III Year, Section B', departmentId: 'DPT02' },
+];
+
 
 export const mockAttendanceData: AttendanceRecord[] = [
   {

@@ -8,6 +8,7 @@ export interface User {
     role: UserRole;
     department?: string;
     imageUrl?: string;
+    classId?: string;
 }
 
 export interface AttendanceRecord {
@@ -19,4 +20,15 @@ export interface AttendanceRecord {
   imageUrl: string;
   violation?: string;
   userId: string;
+}
+
+export interface Department {
+    id: string;
+    name: string;
+}
+
+export interface Class {
+    id: string;
+    name: string;
+    departmentId: string;
 }

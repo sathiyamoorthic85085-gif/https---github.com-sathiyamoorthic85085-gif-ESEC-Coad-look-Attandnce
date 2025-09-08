@@ -4,14 +4,58 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/context/AuthContext';
-import { Building, GraduationCap, Users, UserPlus, FileText, Bell, Settings, LogOut, Shield, User, FolderKanban, MessageSquare, Calendar, Shirt, FileUp, UserCheck } from 'lucide-react';
+import { Building, GraduationCap, Users, UserPlus } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from './ui/input';
+import { useToast } from '@/hooks/use-toast';
+import { AddUserDialog } from './AddUserDialog';
+import { mockUsers, mockDepartments, mockClasses } from '@/lib/mock-data';
+import type { User, Department, Class } from '@/lib/types';
+
 
 export default function AdminDashboard() {
   const { user } = useAuth();
-  const [departments] = useState([]); // Mock data
-  const [classes] = useState([]); // Mock data
+  const { toast } = useToast();
+
+  const [users, setUsers] = useState<User[]>(mockUsers);
+  const [departments, setDepartments] = useState<Department[]>(mockDepartments);
+  const [classes, setClasses] = useState<Class[]>(mockClasses);
+
+  const [newClassName, setNewClassName] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+
+  const handleAddClass = () => {
+    if (!newClassName || !selectedDepartment) {
+      toast({
+        title: 'Error',
+        description: 'Please enter a class name and select a department.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    const newClass: Class = {
+      id: `CLS${(classes.length + 1).toString().padStart(2, '0')}`,
+      name: newClassName,
+      departmentId: selectedDepartment,
+    };
+    setClasses([...classes, newClass]);
+    setNewClassName('');
+    setSelectedDepartment('');
+    toast({
+      title: 'Class Added',
+      description: `Successfully added class "${newClassName}".`,
+    });
+  };
+
+  const handleAddUser = (newUser: Omit<User, 'id' | 'imageUrl'>) => {
+    const finalNewUser: User = {
+        ...newUser,
+        id: `USR${(users.length + 1).toString().padStart(3, '0')}`,
+        imageUrl: `https://picsum.photos/seed/USR${(users.length + 1).toString().padStart(3, '0')}/100/100`,
+    };
+    setUsers([...users, finalNewUser]);
+};
 
   if (!user || user.role !== 'Admin') {
     return (
@@ -29,7 +73,7 @@ export default function AdminDashboard() {
                 <p className="text-muted-foreground">Full control over user and application management.</p>
             </div>
             <div className="flex items-center space-x-2">
-                <Button><UserPlus className="mr-2 h-4 w-4" /> Add New User</Button>
+                <AddUserDialog onUserAdd={handleAddUser} departments={departments} />
             </div>
         </div>
 
@@ -40,7 +84,7 @@ export default function AdminDashboard() {
                     <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">0</div>
+                    <div className="text-2xl font-bold">{users.length}</div>
                     <p className="text-xs text-muted-foreground">Total registered users in the system</p>
                 </CardContent>
             </Card>
@@ -50,7 +94,7 @@ export default function AdminDashboard() {
                     <Building className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">0</div>
+                    <div className="text-2xl font-bold">{departments.length}</div>
                     <p className="text-xs text-muted-foreground">Total configured departments</p>
                 </CardContent>
             </Card>
@@ -60,7 +104,7 @@ export default function AdminDashboard() {
                     <GraduationCap className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">0</div>
+                    <div className="text-2xl font-bold">{classes.length}</div>
                     <p className="text-xs text-muted-foreground">Total configured classes</p>
                 </CardContent>
             </Card>
@@ -78,31 +122,52 @@ export default function AdminDashboard() {
                         <TabsTrigger value="classes">Classes</TabsTrigger>
                     </TabsList>
                     <TabsContent value="departments" className="mt-4">
-                        <p className="text-muted-foreground">Department management coming soon.</p>
+                        <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-4">
+                           <ul className="space-y-2">
+                            {departments.map(dep => <li key={dep.id} className="font-medium">{dep.name}</li>)}
+                           </ul>
+                        </div>
                     </TabsContent>
                     <TabsContent value="classes" className="mt-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div>
                                 <h3 className="font-semibold mb-2">Existing Classes</h3>
-                                <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-4 text-center">
-                                    <p className="text-sm text-muted-foreground">No classes found.</p>
+                                <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-4">
+                                    {classes.length > 0 ? (
+                                        <ul className="space-y-2">
+                                            {classes.map((c) => (
+                                                <li key={c.id} className="flex justify-between items-center">
+                                                    <span>{c.name}</span>
+                                                    <span className="text-sm text-muted-foreground">
+                                                        {departments.find(d => d.id === c.departmentId)?.name}
+                                                    </span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p className="text-sm text-muted-foreground text-center">No classes found.</p>
+                                    )}
                                 </div>
                             </div>
                              <div>
                                 <h3 className="font-semibold mb-2">Add New Class</h3>
                                 <div className="space-y-4">
                                      <div>
-                                        <label htmlFor="department" className="text-sm font-medium">Department</label>
-                                        <Select>
+                                        <label htmlFor="department" className="text-sm font-medium block mb-2">Department</label>
+                                        <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
                                             <SelectTrigger id="department">
                                                 <SelectValue placeholder="Select a department" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="cse">Computer Science</SelectItem>
-                                                <SelectItem value="eee">Electrical Engineering</SelectItem>
+                                                {departments.map(dep => <SelectItem key={dep.id} value={dep.id}>{dep.name}</SelectItem>)}
                                             </SelectContent>
                                         </Select>
                                     </div>
+                                    <div>
+                                        <label htmlFor="className" className="text-sm font-medium block mb-2">Class Name</label>
+                                        <Input id="className" placeholder="e.g. IV Year, Section A" value={newClassName} onChange={(e) => setNewClassName(e.target.value)} />
+                                    </div>
+                                    <Button onClick={handleAddClass} className="w-full">Add Class</Button>
                                 </div>
                             </div>
                         </div>
