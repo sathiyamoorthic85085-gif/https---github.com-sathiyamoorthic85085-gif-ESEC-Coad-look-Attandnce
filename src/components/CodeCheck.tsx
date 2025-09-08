@@ -224,7 +224,7 @@ export default function CodeCheck() {
                 <CardHeader className="flex-row items-center gap-2 space-y-0 pb-2">
                     <Wand2 className="h-5 w-5 text-accent" />
                     <CardTitle className="font-headline text-lg font-semibold text-accent">AI Recommendations</CardTitle>
-                </Header>
+                </CardHeader>
                 <CardContent>
                     {isPending ? (
                       <p className="text-sm text-muted-foreground flex items-center"><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...</p>
