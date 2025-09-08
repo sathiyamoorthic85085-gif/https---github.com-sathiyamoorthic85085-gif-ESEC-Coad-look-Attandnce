@@ -10,6 +10,7 @@ import { AttendanceRecord } from "@/lib/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import Image from "next/image";
 import { Badge } from "./ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export default function HodDashboard() {
     const { user } = useAuth();
@@ -24,13 +25,16 @@ export default function HodDashboard() {
 
 
     return (
-        <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+        <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">HOD Dashboard</h1>
-                    <p className="text-muted-foreground">Department: {user.department}</p>
+                    <h1 className="text-2xl font-bold tracking-tight text-white/90">🏛️ Welcome, {user.name.split(' ')[0]}!</h1>
+                    <p className="text-muted-foreground">Managing the {user.department} Department.</p>
                 </div>
-                <p className="text-muted-foreground">Welcome, {user.name}</p>
+                 <Avatar className="h-12 w-12 border-2 border-primary-pink shadow-neon-pink">
+                    <AvatarImage src={user.imageUrl} alt={user.name} />
+                    <AvatarFallback>{user.name?.[0]}</AvatarFallback>
+                </Avatar>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

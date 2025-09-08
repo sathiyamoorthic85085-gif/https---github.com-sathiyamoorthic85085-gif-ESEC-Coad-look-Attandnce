@@ -113,10 +113,10 @@ export default function AdminDashboard() {
 
   return (
     <>
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+    <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
             <div>
-                <h2 className="text-3xl font-bold tracking-tight">Admin Dashboard</h2>
+                <h2 className="text-3xl font-bold tracking-tight text-white/90">🚀 Welcome, Administrator!</h2>
                 <p className="text-muted-foreground">Full control over user and application management.</p>
             </div>
             <div className="flex items-center space-x-2">
@@ -147,7 +147,7 @@ export default function AdminDashboard() {
             </Card>
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">My Attendance</CardTitle>
+                    <CardTitle className="text-sm font-medium">Classes</CardTitle>
                     <GraduationCap className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
