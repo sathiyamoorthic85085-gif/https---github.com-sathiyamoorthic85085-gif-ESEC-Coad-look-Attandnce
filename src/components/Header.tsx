@@ -1,9 +1,14 @@
+"use client";
+
 import Link from 'next/link';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu, Camera, LogIn, LayoutDashboard } from 'lucide-react';
+import { Menu, Camera, LogIn, LayoutDashboard, LogOut } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Header() {
+  const { user, logout } = useAuth();
+
   const navItems = [
     { href: '/', label: 'Home', icon: <Camera /> },
     { href: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard /> },
@@ -32,12 +37,19 @@ export default function Header() {
         </nav>
         
         <div className="hidden md:block">
-            <Button asChild>
-                <Link href="/login">
-                    <LogIn className="mr-2" />
-                    Login
-                </Link>
-            </Button>
+            {user ? (
+                <Button onClick={logout} variant="outline">
+                    <LogOut className="mr-2" />
+                    Logout
+                </Button>
+            ) : (
+                <Button asChild>
+                    <Link href="/login">
+                        <LogIn className="mr-2" />
+                        Login
+                    </Link>
+                </Button>
+            )}
         </div>
 
         <div className="md:hidden">
@@ -64,10 +76,17 @@ export default function Header() {
                     {item.label}
                   </Link>
                 ))}
-                 <Link href="/login" className="text-foreground/80 hover:text-foreground flex items-center gap-2">
-                    <LogIn />
-                    Login
-                </Link>
+                 {user ? (
+                    <Button onClick={logout} variant="outline" className="flex items-center gap-2">
+                        <LogOut />
+                        Logout
+                    </Button>
+                 ) : (
+                    <Link href="/login" className="text-foreground/80 hover:text-foreground flex items-center gap-2">
+                        <LogIn />
+                        Login
+                    </Link>
+                 )}
               </nav>
             </SheetContent>
           </Sheet>

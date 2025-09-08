@@ -3,14 +3,14 @@ import type { AttendanceRecord, User, UserRole } from './types';
 const staticDate = new Date().toLocaleDateString('en-CA');
 
 export const mockUsers: User[] = [
-    { id: 'USR001', name: 'John Doe', role: 'Student', department: 'Computer Science' },
-    { id: 'USR002', name: 'Jane Smith', role: 'Student', department: 'Computer Science' },
-    { id: 'USR003', name: 'Peter Jones', role: 'Faculty', department: 'Computer Science' },
-    { id: 'USR004', name: 'Mary Williams', role: 'HOD', department: 'Computer Science' },
-    { id: 'USR005', name: 'David Brown', role: 'Admin', department: 'Administration' },
-    { id: 'USR006', name: 'Emily Davis', role: 'Student', department: 'Electrical Engineering' },
-    { id: 'USR007', name: 'Michael Wilson', role: 'Faculty', department: 'Electrical Engineering' },
-    { id: 'USR008', name: 'Sarah Martinez', role: 'HOD', department: 'Electrical Engineering' },
+    { id: 'USR001', name: 'John Doe', email: 'john.doe@example.com', password: 'password', role: 'Student', department: 'Computer Science' },
+    { id: 'USR002', name: 'Jane Smith', email: 'jane.smith@example.com', password: 'password', role: 'Student', department: 'Computer Science' },
+    { id: 'USR003', name: 'Peter Jones', email: 'peter.jones@example.com', password: 'password', role: 'Faculty', department: 'Computer Science' },
+    { id: 'USR004', name: 'Mary Williams', email: 'mary.williams@example.com', password: 'password', role: 'HOD', department: 'Computer Science' },
+    { id: 'USR005', name: 'David Brown', email: 'david.brown@example.com', password: 'password', role: 'Admin', department: 'Administration' },
+    { id: 'USR006', name: 'Emily Davis', email: 'emily.davis@example.com', password: 'password', role: 'Student', department: 'Electrical Engineering' },
+    { id: 'USR007', name: 'Michael Wilson', email: 'michael.wilson@example.com', password: 'password', role: 'Faculty', department: 'Electrical Engineering' },
+    { id: 'USR008', name: 'Sarah Martinez', email: 'sarah.martinez@example.com', password: 'password', role: 'HOD', department: 'Electrical Engineering' },
 ];
 
 export const mockAttendanceData: AttendanceRecord[] = [

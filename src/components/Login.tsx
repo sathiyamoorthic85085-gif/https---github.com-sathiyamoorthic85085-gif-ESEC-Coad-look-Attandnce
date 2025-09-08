@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,19 +22,40 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { LogIn } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Login() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isSigningUp, setIsSigningUp] = useState(false);
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+
+  const { login } = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoggingIn(true);
-    // Mock login logic
+
     setTimeout(() => {
+        const success = login(loginEmail, loginPassword);
+        if (success) {
+            toast({
+                title: "Login Successful",
+                description: "Redirecting to your dashboard...",
+            });
+            router.push("/dashboard");
+        } else {
+            toast({
+                title: "Login Failed",
+                description: "Invalid email or password.",
+                variant: "destructive",
+            });
+        }
         setIsLoggingIn(false);
-        // Here you would redirect or update UI
-    }, 1500);
+    }, 1000);
   };
 
   const handleSignUp = (e: React.FormEvent) => {
@@ -42,7 +64,10 @@ export default function Login() {
     // Mock signup logic
     setTimeout(() => {
         setIsSigningUp(false);
-        // Here you would redirect or update UI
+        toast({
+            title: "Registration Complete",
+            description: "You can now log in with your credentials.",
+        });
     }, 1500);
   };
 
@@ -64,11 +89,11 @@ export default function Login() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="login-email">Email</Label>
-                <Input id="login-email" type="email" placeholder="m@example.com" required />
+                <Input id="login-email" type="email" placeholder="m@example.com" required value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="login-password">Password</Label>
-                <Input id="login-password" type="password" required />
+                <Input id="login-password" type="password" required value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} />
               </div>
             </CardContent>
             <CardFooter>
@@ -128,7 +153,7 @@ export default function Login() {
               </Button>
             </CardFooter>
           </form>
-        </Card>
+        </card>
       </TabsContent>
     </Tabs>
   );
