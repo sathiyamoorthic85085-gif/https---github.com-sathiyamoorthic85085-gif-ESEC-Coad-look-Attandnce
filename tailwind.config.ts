@@ -10,8 +10,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Inter', 'sans-serif'],
-        headline: ['"Space Grotesk"', 'sans-serif'],
+        body: ['var(--font-inter)', 'sans-serif'],
+        headline: ['var(--font-orbitron)', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
@@ -93,6 +93,10 @@ export default {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
+      boxShadow: {
+        'neon-blue': '0 0 5px hsl(var(--primary)), 0 0 10px hsl(var(--primary))',
+        'neon-gold': '0 0 5px hsl(var(--accent)), 0 0 10px hsl(var(--accent))',
+      }
     },
   },
   plugins: [require('tailwindcss-animate')],
