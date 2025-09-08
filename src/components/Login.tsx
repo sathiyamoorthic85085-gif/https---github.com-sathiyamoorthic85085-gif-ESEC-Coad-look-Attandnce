@@ -139,6 +139,7 @@ export default function Login() {
                         <SelectItem value="faculty">Faculty</SelectItem>
                         <SelectItem value="hod">HOD</SelectItem>
                         <SelectItem value="admin">Admin</SelectItem>
+                        <SelectItem value="advisor">Advisor</SelectItem>
                     </SelectContent>
                 </Select>
               </div>
@@ -153,7 +154,7 @@ export default function Login() {
               </Button>
             </CardFooter>
           </form>
-        </card>
+        </Card>
       </TabsContent>
     </Tabs>
   );
