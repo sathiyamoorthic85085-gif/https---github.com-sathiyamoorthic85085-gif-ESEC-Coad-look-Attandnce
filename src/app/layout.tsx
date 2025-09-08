@@ -3,19 +3,12 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import Header from "@/components/Header";
 import { AuthProvider } from '@/context/AuthContext';
-import { Inter, Orbitron } from 'next/font/google';
+import { Inter } from 'next/font/google';
 
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
 });
-
-const orbitron = Orbitron({
-  subsets: ['latin'],
-  variable: '--font-orbitron',
-  weight: ['400', '700'],
-});
-
 
 export const metadata: Metadata = {
   title: 'CodeLook Attendance',
@@ -28,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${orbitron.variable} dark`}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} dark`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
