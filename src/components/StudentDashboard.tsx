@@ -25,20 +25,20 @@ export default function StudentDashboard() {
     }
 
     return (
-        <div className="flex-1 space-y-6 p-4 md:p-8 pt-6 font-sans">
+        <div className="flex-1 space-y-6 p-4 md:p-6 pt-6 font-sans">
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-white/90">👋 Hi {user.name.split(' ')[0]}, ready for class today?</h1>
                     <p className="text-muted-foreground">Here is your status summary.</p>
                 </div>
-                <Avatar className="h-12 w-12 border-2 border-white/50">
+                <Avatar className="h-12 w-12 border-2 border-primary">
                     <AvatarImage src={user.imageUrl} alt={user.name} />
                     <AvatarFallback>{user.name?.[0]}</AvatarFallback>
                 </Avatar>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                <Card className="glass-card">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <Card>
                     <CardHeader>
                         <CardTitle className="text-lg font-semibold text-white/90">My Attendance</CardTitle>
                     </CardHeader>
@@ -51,7 +51,7 @@ export default function StudentDashboard() {
                     </CardContent>
                 </Card>
 
-                <Card className="glass-card">
+                <Card>
                      <CardHeader>
                         <CardTitle className="text-lg font-semibold text-white/90">Uniform Check</CardTitle>
                     </CardHeader>
@@ -67,12 +67,12 @@ export default function StudentDashboard() {
                     </CardContent>
                 </Card>
 
-                <Card className="glass-card">
+                <Card>
                     <CardHeader>
                         <CardTitle className="text-lg font-semibold text-white/90">Notifications</CardTitle>
                     </CardHeader>
                     <CardContent>
-                       <div className="flex items-center gap-4 p-2 rounded-lg bg-white/5">
+                       <div className="flex items-center gap-4 p-3 rounded-lg bg-white/5">
                          <Bell className="h-6 w-6 text-yellow-400"/>
                          <div>
                             <p className="font-semibold text-white/80">Assignment Due</p>
@@ -84,9 +84,9 @@ export default function StudentDashboard() {
             </div>
 
             {/* Bottom Nav Placeholder */}
-            <div className="fixed bottom-0 left-0 right-0 md:hidden bg-background/80 backdrop-blur-xl border-t border-white/10 p-2">
+            <div className="fixed bottom-0 left-0 right-0 md:hidden bg-background/80 backdrop-blur-xl border-t border-border p-2">
                 <div className="container mx-auto flex justify-around">
-                    <button className="flex flex-col items-center gap-1 text-white/90">
+                    <button className="flex flex-col items-center gap-1 text-primary">
                         <User className="h-6 w-6"/>
                         <span className="text-xs">My Status</span>
                     </button>
