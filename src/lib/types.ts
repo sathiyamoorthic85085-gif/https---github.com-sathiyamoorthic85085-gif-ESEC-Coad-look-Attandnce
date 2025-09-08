@@ -1,3 +1,12 @@
+export type UserRole = 'Admin' | 'HOD' | 'Faculty' | 'Student';
+
+export interface User {
+    id: string;
+    name: string;
+    role: UserRole;
+    department?: string;
+}
+
 export interface AttendanceRecord {
   id: string;
   name: string;
@@ -6,4 +15,5 @@ export interface AttendanceRecord {
   attendance: 'Present' | 'Absent';
   imageUrl: string;
   violation?: string;
+  userId: string;
 }

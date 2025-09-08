@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu, Camera, LogIn } from 'lucide-react';
+import { Menu, Camera, LogIn, LayoutDashboard } from 'lucide-react';
 
 export default function Header() {
   const navItems = [
-    { href: '/', label: 'Home' },
-    { href: '/admin', label: 'Admin Dashboard' },
+    { href: '/', label: 'Home', icon: <Camera /> },
+    { href: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard /> },
   ];
 
   return (
@@ -14,7 +14,7 @@ export default function Header() {
       <Link href="/" className="flex items-center gap-2">
         <Camera className="h-6 w-6 text-primary" />
         <span className="font-headline text-xl font-semibold tracking-tight">
-          CodeLook Attendance
+          CodeLook
         </span>
       </Link>
       
@@ -58,12 +58,14 @@ export default function Header() {
                   <Link
                     key={item.label}
                     href={item.href}
-                    className="text-foreground/80 hover:text-foreground"
+                    className="text-foreground/80 hover:text-foreground flex items-center gap-2"
                   >
+                    {item.icon}
                     {item.label}
                   </Link>
                 ))}
-                 <Link href="/login" className="text-foreground/80 hover:text-foreground">
+                 <Link href="/login" className="text-foreground/80 hover:text-foreground flex items-center gap-2">
+                    <LogIn />
                     Login
                 </Link>
               </nav>

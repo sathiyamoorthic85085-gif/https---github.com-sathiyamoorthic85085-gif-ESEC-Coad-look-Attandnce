@@ -1,10 +1,22 @@
-import type { AttendanceRecord } from './types';
+import type { AttendanceRecord, User, UserRole } from './types';
 
 const staticDate = new Date().toLocaleDateString('en-CA');
 
+export const mockUsers: User[] = [
+    { id: 'USR001', name: 'John Doe', role: 'Student', department: 'Computer Science' },
+    { id: 'USR002', name: 'Jane Smith', role: 'Student', department: 'Computer Science' },
+    { id: 'USR003', name: 'Peter Jones', role: 'Faculty', department: 'Computer Science' },
+    { id: 'USR004', name: 'Mary Williams', role: 'HOD', department: 'Computer Science' },
+    { id: 'USR005', name: 'David Brown', role: 'Admin', department: 'Administration' },
+    { id: 'USR006', name: 'Emily Davis', role: 'Student', department: 'Electrical Engineering' },
+    { id: 'USR007', name: 'Michael Wilson', role: 'Faculty', department: 'Electrical Engineering' },
+    { id: 'USR008', name: 'Sarah Martinez', role: 'HOD', department: 'Electrical Engineering' },
+];
+
 export const mockAttendanceData: AttendanceRecord[] = [
   {
-    id: 'USR001',
+    id: 'ATT001',
+    userId: 'USR001',
     name: 'John Doe',
     date: staticDate,
     status: 'Pending',
@@ -12,7 +24,8 @@ export const mockAttendanceData: AttendanceRecord[] = [
     imageUrl: 'https://picsum.photos/seed/USR001/100/100',
   },
   {
-    id: 'USR002',
+    id: 'ATT002',
+    userId: 'USR002',
     name: 'Jane Smith',
     date: staticDate,
     status: 'Pending',
@@ -20,7 +33,8 @@ export const mockAttendanceData: AttendanceRecord[] = [
     imageUrl: 'https://picsum.photos/seed/USR002/100/100',
   },
   {
-    id: 'USR003',
+    id: 'ATT003',
+    userId: 'USR003',
     name: 'Peter Jones',
     date: staticDate,
     status: 'Pending',
@@ -28,22 +42,52 @@ export const mockAttendanceData: AttendanceRecord[] = [
     imageUrl: 'https://picsum.photos/seed/USR003/100/100',
   },
   {
-    id: 'USR004',
+    id: 'ATT004',
+    userId: 'USR004',
     name: 'Mary Williams',
     date: staticDate,
     status: 'Pending',
     attendance: 'Absent',
     imageUrl: 'https://picsum.photos/seed/USR004/100/100',
   },
-    {
-    id: 'USR005',
+  {
+    id: 'ATT005',
+    userId: 'USR005',
     name: 'David Brown',
     date: staticDate,
     status: 'Pending',
     attendance: 'Absent',
     imageUrl: 'https://picsum.photos/seed/USR005/100/100',
   },
+  {
+    id: 'ATT006',
+    userId: 'USR006',
+    name: 'Emily Davis',
+    date: staticDate,
+    status: 'Pending',
+    attendance: 'Absent',
+    imageUrl: 'https://picsum.photos/seed/USR006/100/100',
+  },
+  {
+    id: 'ATT007',
+    userId: 'USR007',
+    name: 'Michael Wilson',
+    date: staticDate,
+    status: 'Pending',
+    attendance: 'Absent',
+    imageUrl: 'https://picsum.photos/seed/USR007/100/100',
+  },
+  {
+    id: 'ATT008',
+    userId: 'USR008',
+    name: 'Sarah Martinez',
+    date: staticDate,
+    status: 'Pending',
+    attendance: 'Absent',
+    imageUrl: 'https://picsum.photos/seed/USR008/100/100',
+  },
 ];
+
 
 export const mockViolations: string[] = [
     "Not wearing a tie",

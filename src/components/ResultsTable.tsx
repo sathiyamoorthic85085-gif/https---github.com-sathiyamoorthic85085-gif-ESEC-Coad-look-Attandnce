@@ -60,7 +60,7 @@ export default function ResultsTable({ attendanceData }: ResultsTableProps) {
                     />
                     <div>
                       <div className="font-medium">{record.name}</div>
-                      <div className="text-sm text-muted-foreground">{record.id}</div>
+                      <div className="text-sm text-muted-foreground">{record.userId}</div>
                     </div>
                   </div>
                 </TableCell>

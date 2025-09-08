@@ -12,6 +12,7 @@ import { generateDressCodeRecommendations } from '@/ai/flows/generate-dress-code
 import ResultsTable from './ResultsTable';
 import type { AttendanceRecord } from '@/lib/types';
 import { mockAttendanceData, mockViolations } from '@/lib/mock-data';
+import { useAuth } from '@/context/AuthContext';
 
 interface DetectionResult {
   compliant: boolean;
@@ -20,6 +21,7 @@ interface DetectionResult {
 }
 
 export default function CodeCheck() {
+  const { user } = useAuth();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [detectionResult, setDetectionResult] = useState<DetectionResult | null>(null);
@@ -70,10 +72,10 @@ export default function CodeCheck() {
   };
 
   const handleCaptureAndDetect = async () => {
-    if (!videoRef.current) {
+    if (!videoRef.current || !user) {
       toast({
-        title: 'Camera Not Ready',
-        description: 'The camera feed is not available.',
+        title: 'Error',
+        description: 'Camera or user not available.',
         variant: 'destructive',
       });
       return;
@@ -83,37 +85,43 @@ export default function CodeCheck() {
     setDetectionResult(null);
     setRecommendations(null);
 
-    const canvas = canvasRef.current;
+    const canvas = canvasRef.current ?? document.createElement('canvas');
+    canvasRef.current = canvas;
     const video = videoRef.current;
-    if (!canvas) {
-        canvasRef.current = document.createElement('canvas');
-    }
-    const context = canvasRef.current!.getContext('2d');
+    const context = canvas.getContext('2d');
     
-    canvasRef.current!.width = video.videoWidth;
-    canvasRef.current!.height = video.videoHeight;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
     context?.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
 
-    const capturedImage = canvasRef.current!.toDataURL('image/jpeg');
+    const capturedImage = canvas.toDataURL('image/jpeg');
     setImagePreview(capturedImage);
 
     await new Promise(resolve => setTimeout(resolve, 2000));
 
     const isCompliant = Math.random() > 0.4;
-    const randomUserIndex = Math.floor(Math.random() * attendanceData.length);
-    const updatedUser = { ...attendanceData[randomUserIndex] };
+    
+    const userAttendanceIndex = attendanceData.findIndex(record => record.userId === user.id);
+
+    if (userAttendanceIndex === -1) {
+        toast({ title: "User not in attendance list", variant: "destructive" });
+        setIsProcessing(false);
+        return;
+    }
+
+    const updatedRecord = { ...attendanceData[userAttendanceIndex] };
 
     if (isCompliant) {
       setDetectionResult({ compliant: true, imageUrl: capturedImage });
-      updatedUser.status = 'Compliant';
-      updatedUser.attendance = 'Present';
-      updatedUser.violation = undefined;
+      updatedRecord.status = 'Compliant';
+      updatedRecord.attendance = 'Present';
+      updatedRecord.violation = undefined;
     } else {
       const violation = mockViolations[Math.floor(Math.random() * mockViolations.length)];
       setDetectionResult({ compliant: false, violation, imageUrl: capturedImage });
-      updatedUser.status = 'Non-Compliant';
-      updatedUser.attendance = 'Present';
-      updatedUser.violation = violation;
+      updatedRecord.status = 'Non-Compliant';
+      updatedRecord.attendance = 'Present';
+      updatedRecord.violation = violation;
 
       startTransition(async () => {
         try {
@@ -127,7 +135,7 @@ export default function CodeCheck() {
     }
 
     const newAttendanceData = [...attendanceData];
-    newAttendanceData[randomUserIndex] = updatedUser;
+    newAttendanceData[userAttendanceIndex] = updatedRecord;
     setAttendanceData(newAttendanceData);
 
     setIsProcessing(false);
@@ -216,7 +224,7 @@ export default function CodeCheck() {
                 <CardHeader className="flex-row items-center gap-2 space-y-0 pb-2">
                     <Wand2 className="h-5 w-5 text-accent" />
                     <CardTitle className="font-headline text-lg font-semibold text-accent">AI Recommendations</CardTitle>
-                </CardHeader>
+                </Header>
                 <CardContent>
                     {isPending ? (
                       <p className="text-sm text-muted-foreground flex items-center"><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...</p>
