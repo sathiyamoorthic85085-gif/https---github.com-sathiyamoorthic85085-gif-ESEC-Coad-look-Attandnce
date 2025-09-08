@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/context/AuthContext";
-import { Shield, Users, User, BookUser, FolderKanban, MessageSquare, Calendar, Shirt, FileUp, Settings, LogOut, GraduationCap, Building, UserCheck, Bell } from "lucide-react";
+import { Shield, Users, User, BookUser, FolderKanban, MessageSquare, Calendar, Shirt, FileUp, Settings, LogOut, GraduationCap, Building, Bell } from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const { user, logout } = useAuth();
@@ -28,15 +28,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       { href: '/dashboard', label: 'Admin Dashboard', icon: <Shield />, role: 'Admin' },
       { href: '/dashboard', label: 'HOD View', icon: <Building />, role: 'Admin' },
       { href: '/dashboard', label: 'Advisor View', icon: <BookUser />, role: 'Admin' },
-      { href: '/dashboard', label: 'Faculty View', icon: <User />, role: 'Admin' },
+      { href: '/dashboard', label: 'Mentor View', icon: <User />, role: 'Admin' },
       { href: '/dashboard', label: 'Student View', icon: <GraduationCap />, role: 'Admin' },
       { href: '/dashboard', label: 'Students', icon: <Users />, role: 'Admin' },
-      { href: '/dashboard', label: 'Faculty', icon: <User />, role: 'Admin' },
-      { href: '/dashboard', label: 'Attendance', icon: <UserCheck />, role: 'Admin' },
+      { href: '/dashboard', label: 'Mentors', icon: <User />, role: 'Admin' },
+      { href: '/dashboard', label: 'My Attendance', icon: <User />, role: 'Admin' },
       { href: '/dashboard', label: 'Assignments', icon: <FolderKanban />, role: 'Admin' },
       { href: '/dashboard', label: 'Messages', icon: <MessageSquare />, role: 'Admin' },
       { href: '/dashboard', label: 'Timetable & Circulars', icon: <Calendar />, role: 'Admin' },
-      { href: '/', label: 'Dress Checker', icon: <Shirt />, role: 'Admin' },
+      { href: '/', label: 'Uniform Check', icon: <Shirt />, role: 'Admin' },
       { href: '/dashboard', label: 'Leave/OD Forms', icon: <FileUp />, role: 'Admin' },
       { href: '/dashboard', label: 'Profile & Settings', icon: <Settings />, role: 'Admin' },
     ];

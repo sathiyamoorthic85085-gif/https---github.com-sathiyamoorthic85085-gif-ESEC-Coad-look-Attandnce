@@ -36,10 +36,10 @@ export default function HodDashboard() {
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                  <Card>
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><UserPlus /> Manage Faculty</CardTitle>
+                        <CardTitle className="flex items-center gap-2"><UserPlus /> Manage Mentors</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-muted-foreground">Add or remove faculty from your department.</p>
+                        <p className="text-muted-foreground">Add or remove mentors from your department.</p>
                         <Button className="mt-4">Manage</Button>
                     </CardContent>
                 </Card>

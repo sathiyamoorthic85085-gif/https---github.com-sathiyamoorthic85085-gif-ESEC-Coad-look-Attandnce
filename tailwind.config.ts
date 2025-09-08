@@ -12,7 +12,7 @@ export default {
       fontFamily: {
         body: ['var(--font-inter)', 'sans-serif'],
         headline: ['var(--font-inter)', 'sans-serif'],
-        code: ['monospace'],
+        sans: ['var(--font-inter)', 'sans-serif'],
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -26,8 +26,10 @@ export default {
           foreground: 'hsl(var(--popover-foreground))',
         },
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
+          DEFAULT: 'hsl(var(--primary-blue))',
           foreground: 'hsl(var(--primary-foreground))',
+          pink: 'hsl(var(--primary-pink))',
+          blue: 'hsl(var(--primary-blue))',
         },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
@@ -68,8 +70,9 @@ export default {
       },
       borderRadius: {
         lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
+        md: 'calc(var(--radius) - 4px)',
+        sm: 'calc(var(--radius) - 8px)',
+        '2xl': 'calc(var(--radius) + 4px)',
       },
       keyframes: {
         'accordion-down': {
@@ -94,8 +97,8 @@ export default {
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
       boxShadow: {
-        'neon-blue': '0 0 5px hsl(var(--primary)), 0 0 10px hsl(var(--primary))',
-        'neon-gold': '0 0 5px hsl(var(--accent)), 0 0 10px hsl(var(--accent))',
+        'neon-blue': '0 0 5px hsl(var(--primary-blue)), 0 0 10px hsl(var(--primary-blue))',
+        'neon-pink': '0 0 5px hsl(var(--primary-pink)), 0 0 10px hsl(var(--primary-pink))',
       }
     },
   },

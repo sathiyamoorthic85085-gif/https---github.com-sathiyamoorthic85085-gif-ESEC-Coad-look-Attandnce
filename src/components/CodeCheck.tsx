@@ -145,7 +145,7 @@ export default function CodeCheck() {
     <div className="grid gap-8 md:grid-cols-2">
       <Card className="flex flex-col">
         <CardHeader>
-          <CardTitle className="font-headline text-2xl">Dress Code Check</CardTitle>
+          <CardTitle className="font-headline text-2xl">Uniform Check</CardTitle>
           <CardDescription>Use the camera to verify dress code compliance and mark attendance.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-1 flex-col items-center justify-center gap-6">
