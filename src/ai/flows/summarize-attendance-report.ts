@@ -1,4 +1,3 @@
-// Summarize Attendance Report
 'use server';
 /**
  * @fileOverview Summarizes the attendance report, highlighting key trends and potential issues.
@@ -34,7 +33,7 @@ const prompt = ai.definePrompt({
   Please analyze the following attendance data and provide a summary of the key trends and potential issues.
 
   Attendance Data:
-  {{attendanceData}}
+  {{{attendanceData}}}
   `,
 });
 
