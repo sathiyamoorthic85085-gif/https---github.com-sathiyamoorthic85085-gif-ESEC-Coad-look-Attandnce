@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { Upload, X, CheckCircle, XCircle, Wand2, Loader2 } from 'lucide-react';
+import { Camera, X, CheckCircle, XCircle, Wand2, Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { generateDressCodeRecommendations } from '@/ai/flows/generate-dress-code-recommendations';
 import ResultsTable from './ResultsTable';
@@ -22,41 +21,59 @@ interface DetectionResult {
 
 export default function CodeCheck() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [detectionResult, setDetectionResult] = useState<DetectionResult | null>(null);
   const [recommendations, setRecommendations] = useState<string | null>(null);
   const [attendanceData, setAttendanceData] = useState<AttendanceRecord[]>(mockAttendanceData);
   const [isPending, startTransition] = useTransition();
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
 
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-      setDetectionResult(null);
-      setRecommendations(null);
-    }
-  };
+  useEffect(() => {
+    const getCameraPermission = async () => {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        console.error('Camera API not supported');
+        setHasCameraPermission(false);
+        toast({
+          variant: 'destructive',
+          title: 'Camera Not Supported',
+          description: 'Your browser does not support the camera API.',
+        });
+        return;
+      }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({video: true});
+        setHasCameraPermission(true);
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+        setHasCameraPermission(false);
+        toast({
+          variant: 'destructive',
+          title: 'Camera Access Denied',
+          description: 'Please enable camera permissions in your browser settings to use this app.',
+        });
+      }
+    };
+    getCameraPermission();
+  }, [toast]);
 
   const handleRemoveImage = () => {
     setImagePreview(null);
-    setImageFile(null);
     setDetectionResult(null);
     setRecommendations(null);
   };
 
-  const handleDetect = async () => {
-    if (!imageFile) {
+  const handleCaptureAndDetect = async () => {
+    if (!videoRef.current) {
       toast({
-        title: 'No Image Selected',
-        description: 'Please upload an image to check the dress code.',
+        title: 'Camera Not Ready',
+        description: 'The camera feed is not available.',
         variant: 'destructive',
       });
       return;
@@ -66,6 +83,20 @@ export default function CodeCheck() {
     setDetectionResult(null);
     setRecommendations(null);
 
+    const canvas = canvasRef.current;
+    const video = videoRef.current;
+    if (!canvas) {
+        canvasRef.current = document.createElement('canvas');
+    }
+    const context = canvasRef.current!.getContext('2d');
+    
+    canvasRef.current!.width = video.videoWidth;
+    canvasRef.current!.height = video.videoHeight;
+    context?.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+
+    const capturedImage = canvasRef.current!.toDataURL('image/jpeg');
+    setImagePreview(capturedImage);
+
     await new Promise(resolve => setTimeout(resolve, 2000));
 
     const isCompliant = Math.random() > 0.4;
@@ -73,13 +104,13 @@ export default function CodeCheck() {
     const updatedUser = { ...attendanceData[randomUserIndex] };
 
     if (isCompliant) {
-      setDetectionResult({ compliant: true, imageUrl: imagePreview! });
+      setDetectionResult({ compliant: true, imageUrl: capturedImage });
       updatedUser.status = 'Compliant';
       updatedUser.attendance = 'Present';
       updatedUser.violation = undefined;
     } else {
       const violation = mockViolations[Math.floor(Math.random() * mockViolations.length)];
-      setDetectionResult({ compliant: false, violation, imageUrl: imagePreview! });
+      setDetectionResult({ compliant: false, violation, imageUrl: capturedImage });
       updatedUser.status = 'Non-Compliant';
       updatedUser.attendance = 'Present';
       updatedUser.violation = violation;
@@ -107,48 +138,54 @@ export default function CodeCheck() {
       <Card className="flex flex-col">
         <CardHeader>
           <CardTitle className="font-headline text-2xl">Dress Code Check</CardTitle>
-          <CardDescription>Upload an image to verify dress code compliance and mark attendance.</CardDescription>
+          <CardDescription>Use the camera to verify dress code compliance and mark attendance.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-1 flex-col items-center justify-center gap-6">
-          {imagePreview ? (
-            <div className="relative w-full max-w-sm">
-              <Image
-                src={imagePreview}
-                alt="Image preview"
-                width={400}
-                height={400}
-                className="rounded-lg object-cover aspect-square"
-              />
-              <Button
-                variant="destructive"
-                size="icon"
-                className="absolute -top-2 -right-2 rounded-full h-8 w-8"
-                onClick={handleRemoveImage}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          ) : (
-            <div className="w-full">
-                <Label
-                htmlFor="picture"
-                className="flex w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/50 bg-primary/10 p-10 text-center transition hover:bg-primary/20"
-                >
-                <Upload className="h-10 w-10 text-primary" />
-                <span className="font-semibold text-primary">Click to upload image</span>
-                <p className="text-xs text-foreground/70">PNG, JPG, or GIF</p>
-                </Label>
-                <Input id="picture" type="file" className="sr-only" onChange={handleImageChange} accept="image/*" />
-            </div>
-          )}
-          <Button onClick={handleDetect} disabled={!imageFile || isProcessing} className="w-full max-w-sm">
+          <div className="relative w-full max-w-sm">
+            {imagePreview ? (
+                <>
+                    <Image
+                        src={imagePreview}
+                        alt="Captured image"
+                        width={400}
+                        height={400}
+                        className="rounded-lg object-cover aspect-square"
+                    />
+                    <Button
+                        variant="destructive"
+                        size="icon"
+                        className="absolute -top-2 -right-2 rounded-full h-8 w-8"
+                        onClick={handleRemoveImage}
+                    >
+                        <X className="h-4 w-4" />
+                    </Button>
+                </>
+            ) : (
+                <div className="w-full aspect-square bg-muted rounded-lg flex items-center justify-center">
+                    <video ref={videoRef} className="w-full aspect-video rounded-md" autoPlay muted playsInline />
+                </div>
+            )}
+             {hasCameraPermission === false && (
+                <Alert variant="destructive" className="mt-4">
+                  <AlertTitle>Camera Access Required</AlertTitle>
+                  <AlertDescription>
+                    Please allow camera access in your browser to use this feature.
+                  </AlertDescription>
+                </Alert>
+            )}
+          </div>
+         
+          <Button onClick={handleCaptureAndDetect} disabled={hasCameraPermission !== true || isProcessing} className="w-full max-w-sm">
             {isProcessing ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Analyzing...
               </>
             ) : (
-              'Detect Dress Code'
+                <>
+                    <Camera className="mr-2 h-4 w-4" />
+                    Scan Dress Code
+                </>
             )}
           </Button>
 
