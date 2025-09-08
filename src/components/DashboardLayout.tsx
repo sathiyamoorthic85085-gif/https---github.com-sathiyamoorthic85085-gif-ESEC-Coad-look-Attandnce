@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/context/AuthContext";
-import { Shield, Users, User, BookUser, FolderKanban, MessageSquare, Calendar, Shirt, FileUp, Settings, LogOut, GraduationCap, Building } from "lucide-react";
+import { Shield, Users, User, BookUser, FolderKanban, MessageSquare, Calendar, Shirt, FileUp, Settings, LogOut, GraduationCap, Building, UserCheck, Bell } from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const { user, logout } = useAuth();
