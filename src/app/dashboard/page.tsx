@@ -4,9 +4,9 @@ import FacultyDashboard from "@/components/FacultyDashboard";
 import HodDashboard from "@/components/HodDashboard";
 import StudentDashboard from "@/components/StudentDashboard";
 import { useAuth } from "@/context/AuthContext";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import DashboardLayout from "@/components/DashboardLayout";
 
 
 export default function DashboardPage() {
@@ -23,7 +23,7 @@ export default function DashboardPage() {
     const renderDashboard = () => {
         if (!user) {
             return (
-                 <div className="flex h-[50vh] flex-col items-center justify-center gap-4">
+                 <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
                     <p>Redirecting to login...</p>
                  </div>
             );
@@ -43,9 +43,13 @@ export default function DashboardPage() {
         }
     }
 
+    if (!user) {
+        return renderDashboard();
+    }
+
     return (
-        <div className="container mx-auto p-4 md:p-8 space-y-8">
+        <DashboardLayout>
             {renderDashboard()}
-        </div>
+        </DashboardLayout>
     )
 }

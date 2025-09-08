@@ -1,4 +1,4 @@
-export type UserRole = 'Admin' | 'HOD' | 'Faculty' | 'Student';
+export type UserRole = 'Admin' | 'HOD' | 'Faculty' | 'Student' | 'Advisor';
 
 export interface User {
     id: string;
@@ -7,6 +7,7 @@ export interface User {
     password?: string; // Keep password optional for security reasons in real apps
     role: UserRole;
     department?: string;
+    imageUrl?: string;
 }
 
 export interface AttendanceRecord {
