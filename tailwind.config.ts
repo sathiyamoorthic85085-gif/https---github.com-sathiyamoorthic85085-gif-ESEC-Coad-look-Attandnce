@@ -97,8 +97,8 @@ export default {
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
       boxShadow: {
-        'neon-blue': '0 0 5px hsl(var(--primary-blue)), 0 0 10px hsl(var(--primary-blue))',
-        'neon-pink': '0 0 5px hsl(var(--primary-pink)), 0 0 10px hsl(var(--primary-pink))',
+        'neon-blue': '0 0 10px hsl(var(--primary-blue)), 0 0 20px hsl(var(--primary-blue))',
+        'neon-pink': '0 0 10px hsl(var(--primary-pink)), 0 0 20px hsl(var(--primary-pink))',
       }
     },
   },

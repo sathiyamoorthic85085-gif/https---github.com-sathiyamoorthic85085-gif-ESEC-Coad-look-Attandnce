@@ -34,7 +34,7 @@
     --input: 215 27.9% 16.9%;
     --ring: 211 100% 65.3%;
     
-    --radius: 0.75rem; /* Standard Android radius */
+    --radius: 1.5rem; /* Larger radius for iOS feel */
   }
 
   .dark {
@@ -76,5 +76,6 @@
   }
   body {
     @apply bg-background text-foreground;
+    background: linear-gradient(180deg, hsl(240, 30%, 10%) 0%, hsl(240, 20%, 5%) 100%);
   }
 }
