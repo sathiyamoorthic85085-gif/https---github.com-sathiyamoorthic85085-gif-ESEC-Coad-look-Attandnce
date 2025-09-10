@@ -86,7 +86,10 @@ export default function CodeCheck() {
     setRecommendations(null);
 
     const canvas = canvasRef.current ?? document.createElement('canvas');
-    canvasRef.current = canvas;
+    if (!canvasRef.current) {
+        canvasRef.current = canvas;
+    }
+
     const video = videoRef.current;
     const context = canvas.getContext('2d');
     
