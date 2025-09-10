@@ -7,7 +7,7 @@ import { Button } from "./ui/button";
 import { FileText, Trash2, Edit, Loader2, BarChart2, Download, Shield } from "lucide-react";
 import { mockAttendanceData, mockClasses, mockDepartments, mockUsers } from "@/lib/mock-data";
 import { useEffect, useState, useTransition, useMemo } from "react";
-import { AttendanceRecord, Class, User } from "@/lib/types";
+import type { AttendanceRecord, Class, User } from "@/lib/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import Image from "next/image";
 import { Badge } from "./ui/badge";
@@ -29,7 +29,8 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
     const { user } = useAuth();
     const { toast } = useToast();
 
-    const [users, setUsers] = useState<User[]>(mockUsers);
+    // Initialize state with a copy of mockUsers to prevent mutation issues
+    const [users, setUsers] = useState<User[]>(() => [...mockUsers]);
     const [departmentClasses, setDepartmentClasses] = useState<Class[]>([]);
     
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -54,8 +55,8 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
     );
 
     const departmentAttendance = useMemo(() => {
-        const userIdsInDept = departmentUsers.map(s => s.id);
-        return mockAttendanceData.filter(a => userIdsInDept.includes(a.userId));
+        const userIdsInDept = new Set(departmentUsers.map(s => s.id));
+        return mockAttendanceData.filter(a => userIdsInDept.has(a.userId));
     }, [departmentUsers]);
 
     useEffect(() => {
@@ -64,9 +65,12 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
             if (department) {
                 const filteredClasses = mockClasses.filter(c => c.departmentId === department.id);
                 setDepartmentClasses(filteredClasses);
+                if (filteredClasses.length > 0 && !selectedClass) {
+                    // setSelectedClass(filteredClasses[0].id);
+                }
             }
         }
-    }, [hodDepartmentName]);
+    }, [hodDepartmentName, selectedClass]);
 
 
     const openConfirmationDialog = (title: string, description: string, onConfirm: () => void) => {
@@ -76,14 +80,13 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
 
     const handleAddUser = (newUser: Omit<User, 'id' | 'imageUrl'>) => {
         if (!hodDepartmentName) return;
-
         const department = currentUser?.role === 'Admin' ? newUser.department : hodDepartmentName;
 
         const finalNewUser: User = {
             ...newUser,
-            id: `USR${(users.length + 1).toString().padStart(3, '0')}`,
+            id: `USR${Date.now()}`, // More robust ID generation
             department: department,
-            imageUrl: `https://picsum.photos/seed/USR${(users.length + 1).toString().padStart(3, '0')}/100/100`,
+            imageUrl: `https://picsum.photos/seed/USR${Date.now()}/100/100`,
         };
         setUsers(currentUsers => [...currentUsers, finalNewUser]);
         toast({ title: "User Added", description: `Successfully added ${newUser.name} to the department.`});
@@ -384,5 +387,7 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
         </>
     );
 }
+
+    
 
     
