@@ -25,6 +25,9 @@ const menuConfig = {
     Admin: [
         { href: '/dashboard', label: 'Admin Dashboard', icon: <Shield /> },
         { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
+        { href: '/dashboard/students', label: 'Manage Students', icon: <Users /> },
+        { href: '/dashboard/assignments', label: 'Assignments', icon: <FolderKanban /> },
+        { href: '/dashboard/attendance', label: 'Attendance', icon: <Calendar /> },
         { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
     ],
     HOD: [
