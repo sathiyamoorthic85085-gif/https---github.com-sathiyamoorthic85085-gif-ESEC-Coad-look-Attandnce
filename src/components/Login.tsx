@@ -41,7 +41,6 @@ export default function Login() {
   const [signupDepartment, setSignupDepartment] = useState("");
   const [signupRollNumber, setSignupRollNumber] = useState("");
   const [signupRegisterNumber, setSignupRegisterNumber] = useState("");
-  const [signupMobileNumber, setSignupMobileNumber] = useState("");
 
   const { login } = useAuth();
   const router = useRouter();
@@ -76,7 +75,7 @@ export default function Login() {
 
     let isFormValid = signupName && signupEmail && signupRole;
     if (signupRole === 'Student') {
-        isFormValid = isFormValid && signupRollNumber && signupRegisterNumber && signupMobileNumber;
+        isFormValid = isFormValid && signupRollNumber && signupRegisterNumber;
     } else {
         isFormValid = isFormValid && signupPassword;
     }
@@ -104,7 +103,6 @@ export default function Login() {
         department: signupRole === 'Admin' ? 'Administration' : signupDepartment,
         rollNumber: signupRole === 'Student' ? signupRollNumber : undefined,
         registerNumber: signupRole === 'Student' ? signupRegisterNumber : undefined,
-        mobileNumber: signupRole === 'Student' ? signupMobileNumber : undefined,
         imageUrl: `https://picsum.photos/seed/USR${(mockUsers.length + 1).toString().padStart(3, '0')}/100/100`,
     };
 
@@ -217,10 +215,6 @@ export default function Login() {
                     <div className="space-y-2">
                         <Label htmlFor="register-reg">Register Number</Label>
                         <Input id="register-reg" placeholder="Your Register Number" required value={signupRegisterNumber} onChange={e => setSignupRegisterNumber(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="register-mobile">Mobile Number</Label>
-                        <Input id="register-mobile" placeholder="Your Mobile Number" required value={signupMobileNumber} onChange={e => setSignupMobileNumber(e.target.value)} />
                     </div>
                 </>
               ) : (

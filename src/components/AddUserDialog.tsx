@@ -32,7 +32,6 @@ export function AddUserDialog({ onUserAdd, departments }: AddUserDialogProps) {
   const [department, setDepartment] = useState("");
   const [rollNumber, setRollNumber] = useState("");
   const [registerNumber, setRegisterNumber] = useState("");
-  const [mobileNumber, setMobileNumber] = useState("");
   const { toast } = useToast();
 
   const handleRoleChange = (value: UserRole | "") => {
@@ -41,7 +40,6 @@ export function AddUserDialog({ onUserAdd, departments }: AddUserDialogProps) {
     if (value !== 'Student') {
       setRollNumber("");
       setRegisterNumber("");
-      setMobileNumber("");
     }
   }
 
@@ -50,7 +48,7 @@ export function AddUserDialog({ onUserAdd, departments }: AddUserDialogProps) {
 
     let isFormValid = name && email && role;
     if (role === 'Student') {
-      isFormValid = isFormValid && rollNumber && registerNumber && mobileNumber;
+      isFormValid = isFormValid && rollNumber && registerNumber;
     } else {
       isFormValid = isFormValid && password;
     }
@@ -78,7 +76,6 @@ export function AddUserDialog({ onUserAdd, departments }: AddUserDialogProps) {
       department: role === 'Admin' ? 'Administration' : department,
       rollNumber: role === 'Student' ? rollNumber : undefined,
       registerNumber: role === 'Student' ? registerNumber : undefined,
-      mobileNumber: role === 'Student' ? mobileNumber : undefined,
     });
 
     toast({
@@ -94,7 +91,6 @@ export function AddUserDialog({ onUserAdd, departments }: AddUserDialogProps) {
     setDepartment("");
     setRollNumber("");
     setRegisterNumber("");
-    setMobileNumber("");
     setOpen(false);
   };
 
@@ -151,10 +147,6 @@ export function AddUserDialog({ onUserAdd, departments }: AddUserDialogProps) {
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="registerNumber" className="text-right">Reg. No.</Label>
                     <Input id="registerNumber" value={registerNumber} onChange={e => setRegisterNumber(e.target.value)} className="col-span-3" required />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="mobileNumber" className="text-right">Mobile No.</Label>
-                    <Input id="mobileNumber" value={mobileNumber} onChange={e => setMobileNumber(e.target.value)} className="col-span-3" required />
                 </div>
               </>
             ) : (

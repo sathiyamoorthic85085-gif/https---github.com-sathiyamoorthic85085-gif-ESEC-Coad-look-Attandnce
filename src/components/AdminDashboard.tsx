@@ -186,10 +186,9 @@ export default function AdminDashboard() {
                                         <TableCell>{u.role}</TableCell>
                                         <TableCell>{u.department}</TableCell>
                                         <TableCell>
-                                            {u.role === 'Student' && u.mobileNumber && (
+                                            {u.role === 'Student' && (
                                                 <div className="text-sm text-muted-foreground">
                                                     <p>R.No: {u.rollNumber}</p>
-                                                    <p>M: {u.mobileNumber}</p>
                                                 </div>
                                             )}
                                         </TableCell>

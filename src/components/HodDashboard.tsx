@@ -259,10 +259,9 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
                                             </TableCell>
                                             <TableCell>{u.role}</TableCell>
                                             <TableCell>
-                                                {u.role === 'Student' && u.mobileNumber && (
+                                                {u.role === 'Student' && (
                                                     <div className="text-sm text-muted-foreground">
                                                         <p>R.No: {u.rollNumber}</p>
-                                                        <p>M: {u.mobileNumber}</p>
                                                     </div>
                                                 )}
                                             </TableCell>
