@@ -2,16 +2,19 @@
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/card";
 import { Button } from "./ui/button";
-import { Bell, BellRing, FilePen, Loader2, BarChart2 } from "lucide-react";
+import { Bell, BellRing, FilePen, Loader2, BarChart2, Download } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { summarizeAttendanceReport } from "@/ai/flows/summarize-attendance-report";
 import { mockAttendanceData } from "@/lib/mock-data";
+import { exportToCSV, exportToExcel, exportToPDF } from "@/lib/report-utils";
+import { AttendanceRecord } from "@/lib/types";
 
 export default function FacultyDashboard() {
     const { user } = useAuth();
     const { toast } = useToast();
     const [report, setReport] = useState<string>('');
+    const [reportData, setReportData] = useState<AttendanceRecord[]>([]);
     const [isPending, startTransition] = useTransition();
 
     if (!user || (user.role !== 'Faculty' && user.role !== 'Admin')) {
@@ -28,9 +31,10 @@ export default function FacultyDashboard() {
                     user.role === 'Admin' || d.userId.startsWith('USR') // Simplified for mock
                 ).slice(0, 10);
                 
-                const reportData = JSON.stringify(relevantData, null, 2);
+                setReportData(relevantData);
+                const reportJson = JSON.stringify(relevantData, null, 2);
 
-                const result = await summarizeAttendanceReport({ attendanceData: reportData });
+                const result = await summarizeAttendanceReport({ attendanceData: reportJson });
                 setReport(result.summary);
                 toast({
                     title: 'Report Generated',
@@ -109,8 +113,22 @@ export default function FacultyDashboard() {
                                 <CardHeader>
                                     <CardTitle>AI Summary Report</CardTitle>
                                 </CardHeader>
-                                <CardContent>
+                                <CardContent className="space-y-4">
                                     <p className="text-sm text-muted-foreground whitespace-pre-wrap">{report}</p>
+                                    <div className="flex items-center justify-end gap-2">
+                                        <Button variant="outline" size="sm" onClick={() => exportToPDF(reportData, `Attendance Report - ${department}`)}>
+                                            <Download className="mr-2 h-3 w-3" />
+                                            PDF
+                                        </Button>
+                                        <Button variant="outline" size="sm" onClick={() => exportToExcel(reportData, `Attendance Report - ${department}`)}>
+                                            <Download className="mr-2 h-3 w-3" />
+                                            Excel
+                                        </Button>
+                                        <Button variant="outline" size="sm" onClick={() => exportToCSV(reportData, `Attendance Report - ${department}`)}>
+                                            <Download className="mr-2 h-3 w-3" />
+                                            CSV
+                                        </Button>
+                                    </div>
                                 </CardContent>
                             </Card>
                         )}

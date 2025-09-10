@@ -3,7 +3,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
-import { FileText, Trash2, Edit, Loader2, BarChart2 } from "lucide-react";
+import { FileText, Trash2, Edit, Loader2, BarChart2, Download } from "lucide-react";
 import { mockAttendanceData, mockClasses, mockDepartments, mockUsers } from "@/lib/mock-data";
 import { useEffect, useState, useTransition } from "react";
 import { AttendanceRecord, Class, User } from "@/lib/types";
@@ -17,6 +17,7 @@ import { ConfirmationDialog } from "./ConfirmationDialog";
 import { summarizeAttendanceReport } from "@/ai/flows/summarize-attendance-report";
 import { Label } from "./ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { exportToCSV, exportToExcel, exportToPDF } from "@/lib/report-utils";
 
 export default function HodDashboard() {
     const { user } = useAuth();
@@ -29,27 +30,26 @@ export default function HodDashboard() {
     const [departmentAttendance, setDepartmentAttendance] = useState<AttendanceRecord[]>([]);
     const [departmentClasses, setDepartmentClasses] = useState<Class[]>([]);
     
-    // State for confirmation dialog
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogContent, setDialogContent] = useState({ title: '', description: '', onConfirm: () => {} });
 
-    // Report generation state
     const [report, setReport] = useState<string>('');
-    const [selectedFaculty, setSelectedFaculty] = useState<string>('');
-    const [selectedStudent, setSelectedStudent] = useState<string>('');
+    const [reportData, setReportData] = useState<AttendanceRecord[]>([]);
+    const [selectedClass, setSelectedClass] = useState<string>('');
     const [isPending, startTransition] = useTransition();
-
 
     useEffect(() => {
         if (user && (user.role === 'HOD' || user.role === 'Admin')) {
-            const hodDepartment = user.role === 'Admin' ? 'Computer Science' : user.department; // Mock for admin view
+            const hodDepartment = user.role === 'Admin' ? 'Computer Science' : user.department; 
             
             const filteredUsers = users.filter(u => u.department === hodDepartment);
             setDepartmentUsers(filteredUsers);
             setDepartmentFaculty(filteredUsers.filter(u => u.role === 'Faculty'));
-            setDepartmentStudents(filteredUsers.filter(u => u.role === 'Student'));
+            const studentsInDept = filteredUsers.filter(u => u.role === 'Student');
+            setDepartmentStudents(studentsInDept);
 
-            const filteredAttendance = mockAttendanceData.filter(a => filteredUsers.some(u => u.id === a.userId));
+            const studentIdsInDept = studentsInDept.map(s => s.id);
+            const filteredAttendance = mockAttendanceData.filter(a => studentIdsInDept.includes(a.userId));
             setDepartmentAttendance(filteredAttendance);
 
             const department = mockDepartments.find(d => d.name === hodDepartment);
@@ -71,7 +71,6 @@ export default function HodDashboard() {
 
         const department = user?.role === 'Admin' ? newUser.department : hodDepartment;
 
-
         const finalNewUser: User = {
             ...newUser,
             id: `USR${(users.length + 1).toString().padStart(3, '0')}`,
@@ -80,7 +79,7 @@ export default function HodDashboard() {
         };
         const updatedUsers = [...users, finalNewUser];
         setUsers(updatedUsers);
-        mockUsers.splice(0, mockUsers.length, ...updatedUsers); // a bit of a hack for mock data
+        mockUsers.splice(0, mockUsers.length, ...updatedUsers);
         toast({ title: "User Added", description: `Successfully added ${newUser.name} to the department.`});
     };
   
@@ -95,31 +94,31 @@ export default function HodDashboard() {
 
     const handleGenerateReport = () => {
         startTransition(async () => {
+            setReport('');
+            setReportData([]);
+            if (!selectedClass) {
+                toast({title: "No Class Selected", description: "Please select a class to generate a report.", variant: "destructive"});
+                return;
+            }
             try {
-                let relevantData = departmentAttendance;
-                let reportTitle = `Full Department Attendance Report`;
-
-                if(selectedFaculty) {
-                    // This is a simplified logic. In real app, you'd find students under a faculty.
-                    // Here we will just use the faculty member's own attendance.
-                     relevantData = departmentAttendance.filter(a => a.userId === selectedFaculty);
-                     const facultyName = departmentFaculty.find(f => f.id === selectedFaculty)?.name;
-                     reportTitle = `Attendance Report for Faculty: ${facultyName}`;
-                } else if(selectedStudent) {
-                    relevantData = departmentAttendance.filter(a => a.userId === selectedStudent);
-                    const studentName = departmentStudents.find(s => s.id === selectedStudent)?.name;
-                    reportTitle = `Attendance Report for Student: ${studentName}`;
-                }
+                const studentsInClass = departmentStudents.filter(s => s.classId === selectedClass);
+                const studentIdsInClass = studentsInClass.map(s => s.id);
+                const relevantData = departmentAttendance.filter(a => studentIdsInClass.includes(a.userId));
+                
+                const selectedClassName = departmentClasses.find(c => c.id === selectedClass)?.name || 'the selected class';
+                const reportTitle = `Attendance Report for ${selectedClassName}`;
 
                 if (relevantData.length === 0) {
-                    toast({title: "No Data", description: "No attendance data found for the selected criteria.", variant: "destructive"});
+                    toast({title: "No Data", description: "No attendance data found for the selected class.", variant: "destructive"});
                     return;
                 }
-
-                const reportData = JSON.stringify(relevantData, null, 2);
-
-                const result = await summarizeAttendanceReport({ attendanceData: reportData });
+                
+                setReportData(relevantData);
+                const reportJson = JSON.stringify(relevantData, null, 2);
+                const result = await summarizeAttendanceReport({ attendanceData: reportJson });
+                
                 setReport(result.summary);
+                
                 toast({
                     title: 'Report Generated',
                     description: reportTitle,
@@ -142,7 +141,6 @@ export default function HodDashboard() {
     const departmentName = user.role === 'Admin' ? 'Computer Science' : user.department;
     const departmentForDialog = mockDepartments.find(d => d.name === departmentName);
     const departmentsForDialog = departmentForDialog ? [departmentForDialog] : [];
-
 
     return (
         <>
@@ -289,35 +287,21 @@ export default function HodDashboard() {
                     <Card>
                         <CardHeader>
                             <CardTitle>AI Attendance Reports</CardTitle>
-                            <CardDescription>Generate AI-powered summaries for your department.</CardDescription>
+                            <CardDescription>Generate AI-powered summaries for a specific class in your department.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <Label htmlFor="faculty-select">Filter by Faculty</Label>
-                                    <Select value={selectedFaculty} onValueChange={(value) => { setSelectedFaculty(value); setSelectedStudent(''); }}>
-                                        <SelectTrigger id="faculty-select">
-                                            <SelectValue placeholder="Select a faculty member" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {departmentFaculty.map(f => <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div>
-                                    <Label htmlFor="student-select">Filter by Student</Label>
-                                    <Select value={selectedStudent} onValueChange={(value) => { setSelectedStudent(value); setSelectedFaculty(''); }}>
-                                        <SelectTrigger id="student-select">
-                                            <SelectValue placeholder="Select a student" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {departmentStudents.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+                           <div>
+                                <Label htmlFor="class-select">Select a Class</Label>
+                                <Select value={selectedClass} onValueChange={setSelectedClass}>
+                                    <SelectTrigger id="class-select">
+                                        <SelectValue placeholder="Select a class" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {departmentClasses.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
                             </div>
-                             <p className="text-xs text-center text-muted-foreground">Or leave blank to generate for the whole department.</p>
-
+                           
                              <div className="flex justify-center">
                                 <Button className="w-full max-w-xs" onClick={handleGenerateReport} disabled={isPending}>
                                     {isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Analyzing...</> : <><BarChart2 className="mr-2 h-4 w-4" /> Generate AI Report</>}
@@ -329,12 +313,25 @@ export default function HodDashboard() {
                                     <CardHeader>
                                         <CardTitle>AI Summary Report</CardTitle>
                                     </CardHeader>
-                                    <CardContent>
+                                    <CardContent className="space-y-4">
                                         <p className="text-sm text-muted-foreground whitespace-pre-wrap">{report}</p>
+                                        <div className="flex items-center justify-end gap-2">
+                                            <Button variant="outline" size="sm" onClick={() => exportToPDF(reportData, `Attendance Report - ${departmentClasses.find(c => c.id === selectedClass)?.name}`)}>
+                                                <Download className="mr-2 h-3 w-3" />
+                                                PDF
+                                            </Button>
+                                            <Button variant="outline" size="sm" onClick={() => exportToExcel(reportData, `Attendance Report - ${departmentClasses.find(c => c.id === selectedClass)?.name}`)}>
+                                                <Download className="mr-2 h-3 w-3" />
+                                                Excel
+                                            </Button>
+                                            <Button variant="outline" size="sm" onClick={() => exportToCSV(reportData, `Attendance Report - ${departmentClasses.find(c => c.id === selectedClass)?.name}`)}>
+                                                <Download className="mr-2 h-3 w-3" />
+                                                CSV
+                                            </Button>
+                                        </div>
                                     </CardContent>
                                 </Card>
                             )}
-
                         </CardContent>
                     </Card>
                 </TabsContent>

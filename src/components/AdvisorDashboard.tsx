@@ -5,12 +5,14 @@ import { useState, useTransition } from 'react';
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
-import { Users, BarChart2, MessageSquare, Loader2, FileText } from "lucide-react";
+import { Users, BarChart2, MessageSquare, Loader2, FileText, Shield, Download } from "lucide-react";
 import { mockAttendanceData } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
 import { summarizeAttendanceReport } from '@/ai/flows/summarize-attendance-report';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
-import { Shield } from 'lucide-react';
+import { exportToCSV, exportToExcel, exportToPDF } from "@/lib/report-utils";
+import { AttendanceRecord } from '@/lib/types';
+
 
 interface AdvisorDashboardProps {
     isPreview?: boolean;
@@ -21,6 +23,7 @@ export default function AdvisorDashboard({ isPreview = false }: AdvisorDashboard
     const { toast } = useToast();
 
     const [report, setReport] = useState<string>('');
+    const [reportData, setReportData] = useState<AttendanceRecord[]>([]);
     const [isPending, startTransition] = useTransition();
 
     const handleGenerateReport = () => {
@@ -29,9 +32,10 @@ export default function AdvisorDashboard({ isPreview = false }: AdvisorDashboard
                 // In a real app, you would filter based on the advisor's assigned class.
                 // For this mock, we'll just pass a subset of data to the AI.
                 const relevantAttendance = mockAttendanceData.slice(0, 5); 
-                const reportData = JSON.stringify(relevantAttendance, null, 2);
+                setReportData(relevantAttendance);
+                const reportJson = JSON.stringify(relevantAttendance, null, 2);
 
-                const result = await summarizeAttendanceReport({ attendanceData: reportData });
+                const result = await summarizeAttendanceReport({ attendanceData: reportJson });
                 setReport(result.summary);
                 toast({
                     title: 'Report Generated',
@@ -111,8 +115,22 @@ export default function AdvisorDashboard({ isPreview = false }: AdvisorDashboard
                                 <CardHeader>
                                     <CardTitle>AI Summary Report</CardTitle>
                                 </CardHeader>
-                                <CardContent>
+                                <CardContent className="space-y-4">
                                     <p className="text-sm text-muted-foreground whitespace-pre-wrap">{report}</p>
+                                    <div className="flex items-center justify-end gap-2">
+                                        <Button variant="outline" size="sm" onClick={() => exportToPDF(reportData, `Attendance Report - ${advisorClass}`)}>
+                                            <Download className="mr-2 h-3 w-3" />
+                                            PDF
+                                        </Button>
+                                        <Button variant="outline" size="sm" onClick={() => exportToExcel(reportData, `Attendance Report - ${advisorClass}`)}>
+                                            <Download className="mr-2 h-3 w-3" />
+                                            Excel
+                                        </Button>
+                                        <Button variant="outline" size="sm" onClick={() => exportToCSV(reportData, `Attendance Report - ${advisorClass}`)}>
+                                            <Download className="mr-2 h-3 w-3" />
+                                            CSV
+                                        </Button>
+                                    </div>
                                 </CardContent>
                             </Card>
                         )}
