@@ -37,19 +37,19 @@ const menuConfig = {
     ],
     Faculty: [
         { href: '/dashboard', label: 'Mentor Dashboard', icon: <User /> },
-        { href: '/dashboard/assignments', label: 'Assignments', icon: <FolderKanban /> },
+        { href_dd: '/dashboard/assignments', label: 'Assignments', icon: <FolderKanban /> },
         { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
         { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
     ],
     Student: [
         { href: '/dashboard', label: 'My Status', icon: <LayoutDashboard /> },
         { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
-        { href: '/dashboard/attendance', label: 'My Attendance', icon: <Calendar /> },
+        { href_dd: '/dashboard/attendance', label: 'My Attendance', icon: <Calendar /> },
         { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
     ],
     Advisor: [
         { href: '/dashboard', label: 'Advisor Dashboard', icon: <BookUser /> },
-        { href: '/dashboard/students', label: 'Manage Students', icon: <Users /> },
+        { href_dd: '/dashboard/students', label: 'Manage Students', icon: <Users /> },
         { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
         { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
     ]
@@ -80,7 +80,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <SidebarMenu className="flex-1 px-2">
                 {menuItems.map((item) => (
                     <SidebarMenuItem key={item.label}>
-                         <Link href={item.href}>
+                         <Link href={item.href || "#"}>
                             <SidebarMenuButton isActive={pathname === item.href}>
                                 {item.icon}
                                 <span>{item.label}</span>
