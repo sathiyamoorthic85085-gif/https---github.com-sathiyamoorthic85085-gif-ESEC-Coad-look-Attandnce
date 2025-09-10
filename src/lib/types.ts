@@ -35,3 +35,19 @@ export interface Class {
     name: string;
     departmentId: string;
 }
+
+export type LeaveType = 'Leave' | 'OD';
+export type LeaveRequestStatus = 'Pending Advisor' | 'Pending HOD' | 'Pending Admin' | 'Approved' | 'Rejected';
+
+export interface LeaveRequest {
+    id: string;
+    userId: string;
+    userName: string;
+    userRole: UserRole;
+    type: LeaveType;
+    startDate: string;
+    endDate: string;
+    reason: string;
+    status: LeaveRequestStatus;
+    aiSummary?: string;
+}

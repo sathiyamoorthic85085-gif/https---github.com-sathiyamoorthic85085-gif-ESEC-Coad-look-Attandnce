@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/context/AuthContext";
-import { Shield, Users, User, BookUser, FolderKanban, MessageSquare, Calendar, Shirt, FileUp, Settings, LogOut, GraduationCap, Building, Bell, LayoutDashboard } from "lucide-react";
+import { Shield, Users, User, BookUser, FolderKanban, MessageSquare, Calendar, Shirt, Settings, LogOut, GraduationCap, Building, Bell, LayoutDashboard, CalendarCheck } from "lucide-react";
 import type { UserRole } from "@/lib/types";
 
 const menuConfig = {
@@ -26,6 +26,7 @@ const menuConfig = {
         { href: '/dashboard', label: 'Admin Dashboard', icon: <Shield /> },
         { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
         { href: '/dashboard/messages', label: 'Messages', icon: <MessageSquare /> },
+        { href: '/dashboard/leave-management', label: 'Leave Management', icon: <CalendarCheck />},
         { href: '/dashboard/students', label: 'Manage Students', icon: <Users /> },
         { href: '/dashboard/assignments', label: 'Assignments', icon: <FolderKanban /> },
         { href: '/dashboard/attendance', label: 'Attendance', icon: <Calendar /> },
@@ -39,6 +40,7 @@ const menuConfig = {
         { href: '/dashboard', label: 'HOD Dashboard', icon: <Building /> },
         { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
         { href: '/dashboard/messages', label: 'Messages', icon: <MessageSquare /> },
+        { href: '/dashboard/leave-management', label: 'Leave Management', icon: <CalendarCheck />},
         { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
     ],
     Faculty: [
@@ -46,6 +48,7 @@ const menuConfig = {
         { href: '/dashboard/assignments', label: 'Assignments', icon: <FolderKanban /> },
         { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
         { href: '/dashboard/messages', label: 'Messages', icon: <MessageSquare /> },
+        { href: '/dashboard/leave-management', label: 'Leave Management', icon: <CalendarCheck />},
         { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
     ],
     Student: [
@@ -53,6 +56,7 @@ const menuConfig = {
         { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
         { href: '/dashboard/messages', label: 'Messages', icon: <MessageSquare /> },
         { href: '/dashboard/attendance', label: 'My Attendance', icon: <Calendar /> },
+        { href: '/dashboard/leave-management', label: 'Apply for Leave/OD', icon: <CalendarCheck />},
         { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
     ],
     Advisor: [
@@ -60,6 +64,7 @@ const menuConfig = {
         { href: '/dashboard/students', label: 'Manage Students', icon: <Users /> },
         { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
         { href: '/dashboard/messages', label: 'Messages', icon: <MessageSquare /> },
+        { href: '/dashboard/leave-management', label: 'Leave Management', icon: <CalendarCheck />},
         { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
     ]
 }
