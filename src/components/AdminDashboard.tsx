@@ -46,12 +46,12 @@ export default function AdminDashboard() {
         id: `USR${(users.length + 1).toString().padStart(3, '0')}`,
         imageUrl: `https://picsum.photos/seed/USR${(users.length + 1).toString().padStart(3, '0')}/100/100`,
     };
-    setUsers([...users, finalNewUser]);
+    setUsers(currentUsers => [...currentUsers, finalNewUser]);
   };
   
   const handleRemoveUser = (userId: string) => {
     openConfirmationDialog('Are you sure?', `This will permanently delete the user. This action cannot be undone.`, () => {
-        setUsers(users.filter(u => u.id !== userId));
+        setUsers(users => users.filter(u => u.id !== userId));
         toast({ title: 'User Removed', description: 'The user has been successfully removed.' });
     });
   };
@@ -65,15 +65,15 @@ export default function AdminDashboard() {
       id: `DPT${(departments.length + 1).toString().padStart(2, '0')}`,
       name: newDepartmentName,
     };
-    setDepartments([...departments, newDepartment]);
+    setDepartments(currentDepartments => [...currentDepartments, newDepartment]);
     setNewDepartmentName('');
     toast({ title: 'Department Added', description: `Successfully added department "${newDepartmentName}".` });
   };
 
   const handleRemoveDepartment = (departmentId: string) => {
      openConfirmationDialog('Are you sure?', `This will permanently delete the department and all associated classes. This action cannot be undone.`, () => {
-        setDepartments(departments.filter(d => d.id !== departmentId));
-        setClasses(classes.filter(c => c.departmentId !== departmentId));
+        setDepartments(departments => departments.filter(d => d.id !== departmentId));
+        setClasses(classes => classes.filter(c => c.departmentId !== departmentId));
         toast({ title: 'Department Removed', description: 'The department has been successfully removed.' });
     });
   };
@@ -89,7 +89,7 @@ export default function AdminDashboard() {
       name: newClassName,
       departmentId: selectedDepartmentForClass,
     };
-    setClasses([...classes, newClass]);
+    setClasses(currentClasses => [...currentClasses, newClass]);
     setNewClassName('');
     setSelectedDepartmentForClass('');
     toast({ title: 'Class Added', description: `Successfully added class "${newClassName}".` });
@@ -97,7 +97,7 @@ export default function AdminDashboard() {
 
   const handleRemoveClass = (classId: string) => {
     openConfirmationDialog('Are you sure?', `This will permanently delete the class. This action cannot be undone.`, () => {
-        setClasses(classes.filter(c => c.id !== classId));
+        setClasses(classes => classes.filter(c => c.id !== classId));
         toast({ title: 'Class Removed', description: 'The class has been successfully removed.' });
     });
   };

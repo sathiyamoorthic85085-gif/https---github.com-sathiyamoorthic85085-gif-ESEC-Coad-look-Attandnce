@@ -85,17 +85,13 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
             department: department,
             imageUrl: `https://picsum.photos/seed/USR${(users.length + 1).toString().padStart(3, '0')}/100/100`,
         };
-        const updatedUsers = [...users, finalNewUser];
-        setUsers(updatedUsers);
-        mockUsers.splice(0, mockUsers.length, ...updatedUsers);
+        setUsers(currentUsers => [...currentUsers, finalNewUser]);
         toast({ title: "User Added", description: `Successfully added ${newUser.name} to the department.`});
     };
   
     const handleRemoveUser = (userId: string) => {
         openConfirmationDialog('Are you sure?', `This will permanently delete the user. This action cannot be undone.`, () => {
-            const updatedUsers = users.filter(u => u.id !== userId);
-            setUsers(updatedUsers);
-            mockUsers.splice(0, mockUsers.length, ...updatedUsers);
+            setUsers(currentUsers => currentUsers.filter(u => u.id !== userId));
             toast({ title: 'User Removed', description: 'The user has been successfully removed.' });
         });
     };
