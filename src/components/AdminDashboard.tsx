@@ -21,9 +21,9 @@ export default function AdminDashboard() {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const [users, setUsers] = useState<User[]>(mockUsers);
-  const [departments, setDepartments] = useState<Department[]>(mockDepartments);
-  const [classes, setClasses] = useState<Class[]>(mockClasses);
+  const [users, setUsers] = useState<User[]>(() => [...mockUsers]);
+  const [departments, setDepartments] = useState<Department[]>(() => [...mockDepartments]);
+  const [classes, setClasses] = useState<Class[]>(() => [...mockClasses]);
 
   // State for adding new entities
   const [newDepartmentName, setNewDepartmentName] = useState('');
@@ -331,5 +331,3 @@ export default function AdminDashboard() {
     </>
   );
 }
-
-    
