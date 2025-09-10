@@ -10,8 +10,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'CodeLook Attendance',
-  description: 'AI-powered dress code detection and attendance system.',
+  title: 'ESEC CodeLook',
+  description: 'AI-powered dress code and attendance system.',
 };
 
 export default function RootLayout({

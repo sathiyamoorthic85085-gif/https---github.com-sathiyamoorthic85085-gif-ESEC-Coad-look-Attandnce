@@ -83,7 +83,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <SidebarHeader>
               <div className="flex items-center gap-2 p-2">
                 <GraduationCap className="h-8 w-8 text-primary" />
-                 <h1 className="font-semibold text-xl group-data-[collapsible=icon]:hidden">ESEC DCA</h1>
+                 <h1 className="font-semibold text-xl group-data-[collapsible=icon]:hidden">ESEC CodeLook</h1>
               </div>
             </SidebarHeader>
             <SidebarMenu className="flex-1 px-2">
