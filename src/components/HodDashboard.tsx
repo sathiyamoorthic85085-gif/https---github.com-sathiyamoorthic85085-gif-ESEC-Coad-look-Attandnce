@@ -49,11 +49,6 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
         [users, hodDepartmentName]
     );
 
-    const departmentFaculty = useMemo(() => 
-        departmentUsers.filter(u => u.role === 'Faculty'),
-        [departmentUsers]
-    );
-
     const departmentStudents = useMemo(() => 
         departmentUsers.filter(u => u.role === 'Student'),
         [departmentUsers]
@@ -390,5 +385,3 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
         </>
     );
 }
-
-    

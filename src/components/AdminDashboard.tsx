@@ -51,7 +51,7 @@ export default function AdminDashboard() {
   
   const handleRemoveUser = (userId: string) => {
     openConfirmationDialog('Are you sure?', `This will permanently delete the user. This action cannot be undone.`, () => {
-        setUsers(users => users.filter(u => u.id !== userId));
+        setUsers(currentUsers => currentUsers.filter(u => u.id !== userId));
         toast({ title: 'User Removed', description: 'The user has been successfully removed.' });
     });
   };
