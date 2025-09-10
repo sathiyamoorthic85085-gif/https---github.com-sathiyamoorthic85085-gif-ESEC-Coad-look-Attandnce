@@ -148,7 +148,7 @@ export default function AdminDashboard() {
             </Card>
         </div>
         
-        <Tabs defaultValue="users">
+        <Tabs defaultValue="users" className="w-full">
             <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="users">User Management</TabsTrigger>
                 <TabsTrigger value="departments">Department Management</TabsTrigger>

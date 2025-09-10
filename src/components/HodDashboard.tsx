@@ -29,9 +29,8 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
     const { user } = useAuth();
     const { toast } = useToast();
 
-    // Initialize state with a copy of mockUsers to prevent mutation issues
+    // The user state is now a stable copy, preventing re-renders.
     const [users, setUsers] = useState<User[]>(() => [...mockUsers]);
-    const [departmentClasses, setDepartmentClasses] = useState<Class[]>([]);
     
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogContent, setDialogContent] = useState({ title: '', description: '', onConfirm: () => {} });
@@ -44,6 +43,8 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
     const currentUser = isPreview ? { name: 'Admin Preview', department: 'Computer Science', role: 'HOD' } : user;
     const hodDepartmentName = currentUser?.department;
 
+    // These derived values are now calculated with useMemo for efficiency.
+    // They will only re-calculate when `users` or `hodDepartmentName` changes.
     const departmentUsers = useMemo(() => 
         users.filter(u => u.department === hodDepartmentName),
         [users, hodDepartmentName]
@@ -59,18 +60,12 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
         return mockAttendanceData.filter(a => userIdsInDept.has(a.userId));
     }, [departmentUsers]);
 
-    useEffect(() => {
-        if (hodDepartmentName) {
-            const department = mockDepartments.find(d => d.name === hodDepartmentName);
-            if (department) {
-                const filteredClasses = mockClasses.filter(c => c.departmentId === department.id);
-                setDepartmentClasses(filteredClasses);
-                if (filteredClasses.length > 0 && !selectedClass) {
-                    // setSelectedClass(filteredClasses[0].id);
-                }
-            }
-        }
-    }, [hodDepartmentName, selectedClass]);
+    const departmentClasses = useMemo(() => {
+        if (!hodDepartmentName) return [];
+        const department = mockDepartments.find(d => d.name === hodDepartmentName);
+        if (!department) return [];
+        return mockClasses.filter(c => c.departmentId === department.id);
+    }, [hodDepartmentName]);
 
 
     const openConfirmationDialog = (title: string, description: string, onConfirm: () => void) => {
@@ -391,3 +386,4 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
     
 
     
+

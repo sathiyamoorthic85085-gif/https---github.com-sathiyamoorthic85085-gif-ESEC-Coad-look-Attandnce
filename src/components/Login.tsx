@@ -144,7 +144,7 @@ export default function Login() {
             </CardContent>
             <CardFooter>
               <Button type="submit" className="w-full" disabled={isLoggingIn}>
-                <LogIn className="mr-2" />
+                <LogIn className="mr-2 h-4 w-4" />
                 {isLoggingIn ? "Logging In..." : "Login"}
               </Button>
             </CardFooter>
