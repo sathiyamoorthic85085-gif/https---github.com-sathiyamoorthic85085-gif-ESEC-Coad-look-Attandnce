@@ -3,9 +3,9 @@
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
-import { BookCopy, FileText, Trash2, Edit, UserPlus } from "lucide-react";
+import { BookCopy, FileText, Trash2, Edit, UserPlus, Loader2, BarChart2 } from "lucide-react";
 import { mockAttendanceData, mockClasses, mockDepartments, mockUsers } from "@/lib/mock-data";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { AttendanceRecord, Class, User } from "@/lib/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import Image from "next/image";
@@ -15,6 +15,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { AddUserDialog } from "./AddUserDialog";
 import { useToast } from "@/hooks/use-toast";
 import { ConfirmationDialog } from "./ConfirmationDialog";
+import { summarizeAttendanceReport } from "@/ai/flows/summarize-attendance-report";
+import { Label } from "./ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 export default function HodDashboard() {
     const { user } = useAuth();
@@ -22,6 +25,8 @@ export default function HodDashboard() {
 
     const [users, setUsers] = useState<User[]>(mockUsers);
     const [departmentUsers, setDepartmentUsers] = useState<User[]>([]);
+    const [departmentFaculty, setDepartmentFaculty] = useState<User[]>([]);
+    const [departmentStudents, setDepartmentStudents] = useState<User[]>([]);
     const [departmentAttendance, setDepartmentAttendance] = useState<AttendanceRecord[]>([]);
     const [departmentClasses, setDepartmentClasses] = useState<Class[]>([]);
     
@@ -29,12 +34,21 @@ export default function HodDashboard() {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogContent, setDialogContent] = useState({ title: '', description: '', onConfirm: () => {} });
 
+    // Report generation state
+    const [report, setReport] = useState<string>('');
+    const [selectedFaculty, setSelectedFaculty] = useState<string>('');
+    const [selectedStudent, setSelectedStudent] = useState<string>('');
+    const [isPending, startTransition] = useTransition();
+
+
     useEffect(() => {
         if (user && (user.role === 'HOD' || user.role === 'Admin')) {
             const hodDepartment = user.role === 'Admin' ? 'Computer Science' : user.department; // Mock for admin view
             
             const filteredUsers = users.filter(u => u.department === hodDepartment);
             setDepartmentUsers(filteredUsers);
+            setDepartmentFaculty(filteredUsers.filter(u => u.role === 'Faculty'));
+            setDepartmentStudents(filteredUsers.filter(u => u.role === 'Student'));
 
             const filteredAttendance = mockAttendanceData.filter(a => filteredUsers.some(u => u.id === a.userId));
             setDepartmentAttendance(filteredAttendance);
@@ -80,6 +94,48 @@ export default function HodDashboard() {
         });
     };
 
+    const handleGenerateReport = () => {
+        startTransition(async () => {
+            try {
+                let relevantData = departmentAttendance;
+                let reportTitle = `Full Department Attendance Report`;
+
+                if(selectedFaculty) {
+                    // This is a simplified logic. In real app, you'd find students under a faculty.
+                    // Here we will just use the faculty member's own attendance.
+                     relevantData = departmentAttendance.filter(a => a.userId === selectedFaculty);
+                     const facultyName = departmentFaculty.find(f => f.id === selectedFaculty)?.name;
+                     reportTitle = `Attendance Report for Faculty: ${facultyName}`;
+                } else if(selectedStudent) {
+                    relevantData = departmentAttendance.filter(a => a.userId === selectedStudent);
+                    const studentName = departmentStudents.find(s => s.id === selectedStudent)?.name;
+                    reportTitle = `Attendance Report for Student: ${studentName}`;
+                }
+
+                if (relevantData.length === 0) {
+                    toast({title: "No Data", description: "No attendance data found for the selected criteria.", variant: "destructive"});
+                    return;
+                }
+
+                const reportData = JSON.stringify(relevantData, null, 2);
+
+                const result = await summarizeAttendanceReport({ attendanceData: reportData });
+                setReport(result.summary);
+                toast({
+                    title: 'Report Generated',
+                    description: reportTitle,
+                });
+            } catch (error) {
+                console.error("Failed to generate report:", error);
+                toast({
+                    title: 'Generation Failed',
+                    description: 'There was an error generating the report.',
+                    variant: 'destructive',
+                });
+            }
+        });
+    };
+
     if (!user || (user.role !== 'HOD' && user.role !== 'Admin')) {
         return <p>You do not have access to this page.</p>;
     }
@@ -102,11 +158,12 @@ export default function HodDashboard() {
                 </div>
             </div>
 
-            <Tabs defaultValue="attendance">
-                <TabsList className="grid w-full grid-cols-4">
+            <Tabs defaultValue="attendance" className="w-full">
+                <TabsList className="grid w-full grid-cols-5">
                     <TabsTrigger value="attendance">Department Attendance</TabsTrigger>
                     <TabsTrigger value="users">User Management</TabsTrigger>
                     <TabsTrigger value="classes">Class Management</TabsTrigger>
+                    <TabsTrigger value="reports">Attendance Reports</TabsTrigger>
                     <TabsTrigger value="circulars">Department Circulars</TabsTrigger>
                 </TabsList>
                 <TabsContent value="attendance" className="mt-4">
@@ -229,6 +286,59 @@ export default function HodDashboard() {
                         </CardContent>
                     </Card>
                  </TabsContent>
+                 <TabsContent value="reports" className="mt-4">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>AI Attendance Reports</CardTitle>
+                            <CardDescription>Generate AI-powered summaries for your department.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <Label htmlFor="faculty-select">Filter by Faculty</Label>
+                                    <Select value={selectedFaculty} onValueChange={(value) => { setSelectedFaculty(value); setSelectedStudent(''); }}>
+                                        <SelectTrigger id="faculty-select">
+                                            <SelectValue placeholder="Select a faculty member" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {departmentFaculty.map(f => <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div>
+                                    <Label htmlFor="student-select">Filter by Student</Label>
+                                    <Select value={selectedStudent} onValueChange={(value) => { setSelectedStudent(value); setSelectedFaculty(''); }}>
+                                        <SelectTrigger id="student-select">
+                                            <SelectValue placeholder="Select a student" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {departmentStudents.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                             <p className="text-xs text-center text-muted-foreground">Or leave blank to generate for the whole department.</p>
+
+                             <div className="flex justify-center">
+                                <Button className="w-full max-w-xs" onClick={handleGenerateReport} disabled={isPending}>
+                                    {isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Analyzing...</> : <><BarChart2 className="mr-2 h-4 w-4" /> Generate AI Report</>}
+                                </Button>
+                            </div>
+                       
+                            {report && (
+                                <Card className="bg-background/50 mt-6">
+                                    <CardHeader>
+                                        <CardTitle>AI Summary Report</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <p className="text-sm text-muted-foreground whitespace-pre-wrap">{report}</p>
+                                    </CardContent>
+                                </Card>
+                            )}
+
+                        </CardContent>
+                    </Card>
+                </TabsContent>
                  <TabsContent value="circulars" className="mt-4">
                      <Card>
                         <CardHeader>
