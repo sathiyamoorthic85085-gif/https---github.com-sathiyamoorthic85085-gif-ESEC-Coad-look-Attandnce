@@ -25,12 +25,10 @@ export default function AdminDashboard() {
   const [departments, setDepartments] = useState<Department[]>(() => [...mockDepartments]);
   const [classes, setClasses] = useState<Class[]>(() => [...mockClasses]);
 
-  // State for adding new entities
   const [newDepartmentName, setNewDepartmentName] = useState('');
   const [newClassName, setNewClassName] = useState('');
   const [selectedDepartmentForClass, setSelectedDepartmentForClass] = useState('');
   
-  // State for confirmation dialog
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogContent, setDialogContent] = useState({ title: '', description: '', onConfirm: () => {} });
 
@@ -331,5 +329,3 @@ export default function AdminDashboard() {
     </>
   );
 }
-
-    

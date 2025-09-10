@@ -22,11 +22,9 @@ export default function SettingsPage() {
       reader.onload = (e) => {
         const newImageUrl = e.target?.result as string;
         
-        // Update context state
         const updatedUser = { ...user, imageUrl: newImageUrl };
         setUser(updatedUser);
 
-        // Update mock data to simulate persistence
         const userIndex = mockUsers.findIndex(u => u.id === user.id);
         if (userIndex !== -1) {
             mockUsers[userIndex].imageUrl = newImageUrl;

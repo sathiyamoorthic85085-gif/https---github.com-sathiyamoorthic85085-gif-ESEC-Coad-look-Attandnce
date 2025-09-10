@@ -3,7 +3,6 @@ import type { AttendanceRecord, User, Department, Class, Timetable, TimetableEnt
 const staticDate = new Date().toLocaleDateString('en-CA');
 
 export const mockUsers: User[] = [
-    // Non-student users
     { id: 'USR003', name: 'Peter Jones', email: 'peter.jones@example.com', password: 'password', role: 'Faculty', department: 'Computer Science', imageUrl: 'https://picsum.photos/seed/USR003/100/100' },
     { id: 'USR004', name: 'Mary Williams', email: 'mary.williams@example.com', password: 'password', role: 'HOD', department: 'Computer Science', imageUrl: 'https://picsum.photos/seed/USR004/100/100' },
     { id: 'USR005', name: 'Admin User', email: 'sathiyamoorthi.c85085@gmail.com', password: '1234567890', role: 'Admin', department: 'Administration', imageUrl: 'https://picsum.photos/seed/USR005/100/100' },
@@ -11,7 +10,6 @@ export const mockUsers: User[] = [
     { id: 'USR008', name: 'Sarah Martinez', email: 'sarah.martinez@example.com', password: 'password', role: 'HOD', department: 'Electrical Engineering', imageUrl: 'https://picsum.photos/seed/USR008/100/100' },
     { id: 'USR009', name: 'David Lee', email: 'david.lee@example.com', password: 'password', role: 'Advisor', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/USR009/100/100' },
     
-    // Students from provided data
     { id: 'STU001', name: 'ABHI RUBEN S', email: 'abhiruben2402@gmail.com', password: 'ES24EI01', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU001/100/100', rollNumber: 'ES24EI01', registerNumber: '2403730410721001' },
     { id: 'STU002', name: 'ABINAYASRI V', email: 'abinayasree0207@gmail.com', password: 'ES24EI02', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU002/100/100', rollNumber: 'ES24EI02', registerNumber: '2403730410722002' },
     { id: 'STU003', name: 'BANNARI SANKAR M', email: 'bannarisankar7@gmail.com', password: 'ES24EI03', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU003/100/100', rollNumber: 'ES24EI03', registerNumber: '2403730410721003' },
@@ -22,7 +20,6 @@ export const mockUsers: User[] = [
     { id: 'STU008', name: 'DINESHKUMAR B', email: 'dineshmsd2007@gmail.com', password: 'ES24EI08', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU008/100/100', rollNumber: 'ES24EI08', registerNumber: '2403730410721008' },
     { id: 'STU009', name: 'GLORY CAMRYN JULIYA S', email: 'nithya9944426857@gamil.com', password: 'ES24EI09', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU009/100/100', rollNumber: 'ES24EI09', registerNumber: '2403730410722009' },
     { id: 'STU010', name: 'GOWTHAM T', email: 'gowthamt6977@gmail.com', password: 'ES24EI10', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU010/100/100', rollNumber: 'ES24EI10', registerNumber: '2403730410721010' },
-    // Add other students similarly...
 ];
 
 export const mockDepartments: Department[] = [
@@ -56,7 +53,6 @@ export const mockAttendanceData: AttendanceRecord[] = mockUsers
         periods: csTimetable.map(entry => ({
             period: entry.period,
             subject: entry.subject,
-            // Randomly assign status for mock data
             status: Math.random() > 0.1 ? 'Compliant' : (Math.random() > 0.5 ? 'Non-Compliant' : 'Absent'),
             violation: Math.random() > 0.9 ? 'Not wearing a tie' : undefined,
         })),

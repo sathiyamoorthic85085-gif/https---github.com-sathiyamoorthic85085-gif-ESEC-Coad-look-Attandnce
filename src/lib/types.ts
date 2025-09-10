@@ -5,7 +5,7 @@ export interface User {
     id: string;
     name: string;
     email: string;
-    password?: string; // Keep password optional for security reasons in real apps
+    password?: string;
     role: UserRole;
     department?: string;
     imageUrl?: string;
@@ -18,7 +18,7 @@ export interface User {
 export type PeriodStatus = 'Compliant' | 'Non-Compliant' | 'Pending' | 'Absent';
 
 export interface PeriodAttendance {
-    period: number; // e.g., 1, 2, 3
+    period: number;
     subject: string;
     status: PeriodStatus;
     violation?: string;
@@ -30,7 +30,6 @@ export interface AttendanceRecord {
   date: string;
   userId: string;
   imageUrl: string;
-  // This is now an array to hold the status for each period.
   periods: PeriodAttendance[]; 
 }
 
@@ -60,7 +59,7 @@ export interface LeaveRequest {
     reason: string;
     status: LeaveRequestStatus;
     aiSummary?: string;
-    substitutionAssignedTo?: string; // User ID of the substitute faculty
+    substitutionAssignedTo?: string;
 }
 
 export interface TimetableEntry {
@@ -71,7 +70,6 @@ export interface TimetableEntry {
 }
 export interface Timetable {
     id: string;
-    // We can use a structured format instead of just an image URL
     schedule: TimetableEntry[];
     imageUrl: string;
     departmentId?: string;
