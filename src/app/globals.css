@@ -11,11 +11,11 @@
     --popover: 224 71.4% 4.1%;
     --popover-foreground: 210 20% 98%;
     
-    /* Pink to Blue Gradient */
-    --primary-pink: 336 100% 71.2%;
-    --primary-blue: 211 100% 65.3%;
+    /* Orange to Purple Gradient */
+    --primary-orange: 35 100% 65%;
+    --primary-purple: 280 100% 65%;
 
-    --primary: hsl(var(--primary-blue));
+    --primary: hsl(var(--primary-purple));
     --primary-foreground: 210 20% 98%;
 
     --secondary: 215 27.9% 16.9%;
@@ -32,24 +32,24 @@
 
     --border: 215 27.9% 16.9%;
     --input: 215 27.9% 16.9%;
-    --ring: 211 100% 65.3%;
+    --ring: 280 100% 65%;
     
     --radius: 1.5rem; /* Larger radius for iOS feel */
   }
 
   .dark {
-    --background: 224 71.4% 4.1%;
+    --background: 240 10% 3.9%;
     --foreground: 210 20% 98%;
-    --card: 224 71.4% 10%;
+    --card: 240 4% 10%;
     --card-foreground: 210 20% 98%;
-    --popover: 224 71.4% 4.1%;
+    --popover: 240 10% 3.9%;
     --popover-foreground: 210 20% 98%;
 
-    /* Pink to Blue Gradient */
-    --primary-pink: 336 100% 71.2%;
-    --primary-blue: 211 100% 65.3%;
+    /* Orange to Purple Gradient */
+    --primary-orange: 35 100% 65%;
+    --primary-purple: 280 100% 65%;
 
-    --primary: hsl(var(--primary-blue));
+    --primary: hsl(var(--primary-purple));
     --primary-foreground: 210 20% 98%;
 
     --secondary: 215 27.9% 16.9%;
@@ -66,7 +66,7 @@
 
     --border: 215 27.9% 16.9%;
     --input: 215 27.9% 16.9%;
-    --ring: 211 100% 65.3%;
+    --ring: 280 100% 65%;
   }
 }
 
@@ -76,6 +76,6 @@
   }
   body {
     @apply bg-background text-foreground;
-    background: linear-gradient(180deg, hsl(240, 30%, 10%) 0%, hsl(240, 20%, 5%) 100%);
+    background: linear-gradient(180deg, hsl(240, 10%, 10%) 0%, hsl(240, 5%, 5%) 100%);
   }
 }

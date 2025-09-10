@@ -26,8 +26,8 @@ export function ProgressRing({
       <svg className="absolute top-0 left-0" width={size} height={size}>
         <defs>
             <linearGradient id={`gradient-${id}`} x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="hsl(var(--primary-pink))" />
-            <stop offset="100%" stopColor="hsl(var(--primary-blue))" />
+            <stop offset="0%" stopColor="hsl(var(--primary-orange))" />
+            <stop offset="100%" stopColor="hsl(var(--primary-purple))" />
             </linearGradient>
         </defs>
         <circle
@@ -40,7 +40,7 @@ export function ProgressRing({
           cy={size / 2}
         />
         <circle
-          className="transform -rotate-90 origin-center transition-all duration-500 drop-shadow-[0_0_3px_hsl(var(--primary-pink))]"
+          className="transform -rotate-90 origin-center transition-all duration-500 drop-shadow-[0_0_3px_hsl(var(--primary-orange))]"
           stroke={`url(#gradient-${id})`}
           strokeWidth={strokeWidth}
           strokeDasharray={circumference}

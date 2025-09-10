@@ -26,10 +26,10 @@ export default {
           foreground: 'hsl(var(--popover-foreground))',
         },
         primary: {
-          DEFAULT: 'hsl(var(--primary-blue))',
+          DEFAULT: 'hsl(var(--primary-purple))',
           foreground: 'hsl(var(--primary-foreground))',
-          pink: 'hsl(var(--primary-pink))',
-          blue: 'hsl(var(--primary-blue))',
+          orange: 'hsl(var(--primary-orange))',
+          purple: 'hsl(var(--primary-purple))',
         },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
@@ -97,8 +97,8 @@ export default {
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
       boxShadow: {
-        'neon-blue': '0 0 10px hsl(var(--primary-blue)), 0 0 20px hsl(var(--primary-blue))',
-        'neon-pink': '0 0 10px hsl(var(--primary-pink)), 0 0 20px hsl(var(--primary-pink))',
+        'neon-purple': '0 0 10px hsl(var(--primary-purple)), 0 0 20px hsl(var(--primary-purple))',
+        'neon-orange': '0 0 10px hsl(var(--primary-orange)), 0 0 20px hsl(var(--primary-orange))',
       }
     },
   },

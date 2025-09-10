@@ -35,7 +35,7 @@ export default function StudentDashboard() {
                     <h1 className="text-2xl font-bold tracking-tight text-white/90">👋 Hey {userName} ✨ Ready to shine today?</h1>
                     <p className="text-muted-foreground">Here is your status summary.</p>
                 </div>
-                <Avatar className="h-12 w-12 border-2 border-primary-pink shadow-neon-pink">
+                <Avatar className="h-12 w-12 border-2 border-primary-orange shadow-neon-orange">
                     <AvatarImage src={userImage} alt={userName} />
                     <AvatarFallback>{userName?.[0]}</AvatarFallback>
                 </Avatar>
