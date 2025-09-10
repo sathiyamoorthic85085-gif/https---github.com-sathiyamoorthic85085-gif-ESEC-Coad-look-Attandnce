@@ -9,6 +9,9 @@ export interface User {
     department?: string;
     imageUrl?: string;
     classId?: string;
+    rollNumber?: string;
+    registerNumber?: string;
+    mobileNumber?: string;
 }
 
 export interface AttendanceRecord {

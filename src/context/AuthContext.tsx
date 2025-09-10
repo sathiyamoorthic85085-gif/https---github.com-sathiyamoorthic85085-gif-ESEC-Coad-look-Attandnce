@@ -16,10 +16,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
 
     const login = (email: string, password: string): boolean => {
-        const foundUser = mockUsers.find(u => u.email === email && u.password === password);
+        const foundUser = mockUsers.find(u => u.email === email);
+
         if (foundUser) {
-            setUser(foundUser);
-            return true;
+            const isPasswordCorrect = foundUser.role === 'Student'
+                ? password === foundUser.rollNumber
+                : password === foundUser.password;
+
+            if (isPasswordCorrect) {
+                setUser(foundUser);
+                return true;
+            }
         }
         return false;
     }

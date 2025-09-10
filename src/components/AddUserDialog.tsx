@@ -30,12 +30,36 @@ export function AddUserDialog({ onUserAdd, departments }: AddUserDialogProps) {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<UserRole | "">("");
   const [department, setDepartment] = useState("");
+  const [rollNumber, setRollNumber] = useState("");
+  const [registerNumber, setRegisterNumber] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
   const { toast } = useToast();
+
+  const handleRoleChange = (value: UserRole | "") => {
+    setRole(value);
+    // Reset student-specific fields when role changes
+    if (value !== 'Student') {
+      setRollNumber("");
+      setRegisterNumber("");
+      setMobileNumber("");
+    }
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!name || !email || !password || !role || (role !== 'Admin' && !department)) {
+    let isFormValid = name && email && role;
+    if (role === 'Student') {
+      isFormValid = isFormValid && rollNumber && registerNumber && mobileNumber;
+    } else {
+      isFormValid = isFormValid && password;
+    }
+
+    if (role !== 'Admin' && !department) {
+      isFormValid = false;
+    }
+
+    if (!isFormValid) {
       toast({
         title: "Missing Information",
         description: "Please fill out all required fields.",
@@ -44,12 +68,17 @@ export function AddUserDialog({ onUserAdd, departments }: AddUserDialogProps) {
       return;
     }
 
+    const userPassword = role === 'Student' ? rollNumber : password;
+
     onUserAdd({
       name,
       email,
-      password,
+      password: userPassword,
       role: role as UserRole,
-      department: role === 'Admin' ? 'Administration' : department
+      department: role === 'Admin' ? 'Administration' : department,
+      rollNumber: role === 'Student' ? rollNumber : undefined,
+      registerNumber: role === 'Student' ? registerNumber : undefined,
+      mobileNumber: role === 'Student' ? mobileNumber : undefined,
     });
 
     toast({
@@ -63,6 +92,9 @@ export function AddUserDialog({ onUserAdd, departments }: AddUserDialogProps) {
     setPassword("");
     setRole("");
     setDepartment("");
+    setRollNumber("");
+    setRegisterNumber("");
+    setMobileNumber("");
     setOpen(false);
   };
 
@@ -93,16 +125,10 @@ export function AddUserDialog({ onUserAdd, departments }: AddUserDialogProps) {
               <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="col-span-3" required />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="password" className="text-right">
-                Password
-              </Label>
-              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="col-span-3" required />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="role" className="text-right">
                 Role
               </Label>
-              <Select value={role} onValueChange={(value) => setRole(value as UserRole)}>
+              <Select value={role} onValueChange={(value) => handleRoleChange(value as UserRole | "")}>
                 <SelectTrigger className="col-span-3">
                   <SelectValue placeholder="Select a role" />
                 </SelectTrigger>
@@ -115,12 +141,35 @@ export function AddUserDialog({ onUserAdd, departments }: AddUserDialogProps) {
                 </SelectContent>
               </Select>
             </div>
+
+            {role === 'Student' ? (
+              <>
+                <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="rollNumber" className="text-right">Roll No.</Label>
+                    <Input id="rollNumber" value={rollNumber} onChange={e => setRollNumber(e.target.value)} className="col-span-3" required />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="registerNumber" className="text-right">Reg. No.</Label>
+                    <Input id="registerNumber" value={registerNumber} onChange={e => setRegisterNumber(e.target.value)} className="col-span-3" required />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="mobileNumber" className="text-right">Mobile No.</Label>
+                    <Input id="mobileNumber" value={mobileNumber} onChange={e => setMobileNumber(e.target.value)} className="col-span-3" required />
+                </div>
+              </>
+            ) : (
+                 <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="password" className="text-right">Password</Label>
+                    <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="col-span-3" required />
+                </div>
+            )}
+            
             {role && role !== 'Admin' && (
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="department" className="text-right">
                         Department
                     </Label>
-                    <Select value={department} onValueChange={setDepartment}>
+                    <Select value={department} onValueChange={setDepartment} required>
                         <SelectTrigger className="col-span-3">
                         <SelectValue placeholder="Select a department" />
                         </SelectTrigger>

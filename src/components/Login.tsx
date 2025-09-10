@@ -39,7 +39,9 @@ export default function Login() {
   const [signupPassword, setSignupPassword] = useState("");
   const [signupRole, setSignupRole] = useState<UserRole | "">("");
   const [signupDepartment, setSignupDepartment] = useState("");
-
+  const [signupRollNumber, setSignupRollNumber] = useState("");
+  const [signupRegisterNumber, setSignupRegisterNumber] = useState("");
+  const [signupMobileNumber, setSignupMobileNumber] = useState("");
 
   const { login } = useAuth();
   const router = useRouter();
@@ -72,7 +74,18 @@ export default function Login() {
     e.preventDefault();
     setIsSigningUp(true);
 
-    if (!signupName || !signupEmail || !signupPassword || !signupRole || (signupRole !== 'Admin' && !signupDepartment)) {
+    let isFormValid = signupName && signupEmail && signupRole;
+    if (signupRole === 'Student') {
+        isFormValid = isFormValid && signupRollNumber && signupRegisterNumber && signupMobileNumber;
+    } else {
+        isFormValid = isFormValid && signupPassword;
+    }
+
+    if (signupRole && signupRole !== 'Admin' && !signupDepartment) {
+        isFormValid = false;
+    }
+
+    if (!isFormValid) {
       toast({
         title: "Missing Information",
         description: "Please fill out all required fields.",
@@ -86,13 +99,15 @@ export default function Login() {
         id: `USR${(mockUsers.length + 1).toString().padStart(3, '0')}`,
         name: signupName,
         email: signupEmail,
-        password: signupPassword,
+        password: signupRole === 'Student' ? signupRollNumber : signupPassword,
         role: signupRole as UserRole,
         department: signupRole === 'Admin' ? 'Administration' : signupDepartment,
+        rollNumber: signupRole === 'Student' ? signupRollNumber : undefined,
+        registerNumber: signupRole === 'Student' ? signupRegisterNumber : undefined,
+        mobileNumber: signupRole === 'Student' ? signupMobileNumber : undefined,
         imageUrl: `https://picsum.photos/seed/USR${(mockUsers.length + 1).toString().padStart(3, '0')}/100/100`,
     };
 
-    // In a real app, you'd send this to a server. Here we just mock it.
     mockUsers.push(newUser);
     
     setTimeout(() => {
@@ -101,7 +116,6 @@ export default function Login() {
             title: "Registration Complete",
             description: "You can now log in with your credentials.",
         });
-        // Optionally, switch to login tab
     }, 1500);
   };
 
@@ -126,7 +140,7 @@ export default function Login() {
                 <Input id="login-email" type="email" placeholder="m@example.com" required value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="login-password">Password</Label>
+                <Label htmlFor="login-password">Password or Roll Number</Label>
                 <Input id="login-password" type="password" required value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} />
               </div>
             </CardContent>
@@ -194,10 +208,27 @@ export default function Login() {
                     </Select>
                 </div>
               )}
-              <div className="space-y-2">
-                <Label htmlFor="register-password">Password</Label>
-                <Input id="register-password" type="password" required value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} />
-              </div>
+                {signupRole === 'Student' ? (
+                <>
+                    <div className="space-y-2">
+                        <Label htmlFor="register-roll">Roll Number (Password)</Label>
+                        <Input id="register-roll" placeholder="Your Roll Number" required value={signupRollNumber} onChange={e => setSignupRollNumber(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="register-reg">Register Number</Label>
+                        <Input id="register-reg" placeholder="Your Register Number" required value={signupRegisterNumber} onChange={e => setSignupRegisterNumber(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="register-mobile">Mobile Number</Label>
+                        <Input id="register-mobile" placeholder="Your Mobile Number" required value={signupMobileNumber} onChange={e => setSignupMobileNumber(e.target.value)} />
+                    </div>
+                </>
+              ) : (
+                <div className="space-y-2">
+                    <Label htmlFor="register-password">Password</Label>
+                    <Input id="register-password" type="password" required value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} />
+                </div>
+              )}
             </CardContent>
             <CardFooter>
               <Button type="submit" className="w-full" disabled={isSigningUp}>
