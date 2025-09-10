@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'ESEC CodeLook',
+  title: 'ChromaGrade',
   description: 'AI-powered dress code and attendance system.',
 };
 
