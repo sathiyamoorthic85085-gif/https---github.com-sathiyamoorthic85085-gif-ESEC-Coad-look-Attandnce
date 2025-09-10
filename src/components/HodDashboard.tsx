@@ -43,7 +43,6 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
     const currentUser = isPreview ? { name: 'Admin Preview', department: 'Computer Science', role: 'HOD' } : user;
     const hodDepartmentName = currentUser?.department;
 
-    // Derive state directly instead of using useEffect to prevent infinite loops
     const departmentUsers = useMemo(() => 
         users.filter(u => u.department === hodDepartmentName),
         [users, hodDepartmentName]
@@ -55,9 +54,9 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
     );
 
     const departmentAttendance = useMemo(() => {
-        const studentIdsInDept = departmentStudents.map(s => s.id);
-        return mockAttendanceData.filter(a => studentIdsInDept.includes(a.userId));
-    }, [departmentStudents]);
+        const userIdsInDept = departmentUsers.map(s => s.id);
+        return mockAttendanceData.filter(a => userIdsInDept.includes(a.userId));
+    }, [departmentUsers]);
 
     useEffect(() => {
         if (hodDepartmentName) {
@@ -187,7 +186,7 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
                              <Table>
                                 <TableHeader>
                                 <TableRow>
-                                    <TableHead>Employee</TableHead>
+                                    <TableHead>User</TableHead>
                                     <TableHead>Status</TableHead>
                                      <TableHead>Role</TableHead>
                                     <TableHead>Date</TableHead>

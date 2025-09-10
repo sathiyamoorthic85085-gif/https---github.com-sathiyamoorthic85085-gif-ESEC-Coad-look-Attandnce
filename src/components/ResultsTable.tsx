@@ -39,7 +39,7 @@ export default function ResultsTable({ attendanceData }: ResultsTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[40%]">Employee</TableHead>
+              <TableHead className="w-[40%]">User</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Attendance</TableHead>
               <TableHead>Violation</TableHead>
