@@ -15,16 +15,25 @@ export interface User {
     mobileNumber?: string;
 }
 
+export type PeriodStatus = 'Compliant' | 'Non-Compliant' | 'Pending' | 'Absent';
+
+export interface PeriodAttendance {
+    period: number; // e.g., 1, 2, 3
+    subject: string;
+    status: PeriodStatus;
+    violation?: string;
+}
+
 export interface AttendanceRecord {
   id: string;
   name: string;
   date: string;
-  status: 'Compliant' | 'Non-Compliant' | 'Pending';
-  attendance: 'Present' | 'Absent';
-  imageUrl: string;
-  violation?: string;
   userId: string;
+  imageUrl: string;
+  // This is now an array to hold the status for each period.
+  periods: PeriodAttendance[]; 
 }
+
 
 export interface Department {
     id: string;
@@ -41,7 +50,7 @@ export type LeaveType = 'Leave' | 'OD';
 export type LeaveRequestStatus = 'Pending Advisor' | 'Pending HOD' | 'Pending Admin' | 'Approved' | 'Rejected';
 
 export interface LeaveRequest {
-    id: string;
+    id:string;
     userId: string;
     userName: string;
     userRole: UserRole;
@@ -54,8 +63,16 @@ export interface LeaveRequest {
     substitutionAssignedTo?: string; // User ID of the substitute faculty
 }
 
+export interface TimetableEntry {
+    period: number;
+    subject: string;
+    faculty: string;
+    time: string;
+}
 export interface Timetable {
     id: string;
+    // We can use a structured format instead of just an image URL
+    schedule: TimetableEntry[];
     imageUrl: string;
     departmentId?: string;
     classId?: string;

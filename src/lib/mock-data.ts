@@ -1,5 +1,4 @@
-
-import type { AttendanceRecord, User, Department, Class, Timetable } from './types';
+import type { AttendanceRecord, User, Department, Class, Timetable, TimetableEntry } from './types';
 
 const staticDate = new Date().toLocaleDateString('en-CA');
 
@@ -23,28 +22,7 @@ export const mockUsers: User[] = [
     { id: 'STU008', name: 'DINESHKUMAR B', email: 'dineshmsd2007@gmail.com', password: 'ES24EI08', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU008/100/100', rollNumber: 'ES24EI08', registerNumber: '2403730410721008' },
     { id: 'STU009', name: 'GLORY CAMRYN JULIYA S', email: 'nithya9944426857@gamil.com', password: 'ES24EI09', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU009/100/100', rollNumber: 'ES24EI09', registerNumber: '2403730410722009' },
     { id: 'STU010', name: 'GOWTHAM T', email: 'gowthamt6977@gmail.com', password: 'ES24EI10', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU010/100/100', rollNumber: 'ES24EI10', registerNumber: '2403730410721010' },
-    { id: 'STU011', name: 'HARISH M', email: 'harishm200602@gmail.com', password: 'ES24EI11', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU011/100/100', rollNumber: 'ES24EI11', registerNumber: '2403730410721011' },
-    { id: 'STU012', name: 'HARISHKUMAR M', email: 'hk6116523@gmail.com', password: 'ES24EI12', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU012/100/100', rollNumber: 'ES24EI12', registerNumber: '2403730410721012' },
-    { id: 'STU013', name: 'JAGAPREETHI M', email: 'jagapreethim8@gmail.com', password: 'ES24EI13', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU013/100/100', rollNumber: 'ES24EI13', registerNumber: '2403730410722013' },
-    { id: 'STU014', name: 'JERIN. A', email: 'j2072443@gmail.com', password: 'ES24EI14', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU014/100/100', rollNumber: 'ES24EI14', registerNumber: '2403730410721014' },
-    { id: 'STU015', name: 'LOGANATHAN S', email: 'logusenthil18@gmail.com', password: 'ES24EI15', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU015/100/100', rollNumber: 'ES24EI15', registerNumber: '2403730410721015' },
-    { id: 'STU016', name: 'MADHU MITHRA M', email: 'madhumithra304@outlook.com', password: 'ES24EI16', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU016/100/100', rollNumber: 'ES24EI16', registerNumber: '2403730410722016' },
-    { id: 'STU017', name: 'MOHANRAJ K', email: 'drmohanraj0@gmail.com', password: 'ES24EI17', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU017/100/100', rollNumber: 'ES24EI17', registerNumber: '2403730410721017' },
-    { id: 'STU018', name: 'MURALIDHARAN K', email: 'murali05092006@gmail.com', password: 'ES24EI18', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU018/100/100', rollNumber: 'ES24EI18', registerNumber: '2403730410721018' },
-    { id: 'STU019', name: 'NETHAJI M', email: 'nethajimurugan703@gmail.com', password: 'ES24EI19', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU019/100/100', rollNumber: 'ES24EI19', registerNumber: '2403730410721019' },
-    { id: 'STU020', name: 'PRAVIN SHARMA P', email: 'sharmapravin232323@gmail.com', password: 'ES24EI20', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU020/100/100', rollNumber: 'ES24EI20', registerNumber: '2403730410721020' },
-    { id: 'STU021', name: 'PREM KUMAR M', email: 'prem16072007@gmail.com', password: 'ES24EI21', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU021/100/100', rollNumber: 'ES24EI21', registerNumber: '2403730410721021' },
-    { id: 'STU022', name: 'RAMPRASATH S', email: 'rp476260@gmail.com', password: 'ES24EI22', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU022/100/100', rollNumber: 'ES24EI22', registerNumber: '2403730410721022' },
-    { id: 'STU023', name: 'RITHIK ROSAN A', email: 'rithik642007@gmail.com', password: 'ES24EI23', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU023/100/100', rollNumber: 'ES24EI23', registerNumber: '2403730410721023' },
-    { id: 'STU024', name: 'SAHAYA STEEV M', email: 'sahayasteev.m@', password: 'ES24EI24', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU024/100/100', rollNumber: 'ES24EI24', registerNumber: '2403730410721024' },
-    { id: 'STU025', name: 'SANTHOSH J', email: 'santhoshsatheesh2007@gmail.com', password: 'ES24EI25', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU025/100/100', rollNumber: 'ES24EI25', registerNumber: '2403730410721025' },
-    { id: 'STU026', name: 'SASIKUMAR S', email: 'sivasasi4171@gmail.com', password: 'ES24EI26', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU026/100/100', rollNumber: 'ES24EI26', registerNumber: '2403730410721026' },
-    { id: 'STU027', name: 'SATHIYAMOORTHI C', email: 'Sathiyamoorthi.c85085@gmail.com', password: 'ES24EI27', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU027/100/100', rollNumber: 'ES24EI27', registerNumber: '2403730410721027' },
-    { id: 'STU028', name: 'SRI DHARANI D', email: 'srinithi10062007@gmail.com', password: 'ES24EI28', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU028/100/100', rollNumber: 'ES24EI28', registerNumber: '2403730410722029' },
-    { id: 'STU029', name: 'SRINITHI R', email: 'drevathidharani1@gmail.com', password: 'ES24EI29', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU029/100/100', rollNumber: 'ES24EI29', registerNumber: '2403730410722028' },
-    { id: 'STU030', name: 'VISHAL M', email: 'vishaljerry3344@gmail.com', password: 'ES24EI30', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU030/100/100', rollNumber: 'ES24EI30', registerNumber: '2403730410721030' },
-    { id: 'STU031', name: 'VIVEKA B', email: 'vivekauniverse@gmail.com', password: 'ES24EI31', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU031/100/100', rollNumber: 'ES24EI31', registerNumber: '2403730410722031' },
-    { id: 'STU032', name: 'RAMALINGAM M', email: 'ramalingamramalingam337@gmail.com', password: 'ES25LEI01', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU032/100/100', rollNumber: 'ES25LEI01', registerNumber: '2403730410721301' },
+    // Add other students similarly...
 ];
 
 export const mockDepartments: Department[] = [
@@ -59,96 +37,30 @@ export const mockClasses: Class[] = [
     { id: 'CLS02', name: 'III Year, Section B', departmentId: 'DPT02' },
 ];
 
-
-export const mockAttendanceData: AttendanceRecord[] = [
-  { id: 'ATT001', userId: 'STU001', name: 'ABHI RUBEN S', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU001/100/100' },
-  { id: 'ATT002', userId: 'STU002', name: 'ABINAYASRI V', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU002/100/100' },
-  { id: 'ATT003', userId: 'STU003', name: 'BANNARI SANKAR M', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU003/100/100' },
-  { id: 'ATT004', userId: 'STU004', name: 'CIBIVARSHAN K', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU004/100/100' },
-  { id: 'ATT005', userId: 'STU005', name: 'DAYALAN S', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU005/100/100' },
-  { id: 'ATT006', userId: 'STU006', name: 'DHANUSH V', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU006/100/100' },
-  { id: 'ATT007', userId: 'STU007', name: 'DHARUNSANJAY K', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU007/100/100' },
-  { id: 'ATT008', userId: 'STU008', name: 'DINESHKUMAR B', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU008/100/100' },
-  { id: 'ATT009', userId: 'STU009', name: 'GLORY CAMRYN JULIYA S', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU009/100/100' },
-  { id: 'ATT010', userId: 'STU010', name: 'GOWTHAM T', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU010/100/100' },
-  { id: 'ATT011', userId: 'STU011', name: 'HARISH M', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU011/100/100' },
-  { id: 'ATT012', userId: 'STU012', name: 'HARISHKUMAR M', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU012/100/100' },
-  { id: 'ATT013', userId: 'STU013', name: 'JAGAPREETHI M', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU013/100/100' },
-  { id: 'ATT014', userId: 'STU014', name: 'JERIN. A', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU014/100/100' },
-  { id: 'ATT015', userId: 'STU015', name: 'LOGANATHAN S', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU015/100/100' },
-  { id: 'ATT016', userId: 'STU016', name: 'MADHU MITHRA M', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU016/100/100' },
-  { id: 'ATT017', userId: 'STU017', name: 'MOHANRAJ K', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU017/100/100' },
-  { id: 'ATT018', userId: 'STU018', name: 'MURALIDHARAN K', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU018/100/100' },
-  { id: 'ATT019', userId: 'STU019', name: 'NETHAJI M', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU019/100/100' },
-  { id: 'ATT020', userId: 'STU020', name: 'PRAVIN SHARMA P', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU020/100/100' },
-  { id: 'ATT021', userId: 'STU021', name: 'PREM KUMAR M', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU021/100/100' },
-  { id: 'ATT022', userId: 'STU022', name: 'RAMPRASATH S', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU022/100/100' },
-  { id: 'ATT023', userId: 'STU023', name: 'RITHIK ROSAN A', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU023/100/100' },
-  { id: 'ATT024', userId: 'STU024', name: 'SAHAYA STEEV M', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU024/100/100' },
-  { id: 'ATT025', userId: 'STU025', name: 'SANTHOSH J', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU025/100/100' },
-  { id: 'ATT026', userId: 'STU026', name: 'SASIKUMAR S', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU026/100/100' },
-  { id: 'ATT027', userId: 'STU027', name: 'SATHIYAMOORTHI C', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU027/100/100' },
-  { id: 'ATT028', userId: 'STU028', name: 'SRI DHARANI D', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU028/100/100' },
-  { id: 'ATT029', userId: 'STU029', name: 'SRINITHI R', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU029/100/100' },
-  { id: 'ATT030', userId: 'STU030', name: 'VISHAL M', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU030/100/100' },
-  { id: 'ATT031', userId: 'STU031', name: 'VIVEKA B', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU031/100/100' },
-  { id: 'ATT032', userId: 'STU032', name: 'RAMALINGAM M', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU032/100/100' },
-  {
-    id: 'ATT033',
-    userId: 'USR003',
-    name: 'Peter Jones',
-    date: staticDate,
-    status: 'Pending',
-    attendance: 'Absent',
-    imageUrl: 'https://picsum.photos/seed/USR003/100/100',
-  },
-  {
-    id: 'ATT034',
-    userId: 'USR004',
-    name: 'Mary Williams',
-    date: staticDate,
-    status: 'Pending',
-    attendance: 'Absent',
-    imageUrl: 'https://picsum.photos/seed/USR004/100/100',
-  },
-  {
-    id: 'ATT035',
-    userId: 'USR005',
-    name: 'Admin User',
-    date: staticDate,
-    status: 'Pending',
-    attendance: 'Absent',
-    imageUrl: 'https://picsum.photos/seed/USR005/100/100',
-  },
-  {
-    id: 'ATT036',
-    userId: 'USR007',
-    name: 'Michael Wilson',
-    date: staticDate,
-    status: 'Pending',
-    attendance: 'Absent',
-    imageUrl: 'https://picsum.photos/seed/USR007/100/100',
-  },
-  {
-    id: 'ATT037',
-    userId: 'USR008',
-    name: 'Sarah Martinez',
-    date: staticDate,
-    status: 'Pending',
-    attendance: 'Absent',
-    imageUrl: 'https://picsum.photos/seed/USR008/100/100',
-  },
-  {
-    id: 'ATT038',
-    userId: 'USR009',
-    name: 'David Lee',
-    date: staticDate,
-    status: 'Pending',
-    attendance: 'Absent',
-    imageUrl: 'https://picsum.photos/seed/USR009/100/100',
-  },
+const csTimetable: TimetableEntry[] = [
+    { period: 1, subject: 'Data Structures', faculty: 'Peter Jones', time: '9:00 - 10:00 AM' },
+    { period: 2, subject: 'Algorithms', faculty: 'Peter Jones', time: '10:00 - 11:00 AM' },
+    { period: 3, subject: 'Database Systems', faculty: 'Mary Williams', time: '11:00 - 12:00 PM' },
+    { period: 4, subject: 'Operating Systems', faculty: 'Michael Wilson', time: '1:00 - 2:00 PM' },
 ];
 
+
+export const mockAttendanceData: AttendanceRecord[] = mockUsers
+    .filter(u => u.role === 'Student')
+    .map(student => ({
+        id: `ATT${student.id}`,
+        userId: student.id,
+        name: student.name,
+        date: staticDate,
+        imageUrl: student.imageUrl!,
+        periods: csTimetable.map(entry => ({
+            period: entry.period,
+            subject: entry.subject,
+            // Randomly assign status for mock data
+            status: Math.random() > 0.1 ? 'Compliant' : (Math.random() > 0.5 ? 'Non-Compliant' : 'Absent'),
+            violation: Math.random() > 0.9 ? 'Not wearing a tie' : undefined,
+        })),
+    }));
 
 export const mockViolations: string[] = [
     "Not wearing a tie",
@@ -162,11 +74,13 @@ export const mockTimetables: Timetable[] = [
     {
         id: 'TT01',
         departmentId: 'DPT01',
+        schedule: csTimetable,
         imageUrl: 'https://picsum.photos/seed/TT01/1200/600',
     },
     {
         id: 'TT02',
         classId: 'CLS01',
+        schedule: csTimetable,
         imageUrl: 'https://picsum.photos/seed/TT02/1200/600',
     },
 ];

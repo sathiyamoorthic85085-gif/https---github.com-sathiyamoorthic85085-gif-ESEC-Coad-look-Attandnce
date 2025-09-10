@@ -10,14 +10,16 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { generateDressCodeRecommendations } from '@/ai/flows/generate-dress-code-recommendations';
 import ResultsTable from './ResultsTable';
-import type { AttendanceRecord } from '@/lib/types';
+import type { AttendanceRecord, PeriodAttendance } from '@/lib/types';
 import { mockAttendanceData, mockViolations } from '@/lib/mock-data';
 import { useAuth } from '@/context/AuthContext';
+import { Label } from './ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+
 
 interface DetectionResult {
   compliant: boolean;
   violation?: string;
-  imageUrl: string;
 }
 
 export default function CodeCheck() {
@@ -29,6 +31,7 @@ export default function CodeCheck() {
   const [attendanceData, setAttendanceData] = useState<AttendanceRecord[]>(mockAttendanceData);
   const [isPending, startTransition] = useTransition();
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+  const [selectedPeriod, setSelectedPeriod] = useState<string>("1");
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -100,9 +103,11 @@ export default function CodeCheck() {
     const capturedImage = canvas.toDataURL('image/jpeg');
     setImagePreview(capturedImage);
 
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // This is where you would call your actual ML model API.
+    // For now, we simulate the detection process.
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
-    const isCompliant = Math.random() > 0.4;
+    const isCompliant = Math.random() > 0.4; // Simulate compliance check
     
     const userAttendanceIndex = attendanceData.findIndex(record => record.userId === user.id);
 
@@ -112,19 +117,26 @@ export default function CodeCheck() {
         return;
     }
 
-    const updatedRecord = { ...attendanceData[userAttendanceIndex] };
+    // Create a deep copy to avoid direct state mutation
+    const newAttendanceData = JSON.parse(JSON.stringify(attendanceData));
+    const userRecord = newAttendanceData[userAttendanceIndex];
+    const periodIndex = userRecord.periods.findIndex((p: PeriodAttendance) => p.period === parseInt(selectedPeriod, 10));
+
+    if (periodIndex === -1) {
+        toast({ title: "Selected period not found for this user", variant: "destructive" });
+        setIsProcessing(false);
+        return;
+    }
 
     if (isCompliant) {
-      setDetectionResult({ compliant: true, imageUrl: capturedImage });
-      updatedRecord.status = 'Compliant';
-      updatedRecord.attendance = 'Present';
-      updatedRecord.violation = undefined;
+      setDetectionResult({ compliant: true });
+      userRecord.periods[periodIndex].status = 'Compliant';
+      userRecord.periods[periodIndex].violation = undefined;
     } else {
       const violation = mockViolations[Math.floor(Math.random() * mockViolations.length)];
-      setDetectionResult({ compliant: false, violation, imageUrl: capturedImage });
-      updatedRecord.status = 'Non-Compliant';
-      updatedRecord.attendance = 'Present';
-      updatedRecord.violation = violation;
+      setDetectionResult({ compliant: false, violation });
+      userRecord.periods[periodIndex].status = 'Non-Compliant';
+      userRecord.periods[periodIndex].violation = violation;
 
       startTransition(async () => {
         try {
@@ -137,10 +149,7 @@ export default function CodeCheck() {
       });
     }
 
-    const newAttendanceData = [...attendanceData];
-    newAttendanceData[userAttendanceIndex] = updatedRecord;
     setAttendanceData(newAttendanceData);
-
     setIsProcessing(false);
   };
 
@@ -149,7 +158,7 @@ export default function CodeCheck() {
       <Card className="flex flex-col">
         <CardHeader>
           <CardTitle>Uniform Check</CardTitle>
-          <CardDescription>Use the camera to verify dress code compliance and mark attendance.</CardDescription>
+          <CardDescription>Use the camera to verify dress code compliance and mark attendance for a specific period.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-1 flex-col items-center justify-center gap-6">
           <div className="relative w-full max-w-sm">
@@ -185,20 +194,38 @@ export default function CodeCheck() {
                 </Alert>
             )}
           </div>
-         
-          <Button onClick={handleCaptureAndDetect} disabled={hasCameraPermission !== true || isProcessing} className="w-full max-w-sm">
-            {isProcessing ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Analyzing...
-              </>
-            ) : (
+
+          <div className="w-full max-w-sm space-y-4">
+            <div>
+              <Label htmlFor="period-select">Select Period</Label>
+              <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
+                  <SelectTrigger id="period-select">
+                      <SelectValue placeholder="Select a period" />
+                  </SelectTrigger>
+                  <SelectContent>
+                      <SelectItem value="1">Period 1</SelectItem>
+                      <SelectItem value="2">Period 2</SelectItem>
+                      <SelectItem value="3">Period 3</SelectItem>
+                      <SelectItem value="4">Period 4</SelectItem>
+                  </SelectContent>
+              </Select>
+            </div>
+          
+            <Button onClick={handleCaptureAndDetect} disabled={hasCameraPermission !== true || isProcessing} className="w-full">
+              {isProcessing ? (
                 <>
-                    <Camera className="mr-2 h-4 w-4" />
-                    Scan Dress Code
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Analyzing...
                 </>
-            )}
-          </Button>
+              ) : (
+                  <>
+                      <Camera className="mr-2 h-4 w-4" />
+                      Scan for Period {selectedPeriod}
+                  </>
+              )}
+            </Button>
+          </div>
+
 
           {detectionResult && (
              <Card className="w-full max-w-sm bg-card">
@@ -214,7 +241,7 @@ export default function CodeCheck() {
                                 {detectionResult.compliant ? "Dress Code Compliant" : "Dress Code Violation"}
                             </h3>
                             <p className="text-sm text-muted-foreground">
-                                {detectionResult.compliant ? "Attendance marked as Present." : detectionResult.violation}
+                                {detectionResult.compliant ? `Attendance marked for Period ${selectedPeriod}.` : detectionResult.violation}
                             </p>
                         </div>
                     </div>

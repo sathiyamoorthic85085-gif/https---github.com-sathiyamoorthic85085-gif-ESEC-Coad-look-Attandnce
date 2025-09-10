@@ -4,12 +4,12 @@
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Check, Bell, Shield, CalendarDays } from "lucide-react";
+import { Check, Bell, Shield, CalendarDays, X, AlertCircle } from "lucide-react";
 import { ProgressRing } from "./ProgressRing";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
-import { mockTimetables } from "@/lib/mock-data";
-import Image from "next/image";
-
+import { mockTimetables, mockAttendanceData } from "@/lib/mock-data";
+import { PeriodAttendance } from "@/lib/types";
+import { Badge } from "./ui/badge";
 
 interface StudentDashboardProps {
     isPreview?: boolean;
@@ -18,7 +18,7 @@ interface StudentDashboardProps {
 export default function StudentDashboard({ isPreview = false }: StudentDashboardProps) {
     const { user } = useAuth();
     
-    const currentUser = isPreview ? { name: 'Admin Preview', imageUrl: '', role: 'Student', classId: 'CLS01' } : user;
+    const currentUser = isPreview ? { name: 'Admin Preview', imageUrl: '', role: 'Student', classId: 'CLS01', id: 'STU001' } : user;
 
     if (!currentUser || (currentUser.role !== 'Student' && currentUser.role !== 'Admin')) {
         return <p>You do not have access to this page.</p>;
@@ -27,17 +27,26 @@ export default function StudentDashboard({ isPreview = false }: StudentDashboard
     const userName = currentUser ? currentUser.name.split(' ')[0] : 'Student';
     const userImage = currentUser ? currentUser.imageUrl : '';
     const timetable = mockTimetables.find(t => t.classId === currentUser.classId);
+    
+    const studentAttendance = mockAttendanceData.find(att => att.userId === currentUser.id);
 
+    const overallAttendance = studentAttendance ? 
+        (studentAttendance.periods.filter(p => p.status !== 'Absent').length / studentAttendance.periods.length) * 100 
+        : 0;
+        
+    const overallCompliance = studentAttendance ?
+        (studentAttendance.periods.filter(p => p.status === 'Compliant').length / studentAttendance.periods.filter(p => p.status !== 'Absent').length) * 100
+        : 0;
 
-    const attendanceStats = {
-        present: 92,
-        absent: 5,
-        late: 3,
-    };
-
-    const complianceStats = {
-        compliant: 95,
+    const getStatusIcon = (status: PeriodAttendance['status']) => {
+        switch(status) {
+            case 'Compliant': return <Check className="h-5 w-5 text-green-400" />;
+            case 'Non-Compliant': return <AlertCircle className="h-5 w-5 text-yellow-400" />;
+            case 'Absent': return <X className="h-5 w-5 text-red-500" />;
+            default: return <AlertCircle className="h-5 w-5 text-muted-foreground" />;
+        }
     }
+
 
     return (
         <div className="flex-1 space-y-6 p-4 md:p-6 pt-6">
@@ -71,12 +80,12 @@ export default function StudentDashboard({ isPreview = false }: StudentDashboard
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <Card>
                     <CardHeader>
-                        <CardTitle>⏳ My Check-ins</CardTitle>
+                        <CardTitle>⏳ My Attendance</CardTitle>
                     </CardHeader>
                     <CardContent className="flex items-center justify-around gap-4">
-                        <ProgressRing value={attendanceStats.present} label="Present" />
+                        <ProgressRing value={overallAttendance} />
                         <div className="space-y-2 text-center">
-                            <p className="text-4xl font-bold">{attendanceStats.present}%</p>
+                            <p className="text-4xl font-bold">{Math.round(overallAttendance)}%</p>
                             <p className="text-sm text-muted-foreground">Present</p>
                         </div>
                     </CardContent>
@@ -87,13 +96,10 @@ export default function StudentDashboard({ isPreview = false }: StudentDashboard
                         <CardTitle>👕 Style Status</CardTitle>
                     </CardHeader>
                     <CardContent className="flex items-center justify-around gap-4">
-                        <ProgressRing value={complianceStats.compliant} label="Compliant" />
-                        <div className="space-y-2 text-center">
-                            <div className="flex items-center justify-center gap-2">
-                                <Check className="h-8 w-8 text-green-400 drop-shadow-[0_0_5px_rgba(0,255,0,0.7)]" />
-                                <p className="text-4xl font-bold">{complianceStats.compliant}%</p>
-                            </div>
-                            <p className="text-sm text-muted-foreground">Compliance</p>
+                        <ProgressRing value={overallCompliance} />
+                        <div className="flex items-center justify-center gap-2">
+                           <p className="text-4xl font-bold">{Math.round(overallCompliance)}%</p>
+                            <p className="text-sm text-muted-foreground self-end pb-1">Compliance</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -101,6 +107,7 @@ export default function StudentDashboard({ isPreview = false }: StudentDashboard
                 <Card>
                     <CardHeader>
                         <CardTitle>Notifications</CardTitle>
+                         <CardDescription>Latest alerts and updates.</CardDescription>
                     </CardHeader>
                     <CardContent>
                        <div className="flex items-center gap-4 p-3 rounded-lg bg-white/5">
@@ -119,7 +126,22 @@ export default function StudentDashboard({ isPreview = false }: StudentDashboard
                     </CardHeader>
                     <CardContent className="flex justify-center">
                        {timetable ? (
-                           <Image src={timetable.imageUrl} alt="Class timetable" width={800} height={400} className="rounded-lg border" />
+                           <div className="w-full space-y-2">
+                               {timetable.schedule.map(period => (
+                                   <div key={period.period} className="flex items-center justify-between p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+                                       <div className="flex items-center gap-4">
+                                            {getStatusIcon(studentAttendance?.periods.find(p => p.period === period.period)?.status || 'Pending')}
+                                            <div>
+                                                <p className="font-semibold">{period.subject}</p>
+                                                <p className="text-xs text-muted-foreground">{period.faculty} • {period.time}</p>
+                                            </div>
+                                       </div>
+                                       <Badge variant={studentAttendance?.periods.find(p => p.period === period.period)?.status === 'Compliant' ? 'default' : 'secondary'}>
+                                            {studentAttendance?.periods.find(p => p.period === period.period)?.status}
+                                       </Badge>
+                                   </div>
+                               ))}
+                           </div>
                        ) : (
                            <p className="text-muted-foreground text-center py-8">Your advisor has not uploaded the timetable yet.</p>
                        )}
