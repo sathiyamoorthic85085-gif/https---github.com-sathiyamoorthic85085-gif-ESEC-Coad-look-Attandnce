@@ -51,6 +51,7 @@ export interface LeaveRequest {
     reason: string;
     status: LeaveRequestStatus;
     aiSummary?: string;
+    substitutionAssignedTo?: string; // User ID of the substitute faculty
 }
 
 export interface Timetable {

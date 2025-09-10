@@ -12,6 +12,7 @@ import { exportToCSV, exportToExcel, exportToPDF } from "@/lib/report-utils";
 import { AttendanceRecord, Timetable } from "@/lib/types";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import Image from "next/image";
+import { Badge } from "./ui/badge";
 
 interface FacultyDashboardProps {
     isPreview?: boolean;
@@ -102,9 +103,10 @@ export default function FacultyDashboard({ isPreview = false }: FacultyDashboard
                             <p className="font-semibold">CS101 - Intro to Programming</p>
                             <p className="text-sm text-muted-foreground">10:00 AM - Room 304</p>
                         </div>
-                         <div className="mt-4 border-l-4 border-accent pl-4">
+                         <div className="mt-4 border-l-4 border-accent pl-4 relative">
                             <p className="font-semibold">CS202 - Data Structures</p>
                             <p className="text-sm text-muted-foreground">1:00 PM - Room 210</p>
+                             <Badge variant="outline" className="absolute top-0 right-0">SUBSTITUTION</Badge>
                         </div>
                     </CardContent>
                 </Card>

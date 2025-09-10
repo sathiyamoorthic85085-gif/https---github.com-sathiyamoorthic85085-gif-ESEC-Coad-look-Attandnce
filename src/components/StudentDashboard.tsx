@@ -60,6 +60,13 @@ export default function StudentDashboard({ isPreview = false }: StudentDashboard
                     <AvatarFallback>{userName?.[0]}</AvatarFallback>
                 </Avatar>
             </div>
+             <Alert variant="destructive">
+                <Bell className="h-4 w-4" />
+                <AlertTitle>Class Notification</AlertTitle>
+                <AlertDescription>
+                    Prof. Peter Jones will be on leave for the Data Structures class today. Prof. Michael Wilson will be taking the class as substitution.
+                </AlertDescription>
+            </Alert>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <Card>

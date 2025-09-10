@@ -1,3 +1,4 @@
+
 import type { LeaveRequest } from './types';
 
 export const mockLeaveRequests: LeaveRequest[] = [
@@ -34,8 +35,9 @@ export const mockLeaveRequests: LeaveRequest[] = [
         startDate: '2024-08-10',
         endDate: '2024-08-11',
         reason: 'Attending a national conference on computer science education.',
-        status: 'Pending Admin',
-        aiSummary: 'Requesting 2 days leave to attend a national CS conference.'
+        status: 'Approved',
+        aiSummary: 'Requesting 2 days leave to attend a national CS conference.',
+        substitutionAssignedTo: 'USR007' // Michael Wilson
     },
      {
         id: 'LR004',
