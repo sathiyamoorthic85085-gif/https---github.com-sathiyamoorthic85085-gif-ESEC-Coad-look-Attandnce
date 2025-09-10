@@ -1,4 +1,5 @@
 
+
 export type UserRole = 'Admin' | 'HOD' | 'Faculty' | 'Student' | 'Advisor';
 
 export interface User {
@@ -75,3 +76,5 @@ export interface Timetable {
     departmentId?: string;
     classId?: string;
 }
+
+    
