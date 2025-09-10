@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
-import Header from "@/components/Header";
 import { AuthProvider } from '@/context/AuthContext';
 import { Inter } from 'next/font/google';
 
@@ -29,7 +28,6 @@ export default function RootLayout({
       <body className="font-body antialiased bg-background text-foreground">
         <AuthProvider>
             <div className="relative flex min-h-screen w-full flex-col">
-            <Header />
             <main className="flex-1">{children}</main>
             </div>
             <Toaster />

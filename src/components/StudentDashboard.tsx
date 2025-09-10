@@ -82,28 +82,6 @@ export default function StudentDashboard() {
                     </CardContent>
                 </Card>
             </div>
-
-            {/* Bottom Nav Placeholder */}
-            <div className="fixed bottom-0 left-0 right-0 md:hidden bg-background/80 backdrop-blur-xl border-t border-white/10 p-2">
-                <div className="container mx-auto flex justify-around">
-                    <button className="flex flex-col items-center gap-1 text-primary-pink">
-                        <User className="h-6 w-6 drop-shadow-[0_0_5px_hsl(var(--primary-pink))]"/>
-                        <span className="text-xs">My Status</span>
-                    </button>
-                     <button className="flex flex-col items-center gap-1 text-muted-foreground">
-                        <Check className="h-6 w-6"/>
-                        <span className="text-xs">Check-ins</span>
-                    </button>
-                     <button className="flex flex-col items-center gap-1 text-muted-foreground">
-                        <Shirt className="h-6 w-6"/>
-                        <span className="text-xs">Style</span>
-                    </button>
-                     <button className="flex flex-col items-center gap-1 text-muted-foreground">
-                        <Settings className="h-6 w-6"/>
-                        <span className="text-xs">Settings</span>
-                    </button>
-                </div>
-            </div>
         </div>
     );
 }
