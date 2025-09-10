@@ -23,7 +23,7 @@ export default function SplashPage() {
           <GraduationCap className="h-16 w-16" />
         </div>
         <h1 className="text-5xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
-          ChromaGrade
+          ESEC CHROMA GRADE
         </h1>
         <p className="text-muted-foreground animate-fade-in-up delay-500">
           The future of automated attendance and compliance.

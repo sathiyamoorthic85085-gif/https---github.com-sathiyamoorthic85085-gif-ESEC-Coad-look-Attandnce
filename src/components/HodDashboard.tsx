@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/
 import { Button } from "./ui/button";
 import { FileText, Trash2, Edit, Loader2, BarChart2, Download, Shield, Upload } from "lucide-react";
 import { mockAttendanceData, mockClasses, mockDepartments, mockUsers, mockTimetables } from "@/lib/mock-data";
-import { useState, useTransition, useMemo } from "react";
+import React, { useState, useTransition, useMemo } from "react";
 import type { AttendanceRecord, User, Timetable } from "@/lib/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import Image from "next/image";
@@ -189,9 +189,8 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
                                 <TableHeader>
                                 <TableRow>
                                     <TableHead>User</TableHead>
-                                    <TableHead>Status</TableHead>
-                                     <TableHead>Role</TableHead>
-                                    <TableHead>Date</TableHead>
+                                    <TableHead className="w-[60%]">Period Status</TableHead>
+                                    <TableHead>Role</TableHead>
                                 </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -216,12 +215,17 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
                                             </div>
                                         </TableCell>
                                         <TableCell>
-                                            <Badge variant={record.status === 'Compliant' ? 'default' : 'destructive'}>{record.status}</Badge>
+                                            <div className="flex gap-2 flex-wrap">
+                                                 {record.periods.map(p => (
+                                                    <Badge key={p.period} variant={p.status === 'Compliant' ? 'default' : p.status === 'Non-Compliant' ? 'outline' : 'destructive'}>
+                                                        P{p.period}: {p.status}
+                                                    </Badge>
+                                                 ))}
+                                            </div>
                                         </TableCell>
                                         <TableCell>
                                              <Badge variant="secondary">{userRecord?.role}</Badge>
                                         </TableCell>
-                                        <TableCell>{record.date}</TableCell>
                                         </TableRow>
                                     )
                                 })}
@@ -375,3 +379,4 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
 }
 
     
+

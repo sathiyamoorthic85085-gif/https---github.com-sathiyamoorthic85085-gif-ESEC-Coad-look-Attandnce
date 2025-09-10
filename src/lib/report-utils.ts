@@ -15,7 +15,7 @@ export const exportToPDF = (data: AttendanceRecord[], fileName: string) => {
   const doc = new jsPDF();
   doc.text(fileName, 14, 16);
   
-  const tableColumn = ["ID", "Name", "Date", "Status", "Attendance", "Violation"];
+  const tableColumn = ["ID", "Name", "Date", "Period 1", "Period 2", "Period 3", "Period 4"];
   const tableRows: (string | undefined)[][] = [];
 
   data.forEach(record => {
@@ -23,9 +23,10 @@ export const exportToPDF = (data: AttendanceRecord[], fileName: string) => {
       record.userId,
       record.name,
       record.date,
-      record.status,
-      record.attendance,
-      record.violation || "N/A",
+      record.periods[0]?.status || 'N/A',
+      record.periods[1]?.status || 'N/A',
+      record.periods[2]?.status || 'N/A',
+      record.periods[3]?.status || 'N/A',
     ];
     tableRows.push(recordData);
   });
@@ -46,9 +47,14 @@ export const exportToExcel = (data: AttendanceRecord[], fileName: string) => {
         UserID: d.userId,
         Name: d.name,
         Date: d.date,
-        Status: d.status,
-        Attendance: d.attendance,
-        Violation: d.violation || 'N/A'
+        'Period 1': d.periods[0]?.status || 'N/A',
+        'Period 2': d.periods[1]?.status || 'N/A',
+        'Period 3': d.periods[2]?.status || 'N/A',
+        'Period 4': d.periods[3]?.status || 'N/A',
+        'Period 1 Violation': d.periods[0]?.violation || '',
+        'Period 2 Violation': d.periods[1]?.violation || '',
+        'Period 3 Violation': d.periods[2]?.violation || '',
+        'Period 4 Violation': d.periods[3]?.violation || '',
     })));
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
@@ -57,16 +63,17 @@ export const exportToExcel = (data: AttendanceRecord[], fileName: string) => {
 
 // Function to export data to CSV
 export const exportToCSV = (data: AttendanceRecord[], fileName: string) => {
-  const headers = ["UserID", "Name", "Date", "Status", "Attendance", "Violation"];
+  const headers = ["UserID", "Name", "Date", "Period1_Status", "Period2_Status", "Period3_Status", "Period4_Status"];
   const csvRows = [
     headers.join(","),
     ...data.map(row => [
       row.userId,
       row.name,
       row.date,
-      row.status,
-      row.attendance,
-      `"${row.violation || 'N/A'}"`
+      row.periods[0]?.status || 'N/A',
+      row.periods[1]?.status || 'N/A',
+      row.periods[2]?.status || 'N/A',
+      row.periods[3]?.status || 'N/A',
     ].join(","))
   ];
 
