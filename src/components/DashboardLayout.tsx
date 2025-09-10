@@ -18,28 +18,50 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/context/AuthContext";
-import { Shield, Users, User, BookUser, FolderKanban, MessageSquare, Calendar, Shirt, FileUp, Settings, LogOut, GraduationCap, Building, Bell } from "lucide-react";
+import { Shield, Users, User, BookUser, FolderKanban, MessageSquare, Calendar, Shirt, FileUp, Settings, LogOut, GraduationCap, Building, Bell, LayoutDashboard } from "lucide-react";
+import type { UserRole } from "@/lib/types";
+
+const menuConfig = {
+    Admin: [
+        { href: '/dashboard', label: 'Admin Dashboard', icon: <Shield /> },
+        { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
+        { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
+    ],
+    HOD: [
+        { href: '/dashboard', label: 'HOD Dashboard', icon: <Building /> },
+        { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
+        { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
+    ],
+    Faculty: [
+        { href: '/dashboard', label: 'Mentor Dashboard', icon: <User /> },
+        { href: '/dashboard/assignments', label: 'Assignments', icon: <FolderKanban /> },
+        { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
+        { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
+    ],
+    Student: [
+        { href: '/dashboard', label: 'My Status', icon: <LayoutDashboard /> },
+        { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
+        { href: '/dashboard/attendance', label: 'My Attendance', icon: <Calendar /> },
+        { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
+    ],
+    Advisor: [
+        { href: '/dashboard', label: 'Advisor Dashboard', icon: <BookUser /> },
+        { href: '/dashboard/students', label: 'Manage Students', icon: <Users /> },
+        { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
+        { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
+    ]
+}
+
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const { user, logout } = useAuth();
     const pathname = usePathname();
 
-    const menuItems = [
-      { href: '/dashboard', label: 'Admin Dashboard', icon: <Shield />, role: 'Admin' },
-      { href: '/dashboard', label: 'HOD View', icon: <Building />, role: 'Admin' },
-      { href: '/dashboard', label: 'Advisor View', icon: <BookUser />, role: 'Admin' },
-      { href: '/dashboard', label: 'Mentor View', icon: <User />, role: 'Admin' },
-      { href: '/dashboard', label: 'Student View', icon: <GraduationCap />, role: 'Admin' },
-      { href: '/dashboard', label: 'Students', icon: <Users />, role: 'Admin' },
-      { href: '/dashboard', label: 'Mentors', icon: <User />, role: 'Admin' },
-      { href: '/dashboard', label: 'My Attendance', icon: <User />, role: 'Admin' },
-      { href: '/dashboard', label: 'Assignments', icon: <FolderKanban />, role: 'Admin' },
-      { href: '/dashboard', label: 'Messages', icon: <MessageSquare />, role: 'Admin' },
-      { href: '/dashboard', label: 'Timetable & Circulars', icon: <Calendar />, role: 'Admin' },
-      { href: '/', label: 'Uniform Check', icon: <Shirt />, role: 'Admin' },
-      { href: '/dashboard', label: 'Leave/OD Forms', icon: <FileUp />, role: 'Admin' },
-      { href: '/dashboard', label: 'Profile & Settings', icon: <Settings />, role: 'Admin' },
-    ];
+    const getMenuItems = (role: UserRole) => {
+        return menuConfig[role] || [];
+    }
+    
+    const menuItems = user ? getMenuItems(user.role) : [];
 
   return (
     <SidebarProvider>
@@ -56,7 +78,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 {menuItems.map((item) => (
                     <SidebarMenuItem key={item.label}>
                          <Link href={item.href}>
-                            <SidebarMenuButton isActive={pathname.startsWith(item.href)}>
+                            <SidebarMenuButton isActive={pathname === item.href}>
                                 {item.icon}
                                 <span>{item.label}</span>
                             </SidebarMenuButton>
@@ -75,6 +97,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         <span className="text-xs text-muted-foreground">{user?.email}</span>
                     </div>
                 </div>
+                 <SidebarMenuItem>
+                    <SidebarMenuButton onClick={logout}>
+                        <LogOut />
+                        <span className="">Logout</span>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
             </SidebarFooter>
           </SidebarContent>
         </Sidebar>
