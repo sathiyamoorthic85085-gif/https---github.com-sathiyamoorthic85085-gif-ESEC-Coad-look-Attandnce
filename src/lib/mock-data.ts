@@ -3,13 +3,15 @@ import type { AttendanceRecord, User, Department, Class } from './types';
 const staticDate = new Date().toLocaleDateString('en-CA');
 
 export const mockUsers: User[] = [
+    // Non-student users
     { id: 'USR003', name: 'Peter Jones', email: 'peter.jones@example.com', password: 'password', role: 'Faculty', department: 'Computer Science', imageUrl: 'https://picsum.photos/seed/USR003/100/100' },
     { id: 'USR004', name: 'Mary Williams', email: 'mary.williams@example.com', password: 'password', role: 'HOD', department: 'Computer Science', imageUrl: 'https://picsum.photos/seed/USR004/100/100' },
     { id: 'USR005', name: 'Admin User', email: 'sathiyamoorthi.c85085@gmail.com', password: '1234567890', role: 'Admin', department: 'Administration', imageUrl: 'https://picsum.photos/seed/USR005/100/100' },
     { id: 'USR007', name: 'Michael Wilson', email: 'michael.wilson@example.com', password: 'password', role: 'Faculty', department: 'Electrical Engineering', imageUrl: 'https://picsum.photos/seed/USR007/100/100' },
     { id: 'USR008', name: 'Sarah Martinez', email: 'sarah.martinez@example.com', password: 'password', role: 'HOD', department: 'Electrical Engineering', imageUrl: 'https://picsum.photos/seed/USR008/100/100' },
     { id: 'USR009', name: 'David Lee', email: 'david.lee@example.com', password: 'password', role: 'Advisor', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/USR009/100/100' },
-    // Students from image
+    
+    // Students from provided data
     { id: 'STU001', name: 'ABHI RUBEN S', email: 'abhiruben2402@gmail.com', password: 'ES24EI01', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU001/100/100', rollNumber: 'ES24EI01', registerNumber: '2403730410721001', mobileNumber: '7708914279' },
     { id: 'STU002', name: 'ABINAYASRI V', email: 'abinayasree0207@gmail.com', password: 'ES24EI02', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU002/100/100', rollNumber: 'ES24EI02', registerNumber: '2403730410722002', mobileNumber: '9566519970' },
     { id: 'STU003', name: 'BANNARI SANKAR M', email: 'bannarisankar7@gmail.com', password: 'ES24EI03', role: 'Student', department: 'Computer Science', classId: 'CLS01', imageUrl: 'https://picsum.photos/seed/STU003/100/100', rollNumber: 'ES24EI03', registerNumber: '2403730410721003', mobileNumber: '6379622003' },
@@ -90,7 +92,6 @@ export const mockAttendanceData: AttendanceRecord[] = [
   { id: 'ATT030', userId: 'STU030', name: 'VISHAL M', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU030/100/100' },
   { id: 'ATT031', userId: 'STU031', name: 'VIVEKA B', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU031/100/100' },
   { id: 'ATT032', userId: 'STU032', name: 'RAMALINGAM M', date: staticDate, status: 'Pending', attendance: 'Absent', imageUrl: 'https://picsum.photos/seed/STU032/100/100' },
-
   {
     id: 'ATT033',
     userId: 'USR003',
