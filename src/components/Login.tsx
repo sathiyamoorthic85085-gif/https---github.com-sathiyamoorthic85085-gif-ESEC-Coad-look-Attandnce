@@ -24,12 +24,22 @@ import {
 import { LogIn } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { mockDepartments, mockUsers } from "@/lib/mock-data";
+import type { Department, User, UserRole } from "@/lib/types";
 
 export default function Login() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isSigningUp, setIsSigningUp] = useState(false);
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+
+  // Sign up state
+  const [signupName, setSignupName] = useState("");
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
+  const [signupRole, setSignupRole] = useState<UserRole | "">("");
+  const [signupDepartment, setSignupDepartment] = useState("");
+
 
   const { login } = useAuth();
   const router = useRouter();
@@ -61,13 +71,37 @@ export default function Login() {
   const handleSignUp = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSigningUp(true);
-    // Mock signup logic
+
+    if (!signupName || !signupEmail || !signupPassword || !signupRole || (signupRole !== 'Admin' && !signupDepartment)) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill out all required fields.",
+        variant: "destructive",
+      });
+      setIsSigningUp(false);
+      return;
+    }
+
+    const newUser: User = {
+        id: `USR${(mockUsers.length + 1).toString().padStart(3, '0')}`,
+        name: signupName,
+        email: signupEmail,
+        password: signupPassword,
+        role: signupRole as UserRole,
+        department: signupRole === 'Admin' ? 'Administration' : signupDepartment,
+        imageUrl: `https://picsum.photos/seed/USR${(mockUsers.length + 1).toString().padStart(3, '0')}/100/100`,
+    };
+
+    // In a real app, you'd send this to a server. Here we just mock it.
+    mockUsers.push(newUser);
+    
     setTimeout(() => {
         setIsSigningUp(false);
         toast({
             title: "Registration Complete",
             description: "You can now log in with your credentials.",
         });
+        // Optionally, switch to login tab
     }, 1500);
   };
 
@@ -117,7 +151,7 @@ export default function Login() {
             <CardContent className="space-y-4">
                <div className="space-y-2">
                 <Label htmlFor="register-name">Full Name</Label>
-                <Input id="register-name" placeholder="John Doe" required />
+                <Input id="register-name" placeholder="John Doe" required value={signupName} onChange={(e) => setSignupName(e.target.value)} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="register-email">Email</Label>
@@ -126,26 +160,43 @@ export default function Login() {
                   type="email"
                   placeholder="m@example.com"
                   required
+                  value={signupEmail}
+                  onChange={(e) => setSignupEmail(e.target.value)}
                 />
               </div>
                <div className="space-y-2">
                 <Label htmlFor="register-role">Role</Label>
-                <Select required>
+                <Select required value={signupRole} onValueChange={(value) => setSignupRole(value as UserRole)}>
                     <SelectTrigger id="register-role">
                         <SelectValue placeholder="Select a role" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="student">Student</SelectItem>
-                        <SelectItem value="faculty">Faculty</SelectItem>
-                        <SelectItem value="hod">HOD</SelectItem>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        <SelectItem value="advisor">Advisor</SelectItem>
+                        <SelectItem value="Student">Student</SelectItem>
+                        <SelectItem value="Faculty">Faculty</SelectItem>
+                        <SelectItem value="HOD">HOD</SelectItem>
+                        <SelectItem value="Admin">Admin</SelectItem>
+                        <SelectItem value="Advisor">Advisor</SelectItem>
                     </SelectContent>
                 </Select>
               </div>
+               {signupRole && signupRole !== 'Admin' && (
+                <div className="space-y-2">
+                    <Label htmlFor="register-department">Department</Label>
+                    <Select required value={signupDepartment} onValueChange={setSignupDepartment}>
+                        <SelectTrigger id="register-department">
+                            <SelectValue placeholder="Select a department" />
+                        </SelectTrigger>
+                        <SelectContent>
+                        {mockDepartments.map((dep: Department) => (
+                            <SelectItem key={dep.id} value={dep.name}>{dep.name}</SelectItem>
+                        ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+              )}
               <div className="space-y-2">
                 <Label htmlFor="register-password">Password</Label>
-                <Input id="register-password" type="password" required />
+                <Input id="register-password" type="password" required value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} />
               </div>
             </CardContent>
             <CardFooter>
