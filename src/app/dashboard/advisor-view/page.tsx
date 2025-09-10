@@ -4,7 +4,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 export default function AdvisorViewPage() {
   return (
     <DashboardLayout>
-      <AdvisorDashboard isPreview={false} />
+      <AdvisorDashboard isPreview={true} />
     </DashboardLayout>
   );
 }

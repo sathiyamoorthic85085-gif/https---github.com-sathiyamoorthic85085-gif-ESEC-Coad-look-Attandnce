@@ -4,7 +4,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 export default function StudentViewPage() {
   return (
     <DashboardLayout>
-      <StudentDashboard />
+      <StudentDashboard isPreview={true} />
     </DashboardLayout>
   );
 }

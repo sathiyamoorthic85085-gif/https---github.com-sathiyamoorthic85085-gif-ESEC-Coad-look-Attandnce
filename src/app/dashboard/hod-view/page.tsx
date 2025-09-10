@@ -4,7 +4,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 export default function HodViewPage() {
   return (
     <DashboardLayout>
-      <HodDashboard />
+      <HodDashboard isPreview={true} />
     </DashboardLayout>
   );
 }

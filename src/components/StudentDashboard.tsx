@@ -3,19 +3,26 @@
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Check, Bell } from "lucide-react";
+import { Check, Bell, Shield } from "lucide-react";
 import { ProgressRing } from "./ProgressRing";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
 
-export default function StudentDashboard() {
+interface StudentDashboardProps {
+    isPreview?: boolean;
+}
+
+export default function StudentDashboard({ isPreview = false }: StudentDashboardProps) {
     const { user } = useAuth();
+    
+    const currentUser = isPreview ? { name: 'Admin Preview', imageUrl: '', role: 'Student' } : user;
 
-    if (!user || (user.role !== 'Student' && user.role !== 'Admin')) {
+    if (!currentUser || (currentUser.role !== 'Student' && currentUser.role !== 'Admin')) {
         return <p>You do not have access to this page.</p>;
     }
     
-    const userName = user ? user.name.split(' ')[0] : 'Student';
-    const userImage = user ? user.imageUrl : '';
+    const userName = currentUser ? currentUser.name.split(' ')[0] : 'Student';
+    const userImage = currentUser ? currentUser.imageUrl : '';
 
 
     const attendanceStats = {
@@ -30,6 +37,15 @@ export default function StudentDashboard() {
 
     return (
         <div className="flex-1 space-y-6 p-4 md:p-6 pt-6">
+             {isPreview && (
+                <Alert className="mb-4 border-accent">
+                    <Shield className="h-4 w-4" />
+                    <AlertTitle>Admin Preview</AlertTitle>
+                    <AlertDescription>
+                        You are currently viewing the Student Dashboard as an administrator.
+                    </AlertDescription>
+                </Alert>
+            )}
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">👋 Hey {userName}, ready for class today?</h1>

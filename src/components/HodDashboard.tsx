@@ -3,7 +3,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
-import { FileText, Trash2, Edit, Loader2, BarChart2, Download } from "lucide-react";
+import { FileText, Trash2, Edit, Loader2, BarChart2, Download, Shield } from "lucide-react";
 import { mockAttendanceData, mockClasses, mockDepartments, mockUsers } from "@/lib/mock-data";
 import { useEffect, useState, useTransition } from "react";
 import { AttendanceRecord, Class, User } from "@/lib/types";
@@ -18,8 +18,13 @@ import { summarizeAttendanceReport } from "@/ai/flows/summarize-attendance-repor
 import { Label } from "./ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { exportToCSV, exportToExcel, exportToPDF } from "@/lib/report-utils";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
-export default function HodDashboard() {
+interface HodDashboardProps {
+    isPreview?: boolean;
+}
+
+export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
     const { user } = useAuth();
     const { toast } = useToast();
 
@@ -38,9 +43,12 @@ export default function HodDashboard() {
     const [selectedClass, setSelectedClass] = useState<string>('');
     const [isPending, startTransition] = useTransition();
 
+    const currentUser = isPreview ? { name: 'Admin Preview', department: 'Computer Science', role: 'HOD' } : user;
+
+
     useEffect(() => {
-        if (user && (user.role === 'HOD' || user.role === 'Admin')) {
-            const hodDepartment = user.role === 'Admin' ? 'Computer Science' : user.department; 
+        if (currentUser && (currentUser.role === 'HOD' || currentUser.role === 'Admin')) {
+            const hodDepartment = currentUser.department; 
             
             const filteredUsers = users.filter(u => u.department === hodDepartment);
             setDepartmentUsers(filteredUsers);
@@ -58,7 +66,7 @@ export default function HodDashboard() {
                 setDepartmentClasses(filteredClasses);
             }
         }
-    }, [user, users]);
+    }, [currentUser, users]);
 
     const openConfirmationDialog = (title: string, description: string, onConfirm: () => void) => {
         setDialogContent({ title, description, onConfirm });
@@ -66,10 +74,10 @@ export default function HodDashboard() {
     };
 
     const handleAddUser = (newUser: Omit<User, 'id' | 'imageUrl'>) => {
-        const hodDepartment = user?.department;
-        if (!hodDepartment && user?.role !== 'Admin') return;
+        const hodDepartment = currentUser?.department;
+        if (!hodDepartment) return;
 
-        const department = user?.role === 'Admin' ? newUser.department : hodDepartment;
+        const department = currentUser?.role === 'Admin' ? newUser.department : hodDepartment;
 
         const finalNewUser: User = {
             ...newUser,
@@ -101,6 +109,7 @@ export default function HodDashboard() {
                 return;
             }
             try {
+                // This logic assumes students have a `classId`. Make sure your data model supports this.
                 const studentsInClass = departmentStudents.filter(s => s.classId === selectedClass);
                 const studentIdsInClass = studentsInClass.map(s => s.id);
                 const relevantData = departmentAttendance.filter(a => studentIdsInClass.includes(a.userId));
@@ -109,7 +118,7 @@ export default function HodDashboard() {
                 const reportTitle = `Attendance Report for ${selectedClassName}`;
 
                 if (relevantData.length === 0) {
-                    toast({title: "No Data", description: "No attendance data found for the selected class.", variant: "destructive"});
+                    toast({title: "No Data", description: `No attendance data found for ${selectedClassName}.`, variant: "destructive"});
                     return;
                 }
                 
@@ -134,20 +143,29 @@ export default function HodDashboard() {
         });
     };
 
-    if (!user || (user.role !== 'HOD' && user.role !== 'Admin')) {
+    if (!currentUser || (currentUser.role !== 'HOD' && currentUser.role !== 'Admin')) {
         return <p>You do not have access to this page.</p>;
     }
     
-    const departmentName = user.role === 'Admin' ? 'Computer Science' : user.department;
+    const departmentName = currentUser.department;
     const departmentForDialog = mockDepartments.find(d => d.name === departmentName);
     const departmentsForDialog = departmentForDialog ? [departmentForDialog] : [];
 
     return (
         <>
         <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
+            {isPreview && (
+                <Alert className="mb-4 border-accent">
+                    <Shield className="h-4 w-4" />
+                    <AlertTitle>Admin Preview</AlertTitle>
+                    <AlertDescription>
+                        You are currently viewing the HOD Dashboard as an administrator.
+                    </AlertDescription>
+                </Alert>
+            )}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">🏛️ Welcome, {user.name.split(' ')[0]}!</h1>
+                    <h1 className="text-3xl font-bold tracking-tight">🏛️ Welcome, {currentUser.name.split(' ')[0]}!</h1>
                     <p className="text-muted-foreground">Managing the {departmentName} Department.</p>
                 </div>
                  <div className="flex items-center space-x-2">
@@ -320,7 +338,7 @@ export default function HodDashboard() {
                             {report && (
                                 <Card className="bg-background/50 mt-6">
                                     <CardHeader>
-                                        <CardTitle>AI Summary Report</CardTitle>
+                                        <CardTitle>AI Summary Report for {departmentClasses.find(c => c.id === selectedClass)?.name}</CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
                                         <p className="text-sm text-muted-foreground whitespace-pre-wrap">{report}</p>

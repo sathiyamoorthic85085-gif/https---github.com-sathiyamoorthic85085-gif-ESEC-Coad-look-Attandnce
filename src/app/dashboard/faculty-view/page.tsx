@@ -4,7 +4,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 export default function FacultyViewPage() {
   return (
     <DashboardLayout>
-      <FacultyDashboard />
+      <FacultyDashboard isPreview={true} />
     </DashboardLayout>
   );
 }

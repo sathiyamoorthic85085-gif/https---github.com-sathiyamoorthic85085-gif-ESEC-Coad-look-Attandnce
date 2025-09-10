@@ -2,33 +2,41 @@
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/card";
 import { Button } from "./ui/button";
-import { Bell, BellRing, FilePen, Loader2, BarChart2, Download } from "lucide-react";
+import { Bell, BellRing, FilePen, Loader2, BarChart2, Download, Shield } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { summarizeAttendanceReport } from "@/ai/flows/summarize-attendance-report";
 import { mockAttendanceData } from "@/lib/mock-data";
 import { exportToCSV, exportToExcel, exportToPDF } from "@/lib/report-utils";
 import { AttendanceRecord } from "@/lib/types";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
-export default function FacultyDashboard() {
+interface FacultyDashboardProps {
+    isPreview?: boolean;
+}
+
+
+export default function FacultyDashboard({ isPreview = false }: FacultyDashboardProps) {
     const { user } = useAuth();
     const { toast } = useToast();
     const [report, setReport] = useState<string>('');
     const [reportData, setReportData] = useState<AttendanceRecord[]>([]);
     const [isPending, startTransition] = useTransition();
 
-    if (!user || (user.role !== 'Faculty' && user.role !== 'Admin')) {
+    const currentUser = isPreview ? { name: 'Admin Preview', department: 'Computer Science', role: 'Faculty' } : user;
+
+    if (!currentUser || (currentUser.role !== 'Faculty' && currentUser.role !== 'Admin')) {
         return <p>You do not have access to this page.</p>;
     }
     
-    const department = user.role === 'Admin' ? 'All Departments' : user.department;
+    const department = currentUser.department || 'All Departments';
 
     const handleGenerateReport = () => {
         startTransition(async () => {
             try {
                 // In a real app, you'd filter by the faculty's students/classes
                 const relevantData = mockAttendanceData.filter(d => 
-                    user.role === 'Admin' || d.userId.startsWith('USR') // Simplified for mock
+                    user?.role === 'Admin' || d.userId.startsWith('STU') // Simplified for mock
                 ).slice(0, 10);
                 
                 setReportData(relevantData);
@@ -54,12 +62,21 @@ export default function FacultyDashboard() {
 
     return (
         <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
+            {isPreview && (
+                <Alert className="mb-4 border-accent">
+                    <Shield className="h-4 w-4" />
+                    <AlertTitle>Admin Preview</AlertTitle>
+                    <AlertDescription>
+                        You are currently viewing the Faculty Dashboard as an administrator.
+                    </AlertDescription>
+                </Alert>
+            )}
             <div className="flex items-center justify-between">
                  <div>
                     <h1 className="text-3xl font-bold tracking-tight">Mentors Dashboard</h1>
                     <p className="text-muted-foreground">Department: {department}</p>
                 </div>
-                {user && <p className="text-muted-foreground">Welcome, {user.name}</p>}
+                {currentUser && <p className="text-muted-foreground">Welcome, {currentUser.name}</p>}
             </div>
 
              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
