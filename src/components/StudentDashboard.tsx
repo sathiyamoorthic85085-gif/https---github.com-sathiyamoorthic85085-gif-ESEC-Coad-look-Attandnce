@@ -10,9 +10,13 @@ import { ProgressRing } from "./ProgressRing";
 export default function StudentDashboard() {
     const { user } = useAuth();
 
-    if (!user || user.role !== 'Student') {
+    if (!user || (user.role !== 'Student' && user.role !== 'Admin')) {
         return <p>You do not have access to this page.</p>;
     }
+    
+    const userName = user ? user.name.split(' ')[0] : 'Student';
+    const userImage = user ? user.imageUrl : '';
+
 
     const attendanceStats = {
         present: 92,
@@ -28,12 +32,12 @@ export default function StudentDashboard() {
         <div className="flex-1 space-y-6 p-4 md:p-6 pt-6 font-sans">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-white/90">👋 Hey {user.name.split(' ')[0]} ✨ Ready to shine today?</h1>
+                    <h1 className="text-2xl font-bold tracking-tight text-white/90">👋 Hey {userName} ✨ Ready to shine today?</h1>
                     <p className="text-muted-foreground">Here is your status summary.</p>
                 </div>
                 <Avatar className="h-12 w-12 border-2 border-primary-pink shadow-neon-pink">
-                    <AvatarImage src={user.imageUrl} alt={user.name} />
-                    <AvatarFallback>{user.name?.[0]}</AvatarFallback>
+                    <AvatarImage src={userImage} alt={userName} />
+                    <AvatarFallback>{userName?.[0]}</AvatarFallback>
                 </Avatar>
             </div>
 

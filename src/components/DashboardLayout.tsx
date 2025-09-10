@@ -29,6 +29,10 @@ const menuConfig = {
         { href: '/dashboard/assignments', label: 'Assignments', icon: <FolderKanban /> },
         { href: '/dashboard/attendance', label: 'Attendance', icon: <Calendar /> },
         { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
+        { href: '/dashboard/hod-view', label: 'HOD View', icon: <Building /> },
+        { href: '/dashboard/faculty-view', label: 'Faculty View', icon: <User /> },
+        { href: '/dashboard/student-view', label: 'Student View', icon: <LayoutDashboard /> },
+        { href: '/dashboard/advisor-view', label: 'Advisor View', icon: <BookUser /> },
     ],
     HOD: [
         { href: '/dashboard', label: 'HOD Dashboard', icon: <Building /> },
@@ -37,19 +41,19 @@ const menuConfig = {
     ],
     Faculty: [
         { href: '/dashboard', label: 'Mentor Dashboard', icon: <User /> },
-        { href_dd: '/dashboard/assignments', label: 'Assignments', icon: <FolderKanban /> },
+        { href: '/dashboard/assignments', label: 'Assignments', icon: <FolderKanban /> },
         { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
         { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
     ],
     Student: [
         { href: '/dashboard', label: 'My Status', icon: <LayoutDashboard /> },
         { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
-        { href_dd: '/dashboard/attendance', label: 'My Attendance', icon: <Calendar /> },
+        { href: '/dashboard/attendance', label: 'My Attendance', icon: <Calendar /> },
         { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
     ],
     Advisor: [
         { href: '/dashboard', label: 'Advisor Dashboard', icon: <BookUser /> },
-        { href_dd: '/dashboard/students', label: 'Manage Students', icon: <Users /> },
+        { href: '/dashboard/students', label: 'Manage Students', icon: <Users /> },
         { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
         { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
     ]

@@ -30,14 +30,16 @@ export default function HodDashboard() {
     const [dialogContent, setDialogContent] = useState({ title: '', description: '', onConfirm: () => {} });
 
     useEffect(() => {
-        if (user && user.role === 'HOD' && user.department) {
-            const filteredUsers = users.filter(u => u.department === user.department);
+        if (user && (user.role === 'HOD' || user.role === 'Admin')) {
+            const hodDepartment = user.role === 'Admin' ? 'Computer Science' : user.department; // Mock for admin view
+            
+            const filteredUsers = users.filter(u => u.department === hodDepartment);
             setDepartmentUsers(filteredUsers);
 
             const filteredAttendance = mockAttendanceData.filter(a => filteredUsers.some(u => u.id === a.userId));
             setDepartmentAttendance(filteredAttendance);
 
-            const department = mockDepartments.find(d => d.name === user.department);
+            const department = mockDepartments.find(d => d.name === hodDepartment);
             if (department) {
                 const filteredClasses = mockClasses.filter(c => c.departmentId === department.id);
                 setDepartmentClasses(filteredClasses);
@@ -51,17 +53,22 @@ export default function HodDashboard() {
     };
 
     const handleAddUser = (newUser: Omit<User, 'id' | 'imageUrl'>) => {
-        if (!user?.department) return;
+        const hodDepartment = user?.department;
+        if (!hodDepartment && user?.role !== 'Admin') return;
+
+        const department = user?.role === 'Admin' ? newUser.department : hodDepartment;
+
+
         const finalNewUser: User = {
             ...newUser,
             id: `USR${(users.length + 1).toString().padStart(3, '0')}`,
-            department: user.department,
+            department: department,
             imageUrl: `https://picsum.photos/seed/USR${(users.length + 1).toString().padStart(3, '0')}/100/100`,
         };
         const updatedUsers = [...users, finalNewUser];
         setUsers(updatedUsers);
         mockUsers.splice(0, mockUsers.length, ...updatedUsers); // a bit of a hack for mock data
-        toast({ title: "User Added", description: `Successfully added ${newUser.name} to your department.`});
+        toast({ title: "User Added", description: `Successfully added ${newUser.name} to the department.`});
     };
   
     const handleRemoveUser = (userId: string) => {
@@ -73,13 +80,13 @@ export default function HodDashboard() {
         });
     };
 
-
-    if (!user || user.role !== 'HOD') {
+    if (!user || (user.role !== 'HOD' && user.role !== 'Admin')) {
         return <p>You do not have access to this page.</p>;
     }
     
-    const department = mockDepartments.find(d => d.name === user.department);
-    const departmentForDialog = department ? [department] : [];
+    const departmentName = user.role === 'Admin' ? 'Computer Science' : user.department;
+    const departmentForDialog = mockDepartments.find(d => d.name === departmentName);
+    const departmentsForDialog = departmentForDialog ? [departmentForDialog] : [];
 
 
     return (
@@ -88,10 +95,10 @@ export default function HodDashboard() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-white/90">🏛️ Welcome, {user.name.split(' ')[0]}!</h1>
-                    <p className="text-muted-foreground">Managing the {user.department} Department.</p>
+                    <p className="text-muted-foreground">Managing the {departmentName} Department.</p>
                 </div>
                  <div className="flex items-center space-x-2">
-                    <AddUserDialog onUserAdd={handleAddUser} departments={departmentForDialog} />
+                    <AddUserDialog onUserAdd={handleAddUser} departments={departmentsForDialog} />
                 </div>
             </div>
 
@@ -106,7 +113,7 @@ export default function HodDashboard() {
                     <Card>
                         <CardHeader>
                             <CardTitle>Department Attendance</CardTitle>
-                            <CardDescription>Attendance records for the {user.department} department.</CardDescription>
+                            <CardDescription>Attendance records for the {departmentName} department.</CardDescription>
                         </CardHeader>
                         <CardContent>
                              <Table>
@@ -158,7 +165,7 @@ export default function HodDashboard() {
                      <Card>
                         <CardHeader>
                             <CardTitle>Department Users</CardTitle>
-                            <CardDescription>Manage Students and Faculty in the {user.department} department.</CardDescription>
+                            <CardDescription>Manage Students and Faculty in the {departmentName} department.</CardDescription>
                         </CardHeader>
                         <CardContent>
                            <Table>
@@ -197,7 +204,7 @@ export default function HodDashboard() {
                     <Card>
                         <CardHeader>
                             <CardTitle>Department Classes</CardTitle>
-                            <CardDescription>Manage classes within the {user.department} department.</CardDescription>
+                            <CardDescription>Manage classes within the {departmentName} department.</CardDescription>
                         </CardHeader>
                         <CardContent>
                              <Table>

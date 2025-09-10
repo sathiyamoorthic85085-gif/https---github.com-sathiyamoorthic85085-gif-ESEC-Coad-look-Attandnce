@@ -102,15 +102,6 @@ export default function AdminDashboard() {
     });
   };
 
-
-  if (!user || user.role !== 'Admin') {
-    return (
-        <div className="flex h-full items-center justify-center">
-            <p>You do not have access to this page.</p>
-        </div>
-    );
-  }
-
   return (
     <>
     <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">

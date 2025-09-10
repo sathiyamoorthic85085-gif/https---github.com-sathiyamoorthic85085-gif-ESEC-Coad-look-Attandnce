@@ -7,18 +7,21 @@ import { Bell, BellRing, FilePen } from "lucide-react";
 export default function FacultyDashboard() {
     const { user } = useAuth();
 
-    if (!user || user.role !== 'Faculty') {
+    if (!user || (user.role !== 'Faculty' && user.role !== 'Admin')) {
         return <p>You do not have access to this page.</p>;
     }
+    
+    const department = user.role === 'Admin' ? 'All Departments' : user.department;
+
 
     return (
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
             <div className="flex items-center justify-between">
                  <div>
                     <h1 className="text-3xl font-bold tracking-tight">Mentors Dashboard</h1>
-                    <p className="text-muted-foreground">Department: {user.department}</p>
+                    <p className="text-muted-foreground">Department: {department}</p>
                 </div>
-                <p className="text-muted-foreground">Welcome, {user.name}</p>
+                {user && <p className="text-muted-foreground">Welcome, {user.name}</p>}
             </div>
 
              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

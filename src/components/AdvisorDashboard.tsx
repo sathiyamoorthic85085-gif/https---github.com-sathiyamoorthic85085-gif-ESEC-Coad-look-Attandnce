@@ -8,7 +8,7 @@ import { Users, BarChart2, MessageSquare } from "lucide-react";
 export default function AdvisorDashboard() {
     const { user } = useAuth();
 
-    if (!user || user.role !== 'Advisor') {
+    if (!user || (user.role !== 'Advisor' && user.role !== 'Admin')) {
         return <p>You do not have access to this page.</p>;
     }
 
@@ -19,7 +19,7 @@ export default function AdvisorDashboard() {
                     <h1 className="text-3xl font-bold tracking-tight">Advisor Dashboard</h1>
                     <p className="text-muted-foreground">Class: II Year, Section A</p>
                 </div>
-                <p className="text-muted-foreground">Welcome, {user.name}</p>
+                 {user && <p className="text-muted-foreground">Welcome, {user.name}</p>}
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
