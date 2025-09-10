@@ -13,6 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { exportToCSV, exportToExcel, exportToPDF } from "@/lib/report-utils";
 import { AttendanceRecord, Timetable } from '@/lib/types';
 import Image from 'next/image';
+import Link from 'next/link';
 
 
 interface AdvisorDashboardProps {
@@ -88,7 +89,9 @@ export default function AdvisorDashboard({ isPreview = false }: AdvisorDashboard
                     </CardHeader>
                     <CardContent>
                         <p className="text-muted-foreground">View and manage students in your class.</p>
-                        <Button className="mt-4">View Students</Button>
+                        <Button className="mt-4" asChild>
+                            <Link href="/dashboard/students">View Students</Link>
+                        </Button>
                     </CardContent>
                 </Card>
                  <Card>
