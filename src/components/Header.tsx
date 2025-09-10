@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu, Camera, LogIn, LayoutDashboard, LogOut } from 'lucide-react';
+import { Menu, Camera, LogIn, LayoutDashboard, LogOut, GraduationCap } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 export default function Header() {
@@ -17,9 +17,9 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background/95 px-4 backdrop-blur-sm sm:px-6">
       <Link href="/" className="flex items-center gap-2">
-        <Camera className="h-6 w-6 text-primary" />
+        <GraduationCap className="h-6 w-6 text-primary" />
         <span className="font-headline text-xl font-semibold tracking-tight">
-          CodeLook
+          ChromaGrade
         </span>
       </Link>
       
@@ -63,8 +63,8 @@ export default function Header() {
             <SheetContent side="left">
               <nav className="grid gap-6 text-lg font-medium">
                 <Link href="/" className="flex items-center gap-2 text-lg font-semibold">
-                  <Camera className="h-6 w-6 text-primary" />
-                  <span className="font-headline">CodeLook</span>
+                  <GraduationCap className="h-6 w-6 text-primary" />
+                  <span className="font-headline">ChromaGrade</span>
                 </Link>
                 {navItems.map((item) => (
                   <Link
