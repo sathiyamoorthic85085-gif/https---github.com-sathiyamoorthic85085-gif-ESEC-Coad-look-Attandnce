@@ -8,7 +8,7 @@ import type { ChatGroup, Message } from '@/lib/messaging-mock-data';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-import { Send, Search } from 'lucide-react';
+import { Send, Search, MessageSquare } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { ScrollArea } from './ui/scroll-area';
 import { cn } from '@/lib/utils';
