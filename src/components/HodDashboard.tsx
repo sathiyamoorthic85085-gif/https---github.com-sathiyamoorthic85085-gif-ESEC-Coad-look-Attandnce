@@ -3,14 +3,13 @@
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
-import { BookCopy, FileText, Trash2, Edit, UserPlus, Loader2, BarChart2 } from "lucide-react";
+import { FileText, Trash2, Edit, Loader2, BarChart2 } from "lucide-react";
 import { mockAttendanceData, mockClasses, mockDepartments, mockUsers } from "@/lib/mock-data";
 import { useEffect, useState, useTransition } from "react";
 import { AttendanceRecord, Class, User } from "@/lib/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import Image from "next/image";
 import { Badge } from "./ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { AddUserDialog } from "./AddUserDialog";
 import { useToast } from "@/hooks/use-toast";
@@ -150,7 +149,7 @@ export default function HodDashboard() {
         <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-white/90">🏛️ Welcome, {user.name.split(' ')[0]}!</h1>
+                    <h1 className="text-3xl font-bold tracking-tight">🏛️ Welcome, {user.name.split(' ')[0]}!</h1>
                     <p className="text-muted-foreground">Managing the {departmentName} Department.</p>
                 </div>
                  <div className="flex items-center space-x-2">

@@ -25,7 +25,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
       </head>
-      <body className="font-body antialiased bg-background text-foreground">
+      <body className="font-sans antialiased bg-background text-foreground">
         <AuthProvider>
             <div className="relative flex min-h-screen w-full flex-col">
             <main className="flex-1">{children}</main>

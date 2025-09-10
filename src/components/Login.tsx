@@ -114,7 +114,7 @@ export default function Login() {
       <TabsContent value="login">
         <Card>
           <CardHeader>
-            <CardTitle className="font-headline">Login</CardTitle>
+            <CardTitle>Login</CardTitle>
             <CardDescription>
               Enter your credentials to access your account.
             </CardDescription>
@@ -142,7 +142,7 @@ export default function Login() {
       <TabsContent value="register">
         <Card>
           <CardHeader>
-            <CardTitle className="font-headline">Register</CardTitle>
+            <CardTitle>Register</CardTitle>
             <CardDescription>
               Create a new account to get started.
             </CardDescription>

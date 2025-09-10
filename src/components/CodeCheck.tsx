@@ -145,7 +145,7 @@ export default function CodeCheck() {
     <div className="grid gap-8 md:grid-cols-2">
       <Card className="flex flex-col">
         <CardHeader>
-          <CardTitle className="font-headline text-2xl">Uniform Check</CardTitle>
+          <CardTitle>Uniform Check</CardTitle>
           <CardDescription>Use the camera to verify dress code compliance and mark attendance.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-1 flex-col items-center justify-center gap-6">
@@ -223,7 +223,7 @@ export default function CodeCheck() {
             <Card className="w-full max-w-sm border-accent">
                 <CardHeader className="flex-row items-center gap-2 space-y-0 pb-2">
                     <Wand2 className="h-5 w-5 text-accent" />
-                    <CardTitle className="font-headline text-lg font-semibold text-accent">AI Recommendations</CardTitle>
+                    <CardTitle>AI Recommendations</CardTitle>
                 </CardHeader>
                 <CardContent>
                     {isPending ? (
@@ -238,7 +238,7 @@ export default function CodeCheck() {
       </Card>
       
       <div className="flex flex-col gap-8">
-        <h2 className="font-headline text-3xl font-bold tracking-tight">Today's Attendance</h2>
+        <h2 className="text-3xl font-bold tracking-tight">Today's Attendance</h2>
         <ResultsTable attendanceData={attendanceData} />
       </div>
     </div>
