@@ -6,8 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/
 import { Button } from "./ui/button";
 import { FileText, Trash2, Edit, Loader2, BarChart2, Download, Shield } from "lucide-react";
 import { mockAttendanceData, mockClasses, mockDepartments, mockUsers } from "@/lib/mock-data";
-import { useEffect, useState, useTransition, useMemo } from "react";
-import type { AttendanceRecord, Class, User } from "@/lib/types";
+import { useState, useTransition, useMemo } from "react";
+import type { AttendanceRecord, User } from "@/lib/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import Image from "next/image";
 import { Badge } from "./ui/badge";
@@ -137,7 +137,7 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
         });
     };
 
-    if (!currentUser || (currentUser.role !== 'HOD' && currentUser.role !== 'Admin')) {
+    if (!currentUser || (currentUser.role !== 'HOD' && !isPreview)) {
         return <p>You do not have access to this page.</p>;
     }
     
@@ -384,6 +384,3 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
 }
 
     
-
-    
-
