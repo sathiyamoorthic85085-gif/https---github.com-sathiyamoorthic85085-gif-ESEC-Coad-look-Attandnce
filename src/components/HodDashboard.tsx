@@ -60,7 +60,7 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
                     title="Faculty Management"
                     description="View and manage all faculty members."
                     icon={<UserCheck />}
-                    href="#"
+                    href="/dashboard/faculty-management"
                 />
                  <DashboardActionCard 
                     title="Department Attendance"
@@ -72,25 +72,25 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
                     title="Attendance Reports"
                     description="Generate and view AI-powered attendance summaries."
                     icon={<LineChart />}
-                    href="#"
+                    href="/dashboard/attendance-reports"
                 />
                 <DashboardActionCard 
                     title="Department Timetable"
                     description="Manage schedules for all classes."
                     icon={<Newspaper />}
-                    href="#"
+                    href="/dashboard/department-timetable"
                 />
                 <DashboardActionCard 
                     title="Department Circulars"
                     description="Post circulars and announcements for the department."
                     icon={<Newspaper />}
-                    href="#"
+                    href="/dashboard/department-circulars"
                 />
                 <DashboardActionCard 
                     title="Data Upload"
                     description="Bulk upload student or faculty information."
                     icon={<Files />}
-                    href="#"
+                    href="/dashboard/data-upload"
                 />
             </div>
         </div>
