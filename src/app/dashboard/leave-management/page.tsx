@@ -81,15 +81,17 @@ export default function LeaveManagementPage() {
             case 'HOD':
                 return leaveRequests.filter(req => req.status === 'Pending HOD' && mockUsers.find(u => u.id === req.userId)?.department === user.department);
             case 'Admin':
-                return leaveRequests.filter(req => req.status === 'Pending Admin');
+                return leaveRequests.filter(req => req.status === 'Pending Admin' || req.status === 'Pending HOD'); // Admin can see all pending
             default:
                 return [];
         }
     }, [leaveRequests, user]);
     
     const allDepartmentRequests = useMemo(() => {
-        if (!user || user.role !== 'HOD') return [];
-         return leaveRequests.filter(req => mockUsers.find(u => u.id === req.userId)?.department === user.department);
+        if (!user) return [];
+        if (user.role === 'Admin') return leaveRequests;
+        if (user.role === 'HOD') return leaveRequests.filter(req => mockUsers.find(u => u.id === req.userId)?.department === user.department);
+        return [];
 
     }, [leaveRequests, user])
 
@@ -197,7 +199,7 @@ export default function LeaveManagementPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {(user?.role === 'Admin' ? leaveRequests : user?.role === 'HOD' ? allDepartmentRequests : []).map(req => (
+                                {allDepartmentRequests.map(req => (
                                      <TableRow key={req.id}>
                                         <TableCell>{req.userName}</TableCell>
                                         <TableCell>{req.type}</TableCell>
@@ -227,7 +229,7 @@ export default function LeaveManagementPage() {
 
     return (
         <DashboardLayout>
-            <div className="flex-1 space-y-4 p-8 pt-6">
+            <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
                 <h2 className="text-3xl font-bold tracking-tight">Leave & OD Management</h2>
                 {renderContent()}
             </div>

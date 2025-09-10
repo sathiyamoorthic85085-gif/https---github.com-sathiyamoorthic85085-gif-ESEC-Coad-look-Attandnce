@@ -13,6 +13,7 @@ import { AttendanceRecord, Timetable } from "@/lib/types";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import Image from "next/image";
 import { Badge } from "./ui/badge";
+import Link from 'next/link';
 
 interface FacultyDashboardProps {
     isPreview?: boolean;
@@ -91,7 +92,9 @@ export default function FacultyDashboard({ isPreview = false }: FacultyDashboard
                     </CardHeader>
                     <CardContent>
                         <p className="text-muted-foreground">Create and assign work to your classes.</p>
-                        <Button className="mt-4">Create</Button>
+                        <Button asChild className="mt-4">
+                            <Link href="/dashboard/assignments">Create</Link>
+                        </Button>
                     </CardContent>
                 </Card>
                 <Card>

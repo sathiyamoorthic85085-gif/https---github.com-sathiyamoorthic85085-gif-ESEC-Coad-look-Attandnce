@@ -20,9 +20,10 @@ export default function Icon() {
           borderRadius: '6px',
           background: 'linear-gradient(135deg, hsl(260, 100%, 60%), hsl(28, 100%, 60%))',
           color: 'white',
-          fontSize: '20px',
-          fontWeight: 'bold',
+          fontSize: '24px',
+          fontWeight: 'bolder',
           fontFamily: 'monospace',
+          textShadow: '0 0 5px hsl(260, 100%, 80%)'
         }}
       >
         C

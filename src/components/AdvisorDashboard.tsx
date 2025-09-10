@@ -100,7 +100,9 @@ export default function AdvisorDashboard({ isPreview = false }: AdvisorDashboard
                     </CardHeader>
                     <CardContent>
                         <p className="text-muted-foreground">Send messages to your students or parents.</p>
-                         <Button className="mt-4" variant="outline">Send Message</Button>
+                         <Button className="mt-4" asChild>
+                            <Link href="/dashboard/messages">Send Message</Link>
+                        </Button>
                     </CardContent>
                 </Card>
                 <Card>
