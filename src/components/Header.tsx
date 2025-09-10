@@ -19,7 +19,7 @@ export default function Header() {
       <Link href="/" className="flex items-center gap-2">
         <GraduationCap className="h-6 w-6 text-primary" />
         <span className="font-headline text-xl font-semibold tracking-tight">
-          ChromaGrade
+          ESEC CHROMA GRADE
         </span>
       </Link>
       
@@ -64,7 +64,7 @@ export default function Header() {
               <nav className="grid gap-6 text-lg font-medium">
                 <Link href="/" className="flex items-center gap-2 text-lg font-semibold">
                   <GraduationCap className="h-6 w-6 text-primary" />
-                  <span className="font-headline">ChromaGrade</span>
+                  <span className="font-headline">ESEC CHROMA GRADE</span>
                 </Link>
                 {navItems.map((item) => (
                   <Link
