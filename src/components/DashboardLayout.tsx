@@ -25,6 +25,7 @@ const menuConfig = {
     Admin: [
         { href: '/dashboard', label: 'Admin Dashboard', icon: <Shield /> },
         { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
+        { href: '/dashboard/messages', label: 'Messages', icon: <MessageSquare /> },
         { href: '/dashboard/students', label: 'Manage Students', icon: <Users /> },
         { href: '/dashboard/assignments', label: 'Assignments', icon: <FolderKanban /> },
         { href: '/dashboard/attendance', label: 'Attendance', icon: <Calendar /> },
@@ -37,17 +38,20 @@ const menuConfig = {
     HOD: [
         { href: '/dashboard', label: 'HOD Dashboard', icon: <Building /> },
         { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
+        { href: '/dashboard/messages', label: 'Messages', icon: <MessageSquare /> },
         { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
     ],
     Faculty: [
         { href: '/dashboard', label: 'Mentor Dashboard', icon: <User /> },
         { href: '/dashboard/assignments', label: 'Assignments', icon: <FolderKanban /> },
         { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
+        { href: '/dashboard/messages', label: 'Messages', icon: <MessageSquare /> },
         { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
     ],
     Student: [
         { href: '/dashboard', label: 'My Status', icon: <LayoutDashboard /> },
         { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
+        { href: '/dashboard/messages', label: 'Messages', icon: <MessageSquare /> },
         { href: '/dashboard/attendance', label: 'My Attendance', icon: <Calendar /> },
         { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
     ],
@@ -55,6 +59,7 @@ const menuConfig = {
         { href: '/dashboard', label: 'Advisor Dashboard', icon: <BookUser /> },
         { href: '/dashboard/students', label: 'Manage Students', icon: <Users /> },
         { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
+        { href: '/dashboard/messages', label: 'Messages', icon: <MessageSquare /> },
         { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
     ]
 }
