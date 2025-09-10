@@ -1,15 +1,14 @@
+
 "use client";
 
 import { useState, useTransition } from 'react';
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
-import { Users, BarChart2, MessageSquare, Loader2, FileText, Building, GraduationCap } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { mockAttendanceData, mockClasses, mockDepartments } from '@/lib/mock-data';
+import { Users, BarChart2, MessageSquare, Loader2, FileText } from "lucide-react";
+import { mockAttendanceData } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
 import { summarizeAttendanceReport } from '@/ai/flows/summarize-attendance-report';
-import type { Department, Class } from '@/lib/types';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Shield } from 'lucide-react';
 
@@ -21,33 +20,13 @@ export default function AdvisorDashboard({ isPreview = false }: AdvisorDashboard
     const { user } = useAuth();
     const { toast } = useToast();
 
-    const [selectedDepartment, setSelectedDepartment] = useState<string>('');
-    const [selectedClass, setSelectedClass] = useState<string>('');
-    const [filteredClasses, setFilteredClasses] = useState<Class[]>([]);
     const [report, setReport] = useState<string>('');
     const [isPending, startTransition] = useTransition();
 
-    const handleDepartmentChange = (departmentId: string) => {
-        setSelectedDepartment(departmentId);
-        setSelectedClass('');
-        setReport('');
-        const classesForDept = mockClasses.filter(c => c.departmentId === departmentId);
-        setFilteredClasses(classesForDept);
-    };
-
     const handleGenerateReport = () => {
-        if (!selectedClass) {
-            toast({
-                title: 'Selection Required',
-                description: 'Please select a department and a class to generate a report.',
-                variant: 'destructive',
-            });
-            return;
-        }
-
         startTransition(async () => {
             try {
-                // In a real app, you would filter based on classId associated with users in mockAttendanceData
+                // In a real app, you would filter based on the advisor's assigned class.
                 // For this mock, we'll just pass a subset of data to the AI.
                 const relevantAttendance = mockAttendanceData.slice(0, 5); 
                 const reportData = JSON.stringify(relevantAttendance, null, 2);
@@ -69,7 +48,7 @@ export default function AdvisorDashboard({ isPreview = false }: AdvisorDashboard
         });
     };
 
-    if (!user || (!isPreview && user.role !== 'Advisor' && user.role !== 'Admin')) {
+    if (!user && !isPreview) {
         return <p>You do not have access to this page.</p>;
     }
     
@@ -117,40 +96,16 @@ export default function AdvisorDashboard({ isPreview = false }: AdvisorDashboard
                 </Card>
                  <Card className="lg:col-span-3">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><FileText /> Generate Attendance Report</CardTitle>
-                        <CardDescription>Select a department and class to generate an AI-powered summary.</CardDescription>
+                        <CardTitle className="flex items-center gap-2"><FileText /> Attendance Analysis</CardTitle>
+                        <CardDescription>Generate an AI-powered summary for your assigned class.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                            <div>
-                                <label className="text-sm font-medium mb-2 block"><Building className="inline-block mr-2 h-4 w-4" />Department</label>
-                                <Select onValueChange={handleDepartmentChange} value={selectedDepartment}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select Department" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {mockDepartments.map(dep => <SelectItem key={dep.id} value={dep.id}>{dep.name}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium mb-2 block"><GraduationCap className="inline-block mr-2 h-4 w-4" />Class</label>
-                                <Select onValueChange={setSelectedClass} value={selectedClass} disabled={!selectedDepartment}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select Class" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {filteredClasses.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="md:self-end">
-                                <Button className="w-full" onClick={handleGenerateReport} disabled={isPending || !selectedClass}>
-                                    {isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Generating...</> : <><BarChart2 className="mr-2 h-4 w-4" /> Generate Report</>}
-                                </Button>
-                            </div>
+                        <div className="flex justify-center">
+                            <Button className="w-full max-w-xs" onClick={handleGenerateReport} disabled={isPending}>
+                                {isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Analyzing...</> : <><BarChart2 className="mr-2 h-4 w-4" /> Generate AI Report</>}
+                            </Button>
                         </div>
-
+                       
                         {report && (
                             <Card className="bg-background/50 mt-6">
                                 <CardHeader>
