@@ -117,7 +117,7 @@ export default function LeaveManagementPage() {
                                 <TableRow>
                                     <TableHead>Type</TableHead>
                                     <TableHead>Dates</TableHead>
-                                    <TableHead>Reason</TableHead>
+                                    <TableHead className="hidden md:table-cell">Reason</TableHead>
                                     <TableHead>Status</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -126,7 +126,7 @@ export default function LeaveManagementPage() {
                                     <TableRow key={req.id}>
                                         <TableCell>{req.type}</TableCell>
                                         <TableCell>{req.startDate} to {req.endDate}</TableCell>
-                                        <TableCell className="max-w-xs truncate">{req.reason}</TableCell>
+                                        <TableCell className="max-w-xs truncate hidden md:table-cell">{req.reason}</TableCell>
                                         <TableCell><Badge variant={getStatusVariant(req.status)}>{req.status}</Badge></TableCell>
                                     </TableRow>
                                 ))}
@@ -155,10 +155,9 @@ export default function LeaveManagementPage() {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Applicant</TableHead>
-                                    <TableHead>Role</TableHead>
+                                    <TableHead className="hidden md:table-cell">Role</TableHead>
                                     <TableHead>Type</TableHead>
-                                    <TableHead>Dates</TableHead>
-                                    <TableHead>Reason</TableHead>
+                                    <TableHead className="hidden lg:table-cell">Dates</TableHead>
                                     <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -166,10 +165,9 @@ export default function LeaveManagementPage() {
                                 {pendingRequests.map(req => (
                                     <TableRow key={req.id}>
                                         <TableCell>{req.userName}</TableCell>
-                                        <TableCell>{req.userRole}</TableCell>
+                                        <TableCell className="hidden md:table-cell">{req.userRole}</TableCell>
                                         <TableCell>{req.type}</TableCell>
-                                        <TableCell>{req.startDate} to {req.endDate}</TableCell>
-                                        <TableCell className="max-w-xs truncate">{req.reason}</TableCell>
+                                        <TableCell className="hidden lg:table-cell">{req.startDate} to {req.endDate}</TableCell>
                                         <TableCell className="text-right space-x-2">
                                             <Button size="sm" onClick={() => handleApprove(req.id)}>Approve</Button>
                                             <Button size="sm" variant="destructive" onClick={() => handleReject(req.id)}>Reject</Button>

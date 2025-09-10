@@ -267,7 +267,7 @@ export default function CodeCheck() {
         </CardContent>
       </Card>
       
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-8 mt-8 md:mt-0">
         <h2 className="text-3xl font-bold tracking-tight">Today's Attendance</h2>
         <ResultsTable attendanceData={attendanceData} />
       </div>

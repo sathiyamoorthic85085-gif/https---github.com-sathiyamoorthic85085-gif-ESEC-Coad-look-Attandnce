@@ -103,7 +103,7 @@ export default function AdminDashboard() {
   return (
     <>
     <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
-        <div className="flex items-center justify-between space-y-2">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between space-y-2 md:space-y-0">
             <div>
                 <h2 className="text-3xl font-bold tracking-tight">🚀 Welcome, Administrator!</h2>
                 <p className="text-muted-foreground">Full control over user and application management.</p>
@@ -147,10 +147,10 @@ export default function AdminDashboard() {
         </div>
         
         <Tabs defaultValue="users" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-1 md:grid-cols-3">
                 <TabsTrigger value="users">User Management</TabsTrigger>
-                <TabsTrigger value="departments">Department Management</TabsTrigger>
-                <TabsTrigger value="classes">Class Management</TabsTrigger>
+                <TabsTrigger value="departments">Departments</TabsTrigger>
+                <TabsTrigger value="classes">Classes</TabsTrigger>
             </TabsList>
             <TabsContent value="users" className="mt-4">
                  <Card>
@@ -163,9 +163,8 @@ export default function AdminDashboard() {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>User</TableHead>
-                                    <TableHead>Role</TableHead>
-                                    <TableHead>Department</TableHead>
-                                    <TableHead>Contact</TableHead>
+                                    <TableHead className="hidden md:table-cell">Role</TableHead>
+                                    <TableHead className="hidden lg:table-cell">Department</TableHead>
                                     <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -177,19 +176,12 @@ export default function AdminDashboard() {
                                                 <Image src={u.imageUrl!} alt={u.name} width={40} height={40} className="rounded-full" />
                                                 <div>
                                                     <p className="font-medium">{u.name}</p>
-                                                    <p className="text-sm text-muted-foreground">{u.email}</p>
+                                                    <p className="text-sm text-muted-foreground block md:hidden">{u.role}</p>
                                                 </div>
                                             </div>
                                         </TableCell>
-                                        <TableCell>{u.role}</TableCell>
-                                        <TableCell>{u.department}</TableCell>
-                                        <TableCell>
-                                            {u.role === 'Student' && (
-                                                <div className="text-sm text-muted-foreground">
-                                                    <p>R.No: {u.rollNumber}</p>
-                                                </div>
-                                            )}
-                                        </TableCell>
+                                        <TableCell className="hidden md:table-cell">{u.role}</TableCell>
+                                        <TableCell className="hidden lg:table-cell">{u.department}</TableCell>
                                         <TableCell className="text-right">
                                             <Button variant="ghost" size="icon"><Edit className="h-4 w-4" /></Button>
                                             <Button variant="ghost" size="icon" onClick={() => handleRemoveUser(u.id)}><Trash2 className="h-4 w-4" /></Button>
@@ -202,7 +194,7 @@ export default function AdminDashboard() {
                  </Card>
             </TabsContent>
             <TabsContent value="departments" className="mt-4">
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                      <div>
                         <Card>
                             <CardHeader>
@@ -252,7 +244,7 @@ export default function AdminDashboard() {
                 </div>
             </TabsContent>
             <TabsContent value="classes" className="mt-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div>
                          <Card>
                             <CardHeader>
