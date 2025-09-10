@@ -227,6 +227,7 @@ export default function HodDashboard() {
                                     <TableRow>
                                         <TableHead>User</TableHead>
                                         <TableHead>Role</TableHead>
+                                        <TableHead>Contact</TableHead>
                                         <TableHead className="text-right">Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -243,6 +244,14 @@ export default function HodDashboard() {
                                                 </div>
                                             </TableCell>
                                             <TableCell>{u.role}</TableCell>
+                                            <TableCell>
+                                                {u.role === 'Student' && u.mobileNumber && (
+                                                    <div className="text-sm text-muted-foreground">
+                                                        <p>R.No: {u.rollNumber}</p>
+                                                        <p>M: {u.mobileNumber}</p>
+                                                    </div>
+                                                )}
+                                            </TableCell>
                                             <TableCell className="text-right">
                                                 <Button variant="ghost" size="icon"><Edit className="h-4 w-4" /></Button>
                                                 <Button variant="ghost" size="icon" onClick={() => handleRemoveUser(u.id)}><Trash2 className="h-4 w-4" /></Button>
