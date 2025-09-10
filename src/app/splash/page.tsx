@@ -19,10 +19,10 @@ export default function SplashPage() {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-gradient-to-br from-background to-slate-900 text-foreground">
       <div className="flex animate-fade-in-down flex-col items-center gap-4">
-        <div className="rounded-full bg-gradient-to-br from-primary to-accent p-4 shadow-lg animate-pulse">
+        <div className="rounded-full bg-gradient-to-br from-primary-purple to-primary-orange p-4 shadow-lg animate-pulse">
           <GraduationCap className="h-16 w-16" />
         </div>
-        <h1 className="text-5xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
+        <h1 className="text-5xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-primary-purple to-primary-orange">
           ESEC CHROMA GRADE
         </h1>
         <p className="text-muted-foreground animate-fade-in-up delay-500">
