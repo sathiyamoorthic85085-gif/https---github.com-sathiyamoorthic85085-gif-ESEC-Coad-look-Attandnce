@@ -1,13 +1,14 @@
 
+
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
-import { FileText, Trash2, Edit, Loader2, BarChart2, Download, Shield } from "lucide-react";
-import { mockAttendanceData, mockClasses, mockDepartments, mockUsers } from "@/lib/mock-data";
+import { FileText, Trash2, Edit, Loader2, BarChart2, Download, Shield, Upload } from "lucide-react";
+import { mockAttendanceData, mockClasses, mockDepartments, mockUsers, mockTimetables } from "@/lib/mock-data";
 import { useState, useTransition, useMemo } from "react";
-import type { AttendanceRecord, User } from "@/lib/types";
+import type { AttendanceRecord, User, Timetable } from "@/lib/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import Image from "next/image";
 import { Badge } from "./ui/badge";
@@ -42,6 +43,9 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
 
     const currentUser = isPreview ? { name: 'Admin Preview', department: 'Computer Science', role: 'HOD' } : user;
     const hodDepartmentName = currentUser?.department;
+    
+    const [departmentTimetable, setDepartmentTimetable] = useState<Timetable | null>(mockTimetables.find(t => t.departmentId === mockDepartments.find(d => d.name === hodDepartmentName)?.id) || null);
+
 
     // These derived values are now calculated with useMemo for efficiency.
     // They will only re-calculate when `users` or `hodDepartmentName` changes.
@@ -170,7 +174,7 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
                 <TabsList className="grid w-full grid-cols-5">
                     <TabsTrigger value="attendance">Department Attendance</TabsTrigger>
                     <TabsTrigger value="users">User Management</TabsTrigger>
-                    <TabsTrigger value="classes">Class Management</TabsTrigger>
+                    <TabsTrigger value="timetable">Timetable</TabsTrigger>
                     <TabsTrigger value="reports">Attendance Reports</TabsTrigger>
                     <TabsTrigger value="circulars">Department Circulars</TabsTrigger>
                 </TabsList>
@@ -273,32 +277,19 @@ export default function HodDashboard({ isPreview = false }: HodDashboardProps) {
                         </CardContent>
                      </Card>
                 </TabsContent>
-                 <TabsContent value="classes" className="mt-4">
+                <TabsContent value="timetable" className="mt-4">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Department Classes</CardTitle>
-                            <CardDescription>Manage classes within the {hodDepartmentName} department.</CardDescription>
+                            <CardTitle>Department Timetable</CardTitle>
+                            <CardDescription>Manage the timetable for all classes in the {hodDepartmentName} department.</CardDescription>
                         </CardHeader>
-                        <CardContent>
-                             <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Class Name</TableHead>
-                                        <TableHead className="text-right">Actions</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {departmentClasses.map((c) => (
-                                        <TableRow key={c.id}>
-                                            <TableCell className="font-medium">{c.name}</TableCell>
-                                            <TableCell className="text-right">
-                                                <Button variant="ghost" size="icon"><Edit className="h-4 w-4" /></Button>
-                                                <Button variant="ghost" size="icon"><Trash2 className="h-4 w-4" /></Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
+                        <CardContent className="flex flex-col items-center gap-4">
+                            {departmentTimetable ? (
+                                <Image src={departmentTimetable.imageUrl} alt="Department Timetable" width={500} height={300} className="rounded-lg border" />
+                            ): (
+                                <p className="text-muted-foreground text-center py-8">No timetable has been uploaded for this department yet.</p>
+                            )}
+                             <Button><Upload className="mr-2 h-4 w-4" /> Upload New Timetable</Button>
                         </CardContent>
                     </Card>
                  </TabsContent>

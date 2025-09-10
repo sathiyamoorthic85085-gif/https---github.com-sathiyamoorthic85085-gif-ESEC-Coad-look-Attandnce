@@ -5,13 +5,14 @@ import { useState, useTransition } from 'react';
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
-import { Users, BarChart2, MessageSquare, Loader2, FileText, Shield, Download } from "lucide-react";
-import { mockAttendanceData } from '@/lib/mock-data';
+import { Users, BarChart2, MessageSquare, Loader2, FileText, Shield, Download, Upload } from "lucide-react";
+import { mockAttendanceData, mockTimetables } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
 import { summarizeAttendanceReport } from '@/ai/flows/summarize-attendance-report';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { exportToCSV, exportToExcel, exportToPDF } from "@/lib/report-utils";
-import { AttendanceRecord } from '@/lib/types';
+import { AttendanceRecord, Timetable } from '@/lib/types';
+import Image from 'next/image';
 
 
 interface AdvisorDashboardProps {
@@ -25,6 +26,7 @@ export default function AdvisorDashboard({ isPreview = false }: AdvisorDashboard
     const [report, setReport] = useState<string>('');
     const [reportData, setReportData] = useState<AttendanceRecord[]>([]);
     const [isPending, startTransition] = useTransition();
+    const [timetable, setTimetable] = useState<Timetable | null>(mockTimetables.find(t => t.classId === (user?.classId || 'CLS01')) || null);
 
     const handleGenerateReport = () => {
         startTransition(async () => {
@@ -96,6 +98,16 @@ export default function AdvisorDashboard({ isPreview = false }: AdvisorDashboard
                     <CardContent>
                         <p className="text-muted-foreground">Send messages to your students or parents.</p>
                          <Button className="mt-4" variant="outline">Send Message</Button>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><Upload /> Manage Timetable</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-muted-foreground">Upload and update the class timetable.</p>
+                         {timetable && <Image src={timetable.imageUrl} alt="Class timetable" width={200} height={100} className="rounded-md my-2" />}
+                         <Button className="mt-4 w-full">Upload Timetable</Button>
                     </CardContent>
                 </Card>
                  <Card className="lg:col-span-3">

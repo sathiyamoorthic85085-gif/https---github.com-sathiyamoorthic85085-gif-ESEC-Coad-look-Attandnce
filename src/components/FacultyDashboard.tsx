@@ -1,15 +1,17 @@
+
 "use client";
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/card";
 import { Button } from "./ui/button";
-import { Bell, BellRing, FilePen, Loader2, BarChart2, Download, Shield } from "lucide-react";
+import { Bell, BellRing, FilePen, Loader2, BarChart2, Download, Shield, CalendarDays } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { summarizeAttendanceReport } from "@/ai/flows/summarize-attendance-report";
-import { mockAttendanceData } from "@/lib/mock-data";
+import { mockAttendanceData, mockTimetables } from "@/lib/mock-data";
 import { exportToCSV, exportToExcel, exportToPDF } from "@/lib/report-utils";
-import { AttendanceRecord } from "@/lib/types";
+import { AttendanceRecord, Timetable } from "@/lib/types";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import Image from "next/image";
 
 interface FacultyDashboardProps {
     isPreview?: boolean;
@@ -30,6 +32,8 @@ export default function FacultyDashboard({ isPreview = false }: FacultyDashboard
     }
     
     const department = currentUser.department || 'All Departments';
+    const timetable = mockTimetables.find(t => t.departmentId === currentUser?.department);
+
 
     const handleGenerateReport = () => {
         startTransition(async () => {
@@ -106,10 +110,14 @@ export default function FacultyDashboard({ isPreview = false }: FacultyDashboard
                 </Card>
                  <Card>
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><Bell /> Notifications</CardTitle>
+                        <CardTitle className="flex items-center gap-2"><CalendarDays /> Today's Schedule</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                       <p className="text-sm text-muted-foreground">No new notifications.</p>
+                    <CardContent className="flex flex-col items-center">
+                        {timetable ? (
+                            <Image src={timetable.imageUrl} alt="Department timetable" width={250} height={150} className="rounded-lg" />
+                        ) : (
+                            <p className="text-sm text-muted-foreground">No timetable uploaded for this department yet.</p>
+                        )}
                     </CardContent>
                 </Card>
 

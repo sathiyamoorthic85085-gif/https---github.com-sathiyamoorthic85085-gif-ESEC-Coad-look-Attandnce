@@ -1,3 +1,4 @@
+
 export type UserRole = 'Admin' | 'HOD' | 'Faculty' | 'Student' | 'Advisor';
 
 export interface User {
@@ -50,4 +51,11 @@ export interface LeaveRequest {
     reason: string;
     status: LeaveRequestStatus;
     aiSummary?: string;
+}
+
+export interface Timetable {
+    id: string;
+    imageUrl: string;
+    departmentId?: string;
+    classId?: string;
 }

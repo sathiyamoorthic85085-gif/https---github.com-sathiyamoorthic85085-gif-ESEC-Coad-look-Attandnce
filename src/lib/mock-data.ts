@@ -1,4 +1,5 @@
-import type { AttendanceRecord, User, Department, Class } from './types';
+
+import type { AttendanceRecord, User, Department, Class, Timetable } from './types';
 
 const staticDate = new Date().toLocaleDateString('en-CA');
 
@@ -155,4 +156,17 @@ export const mockViolations: string[] = [
     "Wearing a t-shirt instead of a collared shirt",
     "Unkempt hair",
     "Jeans instead of formal trousers"
+];
+
+export const mockTimetables: Timetable[] = [
+    {
+        id: 'TT01',
+        departmentId: 'DPT01',
+        imageUrl: 'https://picsum.photos/seed/TT01/1200/600',
+    },
+    {
+        id: 'TT02',
+        classId: 'CLS01',
+        imageUrl: 'https://picsum.photos/seed/TT02/1200/600',
+    },
 ];

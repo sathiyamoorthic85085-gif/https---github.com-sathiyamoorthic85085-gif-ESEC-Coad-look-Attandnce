@@ -1,11 +1,14 @@
+
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Check, Bell, Shield } from "lucide-react";
+import { Check, Bell, Shield, CalendarDays } from "lucide-react";
 import { ProgressRing } from "./ProgressRing";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { mockTimetables } from "@/lib/mock-data";
+import Image from "next/image";
 
 
 interface StudentDashboardProps {
@@ -15,7 +18,7 @@ interface StudentDashboardProps {
 export default function StudentDashboard({ isPreview = false }: StudentDashboardProps) {
     const { user } = useAuth();
     
-    const currentUser = isPreview ? { name: 'Admin Preview', imageUrl: '', role: 'Student' } : user;
+    const currentUser = isPreview ? { name: 'Admin Preview', imageUrl: '', role: 'Student', classId: 'CLS01' } : user;
 
     if (!currentUser || (currentUser.role !== 'Student' && currentUser.role !== 'Admin')) {
         return <p>You do not have access to this page.</p>;
@@ -23,6 +26,7 @@ export default function StudentDashboard({ isPreview = false }: StudentDashboard
     
     const userName = currentUser ? currentUser.name.split(' ')[0] : 'Student';
     const userImage = currentUser ? currentUser.imageUrl : '';
+    const timetable = mockTimetables.find(t => t.classId === currentUser.classId);
 
 
     const attendanceStats = {
@@ -99,6 +103,19 @@ export default function StudentDashboard({ isPreview = false }: StudentDashboard
                             <p className="text-xs text-muted-foreground">Your "Data Structures" assignment is due tomorrow.</p>
                          </div>
                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card className="md:col-span-3">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><CalendarDays /> Today's Schedule</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex justify-center">
+                       {timetable ? (
+                           <Image src={timetable.imageUrl} alt="Class timetable" width={800} height={400} className="rounded-lg border" />
+                       ) : (
+                           <p className="text-muted-foreground text-center py-8">Your advisor has not uploaded the timetable yet.</p>
+                       )}
                     </CardContent>
                 </Card>
             </div>
