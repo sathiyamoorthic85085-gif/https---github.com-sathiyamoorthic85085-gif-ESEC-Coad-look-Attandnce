@@ -1,3 +1,4 @@
+
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import bcrypt from 'bcrypt';
@@ -8,15 +9,12 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { name, email, password, role, department, rollNumber, registerNumber, classId } = body;
         
-        const passwordHash = await bcrypt.hash(password, 10);
-
         let newUser;
         if (role === 'Student') {
             newUser = await prisma.student.create({
                 data: {
                     name,
                     email,
-                    passwordHash,
                     department,
                     rollNumber,
                     registerNumber,
@@ -25,6 +23,10 @@ export async function POST(request: Request) {
                 }
             });
         } else { // Faculty, HOD, Admin, Advisor
+            if (!password) {
+                return NextResponse.json({ message: 'Password is required for non-student roles.' }, { status: 400 });
+            }
+            const passwordHash = await bcrypt.hash(password, 10);
             newUser = await prisma.faculty.create({
                 data: {
                     name,

@@ -89,9 +89,11 @@ export default function Login() {
     e.preventDefault();
     setIsSigningUp(true);
 
-    let isFormValid = signupName && signupEmail && signupRole && signupPassword;
+    let isFormValid = signupName && signupEmail && signupRole;
     if (signupRole === 'Student') {
         isFormValid = isFormValid && signupRollNumber && signupRegisterNumber;
+    } else {
+        isFormValid = isFormValid && signupPassword;
     }
 
     if (signupRole && signupRole !== 'Admin' && !signupDepartment) {
@@ -163,7 +165,7 @@ export default function Login() {
                 <Input id="login-email" type="email" placeholder="m@example.com" required value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="login-password">Password</Label>
+                <Label htmlFor="login-password">Password / Roll Number</Label>
                 <Input id="login-password" type="password" required value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} />
               </div>
               <div className="space-y-2">
@@ -255,10 +257,6 @@ export default function Login() {
                     <div className="space-y-2">
                         <Label htmlFor="register-reg">Register Number</Label>
                         <Input id="register-reg" placeholder="Your Register Number" required value={signupRegisterNumber} onChange={e => setSignupRegisterNumber(e.target.value)} />
-                    </div>
-                     <div className="space-y-2">
-                        <Label htmlFor="register-password">Password</Label>
-                        <Input id="register-password" type="password" required value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} />
                     </div>
                 </>
               ) : (

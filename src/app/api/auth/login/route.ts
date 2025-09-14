@@ -1,3 +1,4 @@
+
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import bcrypt from 'bcrypt';
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
       user = await prisma.faculty.findUnique({
         where: { email },
       });
-      if (user) {
+      if (user && user.passwordHash) {
         isPasswordCorrect = await bcrypt.compare(password, user.passwordHash);
       }
     }

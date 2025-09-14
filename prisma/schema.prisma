@@ -1,111 +1,57 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-generator client {
-  provider = "prisma-client-js"
-}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+generator client {
+  provider = "prisma-client-js"
+}
+
 model Student {
   id              String   @id @default(uuid())
   name            String
   email           String   @unique
-  passwordHash    String
   department      String?
-  classId         String?  @map("class")
   rollNumber      String?  @unique
   registerNumber  String?  @unique
+  classId         String?
   imageUrl        String?
-  createdAt       DateTime @default(now()) @map("created_at")
-
-  @@map("students")
+  mobileNumber    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model Faculty {
-  id           String   @id @default(uuid())
+  id           String    @id @default(uuid())
   name         String
-  email        String   @unique
+  email        String    @unique
   passwordHash String
+  role         String // Admin, HOD, Faculty, Advisor
   department   String?
-  role         String // HOD, Lecturer, Admin, Advisor
   imageUrl     String?
-  createdAt    DateTime @default(now()) @map("created_at")
-
-  @@map("faculty")
+  classId      String? // For advisors
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  predictions  Prediction[]
 }
-
 
 model Image {
   id        String       @id @default(uuid())
-  filePath  String       @map("file_path")
-  createdAt DateTime     @default(now()) @map("created_at")
-  userId    String       @map("user_id")
-  user      User         @relation(fields: [userId], references: [id])
-  Prediction Prediction[]
-
-  @@map("images")
+  filePath  String
+  userId    String
+  user      Faculty      @relation(fields: [userId], references: [id])
+  createdAt DateTime     @default(now())
+  Prediction Prediction?
 }
 
 model Prediction {
   id         String   @id @default(uuid())
+  imageId    String   @unique
+  image      Image    @relation(fields: [imageId], references: [id])
   label      String
   confidence Float
-  createdAt  DateTime @default(now()) @map("created_at")
-  imageId    String   @unique @map("image_id")
-  image      Image    @relation(fields: [imageId], references: [id])
   user_id    String
-  user       User     @relation(fields: [user_id], references: [id])
-
-  @@map("predictions")
-}
-
-model User {
-  id           String       @id @default(cuid())
-  name         String?
-  email        String?      @unique
-  emailVerified DateTime?    @map("email_verified")
-  image        String?
-  predictions  Prediction[]
-  Image        Image[]
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-
-  @@map("users")
-}
-
-model Department {
-    id String @id @default(uuid())
-    name String @unique
-}
-
-model Class {
-    id String @id @default(uuid())
-    name String
-    departmentId String
-}
-
-model LeaveRequest {
-    id String @id @default(uuid())
-    userId String
-    userName String
-    userRole String
-    type String
-    startDate DateTime
-    endDate DateTime
-    reason String
-    status String
-    aiSummary String?
-    substitutionAssignedTo String?
-}
-
-model AttendanceRecord {
-    id String @id @default(uuid())
-    name String
-    date DateTime
-    userId String
-    imageUrl String
+  user       Faculty    @relation(fields: [user_id], references: [id])
+  created_at DateTime @default(now())
 }
