@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
     }
 
-    const isPasswordCorrect = await bcrypt.compare(password, user.passwordHash);
+    const isPasswordCorrect = await bcrypt.compare(password, user.password_hash);
 
     if (!isPasswordCorrect) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       { expiresIn: '1d' }
     );
     
-    const { passwordHash, ...userWithoutPassword } = user;
+    const { password_hash, ...userWithoutPassword } = user;
 
     return NextResponse.json({ token, user: userWithoutPassword });
   } catch (error) {
