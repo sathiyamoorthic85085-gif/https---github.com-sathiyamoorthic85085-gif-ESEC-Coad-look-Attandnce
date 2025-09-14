@@ -1,9 +1,9 @@
+
 import type { Metadata } from 'next';
 import { StackProvider, StackTheme } from "@stackframe/stack";
 import { stackServerApp } from "../stack";
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from '@/context/AuthContext';
 import { Inter } from 'next/font/google';
 
 const inter = Inter({
@@ -28,12 +28,10 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
       </head>
       <body className="font-sans antialiased bg-background text-foreground"><StackProvider app={stackServerApp}><StackTheme>
-        <AuthProvider>
             <div className="relative flex min-h-screen w-full flex-col">
             <main className="flex-1">{children}</main>
             </div>
             <Toaster />
-        </AuthProvider>
       </StackTheme></StackProvider></body>
     </html>
   );
