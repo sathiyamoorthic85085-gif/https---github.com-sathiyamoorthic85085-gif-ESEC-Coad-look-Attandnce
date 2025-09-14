@@ -20,8 +20,16 @@ export default function AttendanceCard() {
   useEffect(() => {
     const fetchPredictions = () => {
         fetch("/api/predictions")
-          .then(res => res.json())
-          .then(setPredictions)
+          .then(res => {
+            if (!res.ok) {
+              console.error("Failed to fetch predictions with status:", res.status);
+              return;
+            }
+            return res.json()
+          })
+          .then(data => {
+            if(data) setPredictions(data)
+          })
           .catch(err => console.error("Failed to fetch predictions:", err));
     };
     
