@@ -17,12 +17,12 @@ export default function Login() {
       <CardHeader>
         <CardTitle>Welcome to ChromaGrade</CardTitle>
         <CardDescription>
-          Authentication is managed by Stack Auth.
+          Please use the authentication mechanism provided by Stack to log in.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <p className="text-center text-muted-foreground">
-          Please use the authentication mechanism provided by Stack to log in.
+          Authentication is managed by Stack Auth.
         </p>
         <Button asChild className="w-full mt-4">
           <Link href="/dashboard">Proceed to Dashboard (Authenticated)</Link>
