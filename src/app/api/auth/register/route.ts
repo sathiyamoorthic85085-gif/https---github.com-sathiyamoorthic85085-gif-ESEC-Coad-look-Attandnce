@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import bcrypt from 'bcrypt';
-import type { UserRole } from '@/lib/types';
+import type { UserRole } from '@prisma/client';
 
 export async function POST(request: Request) {
     try {
