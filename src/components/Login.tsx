@@ -101,13 +101,15 @@ export default function Login() {
       return;
     }
 
-    const newUser: Omit<User, 'id'|'imageUrl'|'password'> = {
+    const newUser: Omit<User, 'id'|'imageUrl'|'password'> & { classId?: string } = {
         name: signupName,
         email: signupEmail,
         role: signupRole as UserRole,
         department: signupRole === 'Admin' ? 'Administration' : signupDepartment,
         rollNumber: signupRole === 'Student' ? signupRollNumber : undefined,
         registerNumber: signupRole === 'Student' ? signupRegisterNumber : undefined,
+        // This is a mock value, in a real app you'd have a class selection UI
+        classId: signupRole === 'Student' ? 'CLS01' : undefined
     };
 
     const response = await fetch('/api/users', {
