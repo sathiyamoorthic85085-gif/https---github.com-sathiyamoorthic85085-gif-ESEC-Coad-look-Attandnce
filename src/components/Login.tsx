@@ -25,8 +25,7 @@ import {
 import { LogIn } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import type { Department, User, UserRole } from "@/lib/types";
-import { mockDepartments } from "@/lib/mock-data";
+import type { UserRole } from "@/lib/types";
 
 
 export default function Login() {
@@ -41,11 +40,8 @@ export default function Login() {
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
-  const [signupRole, setSignupRole] = useState<UserRole | "">("");
-  const [signupDepartment, setSignupDepartment] = useState("");
-  const [signupRollNumber, setSignupRollNumber] = useState("");
-  const [signupRegisterNumber, setSignupRegisterNumber] = useState("");
-  const [signupClassId, setSignupClassId] = useState("");
+  const [signupRole, setSignupRole] = useState<"student" | "faculty" | "admin" | "">("");
+
   
   const { login } = useAuth();
   const router = useRouter();
@@ -85,15 +81,7 @@ export default function Login() {
     e.preventDefault();
     setIsSigningUp(true);
 
-    let isFormValid = signupName && signupEmail && signupPassword && signupRole;
-    if (signupRole === 'Student') {
-        isFormValid = isFormValid && signupRollNumber && signupRegisterNumber;
-    }
-    if (signupRole && signupRole !== 'Admin' && !signupDepartment) {
-        isFormValid = false;
-    }
-
-    if (!isFormValid) {
+    if (!signupName || !signupEmail || !signupPassword || !signupRole) {
       toast({
         title: "Missing Information",
         description: "Please fill out all required fields.",
@@ -108,10 +96,6 @@ export default function Login() {
         email: signupEmail,
         password: signupPassword,
         role: signupRole,
-        department: signupDepartment,
-        rollNumber: signupRollNumber,
-        registerNumber: signupRegisterNumber,
-        classId: signupClassId || (signupRole === 'Student' ? 'CLS01' : undefined),
     };
 
     try {
@@ -212,46 +196,17 @@ export default function Login() {
               </div>
                <div className="space-y-2">
                 <Label htmlFor="register-role">Role</Label>
-                <Select required value={signupRole} onValueChange={(value) => setSignupRole(value as UserRole)}>
+                <Select required value={signupRole} onValueChange={(value) => setSignupRole(value as "student" | "faculty" | "admin" | "")}>
                     <SelectTrigger id="register-role">
                         <SelectValue placeholder="Select a role" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="Student">Student</SelectItem>
-                        <SelectItem value="Faculty">Faculty</SelectItem>
-                        <SelectItem value="HOD">HOD</SelectItem>
-                        <SelectItem value="Admin">Admin</SelectItem>
-                        <SelectItem value="Advisor">Advisor</SelectItem>
+                        <SelectItem value="student">Student</SelectItem>
+                        <SelectItem value="faculty">Faculty</SelectItem>
+                        <SelectItem value="admin">Admin</SelectItem>
                     </SelectContent>
                 </Select>
               </div>
-               {signupRole && signupRole !== 'Admin' && (
-                <div className="space-y-2">
-                    <Label htmlFor="register-department">Department</Label>
-                    <Select required={signupRole !== 'Admin'} value={signupDepartment} onValueChange={setSignupDepartment}>
-                        <SelectTrigger id="register-department">
-                            <SelectValue placeholder="Select a department" />
-                        </SelectTrigger>
-                        <SelectContent>
-                        {mockDepartments.map((dep: Department) => (
-                            <SelectItem key={dep.id} value={dep.name}>{dep.name}</SelectItem>
-                        ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-              )}
-                {signupRole === 'Student' && (
-                <>
-                    <div className="space-y-2">
-                        <Label htmlFor="register-roll">Roll Number</Label>
-                        <Input id="register-roll" placeholder="Your Roll Number" required value={signupRollNumber} onChange={e => setSignupRollNumber(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="register-reg">Register Number</Label>
-                        <Input id="register-reg" placeholder="Your Register Number" required value={signupRegisterNumber} onChange={e => setSignupRegisterNumber(e.target.value)} />
-                    </div>
-                </>
-              )}
             </CardContent>
             <CardFooter>
               <Button type="submit" className="w-full" disabled={isSigningUp}>

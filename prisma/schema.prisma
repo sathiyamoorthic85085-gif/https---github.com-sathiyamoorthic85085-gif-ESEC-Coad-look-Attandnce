@@ -1,39 +1,54 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DATABASE_URL")
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id           String   @id @default(uuid())
-  name         String
-  email        String   @unique
-  passwordHash String
-  role         String // Admin, HOD, Faculty, Student, Advisor
-  department   String?
-  classId      String?
-  rollNumber   String?  @unique
-  registerNumber String? @unique
-  imageUrl     String?
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
-  predictions  Prediction[]
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
+model User {
+  id           String   @id @default(uuid())
+  name         String?
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(student)
+  createdAt    DateTime @default(now()) @map("created_at")
+  imageUrl     String?
 
-model Prediction {
-  id         String   @id @default(uuid())
-  user_id    String
-  user       User     @relation(fields: [user_id], references: [id])
-  label      String
-  confidence Float
-  imageId    String
-  created_at DateTime @default(now())
+  attendance   Attendance[]
+
+  @@map("users")
+}
+
+model Attendance {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime @db.Date
+  status    String   @default("present") // "present", "absent", "late"
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("attendance")
+}
+
+model Timetable {
+  id          String   @id @default(uuid())
+  className   String   @map("class_name")
+  department  String
+  subject     String
+  dayOfWeek   String   @map("day_of_week")
+  startTime   DateTime @db.Time
+  endTime     DateTime @db.Time
+
+  @@map("timetable")
+}
+
+enum Role {
+  student
+  faculty
+  admin
 }

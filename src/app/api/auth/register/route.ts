@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt';
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { name, email, password, role, department, rollNumber, registerNumber, classId } = body;
+        const { name, email, password, role } = body;
 
         if (!name || !email || !password || !role) {
             return NextResponse.json({ message: 'All fields are required' }, { status: 400 });
@@ -25,10 +25,6 @@ export async function POST(request: Request) {
                 email,
                 passwordHash,
                 role,
-                department: department || (role === 'Admin' ? 'Administration' : undefined),
-                rollNumber,
-                registerNumber,
-                classId,
                 imageUrl: `https://picsum.photos/seed/${email}/100/100`,
             },
         });
