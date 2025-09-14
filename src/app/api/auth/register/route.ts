@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import bcrypt from 'bcrypt';
+import type { UserRole } from '@/lib/types';
 
 export async function POST(request: Request) {
     try {
@@ -9,7 +10,7 @@ export async function POST(request: Request) {
         const { name, email, password, role } = body;
 
         if (!name || !email || !password || !role) {
-            return NextResponse.json({ message: 'All fields are required' }, { status: 400 });
+            return NextResponse.json({ message: 'Name, email, password, and role are required' }, { status: 400 });
         }
 
         const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -24,16 +25,15 @@ export async function POST(request: Request) {
                 name,
                 email,
                 passwordHash,
-                role,
-                imageUrl: `https://picsum.photos/seed/${email}/100/100`,
+                role: role || 'student',
             },
         });
 
         const { passwordHash: _, ...userWithoutPassword } = user;
 
-        return NextResponse.json({ user: userWithoutPassword }, { status: 201 });
+        return NextResponse.json({ user: userWithoutPassword, message: "✅ Registered successfully" }, { status: 201 });
     } catch (error) {
         console.error('Registration error:', error);
-        return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+        return NextResponse.json({ message: '❌ Registration failed' }, { status: 500 });
     }
 }

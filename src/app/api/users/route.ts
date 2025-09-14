@@ -7,7 +7,7 @@ import type { UserRole } from '@/lib/types';
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { name, email, password, role, department, rollNumber, registerNumber, classId } = body;
+        const { name, email, password, role } = body;
         
         if (!name || !email || !password || !role) {
             return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
@@ -20,12 +20,7 @@ export async function POST(request: Request) {
                 name,
                 email,
                 passwordHash,
-                role,
-                department: department || (role === 'Admin' ? 'Administration' : undefined),
-                rollNumber,
-                registerNumber,
-                classId,
-                imageUrl: `https://picsum.photos/seed/${email}/100/100`,
+                role: role || 'student',
             }
         });
         
@@ -37,9 +32,6 @@ export async function POST(request: Request) {
         console.error(error);
         if ((error as any).code === 'P2002' && (error as any).meta?.target?.includes('email')) {
              return NextResponse.json({ message: 'An account with this email already exists.' }, { status: 409 });
-        }
-        if ((error as any).code === 'P2002' && (error as any).meta?.target?.includes('rollNumber')) {
-             return NextResponse.json({ message: 'An account with this roll number already exists.' }, { status: 409 });
         }
         return NextResponse.json({ message: 'Failed to create user' }, { status: 500 });
     }
