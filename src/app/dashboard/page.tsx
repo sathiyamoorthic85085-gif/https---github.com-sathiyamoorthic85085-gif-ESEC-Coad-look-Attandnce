@@ -12,7 +12,9 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { useAuth } from "@/context/AuthContext";
 
 export default function DashboardPage() {
-  const { user: stackUser, isLoading } = useUser();
+  const stackAuth = useUser();
+  const isLoading = stackAuth?.isLoading;
+  const stackUser = stackAuth?.user;
   const { user: authUser, setUser } = useAuth();
 
   useEffect(() => {
