@@ -11,33 +11,87 @@ datasource db {
 }
 
 model User {
-  id          String       @id @default(uuid())
-  name        String?
-  email       String?      @unique
-  predictions Prediction[]
+  id              String    @id @default(uuid())
+  name            String
+  email           String    @unique
+  password        String?
+  role            String // 'Admin', 'HOD', 'Faculty', 'Student', 'Advisor'
+  department      String?
+  classId         String?
+  rollNumber      String?   @unique
+  registerNumber  String?
+  mobileNumber    String?
+  imageUrl        String?
+  created_at      DateTime  @default(now())
+
+  predictions     Prediction[]
+  leaveRequests   LeaveRequest[]
+  attendance      AttendanceRecord[]
 
   @@map("users")
 }
 
+model Department {
+  id      String @id
+  name    String @unique
+  classes Class[]
+}
+
+model Class {
+  id           String @id
+  name         String
+  departmentId String
+  department   Department @relation(fields: [departmentId], references: [id])
+}
+
+
+model Prediction {
+  id          String   @id @default(uuid())
+  user_id     String
+  label       String
+  confidence  Float
+  imageId     String
+  created_at  DateTime @default(now())
+  user        User     @relation(fields: [user_id], references: [id])
+
+  @@map("predictions")
+}
+
 model Image {
-  id          String       @id @default(uuid())
-  userId      String
-  filePath    String
-  predictions Prediction[]
-  createdAt   DateTime     @default(now())
+  id         String   @id @default(uuid())
+  userId     String
+  filePath   String
+  created_at DateTime @default(now())
 
   @@map("images")
 }
 
-model Prediction {
-  id         String   @id @default(uuid())
-  imageId    String
-  label      String
-  confidence Float
-  created_at DateTime @default(now())
-  user_id    String
-  user       User     @relation(fields: [user_id], references: [id])
-  Image      Image?   @relation(fields: [imageId], references: [id])
 
-  @@map("predictions")
+model LeaveRequest {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  type      String // 'Leave' or 'OD'
+  startDate DateTime
+  endDate   DateTime
+  reason    String
+  status    String   @default("Pending Advisor")
+  aiSummary String?
+  createdAt DateTime @default(now())
+
+  @@map("leave_requests")
+}
+
+model AttendanceRecord {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  date      DateTime
+  period    Int
+  subject   String
+  status    String // 'Compliant', 'Non-Compliant', 'Absent'
+  violation String?
+
+  @@unique([userId, date, period])
+  @@map("attendance_records")
 }

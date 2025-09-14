@@ -24,7 +24,6 @@ import {
 import { LogIn } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { mockDepartments, mockUsers } from "@/lib/mock-data";
 import type { Department, User, UserRole } from "@/lib/types";
 
 export default function Login() {
@@ -40,35 +39,43 @@ export default function Login() {
   const [signupDepartment, setSignupDepartment] = useState("");
   const [signupRollNumber, setSignupRollNumber] = useState("");
   const [signupRegisterNumber, setSignupRegisterNumber] = useState("");
+  
+  // In a real app, fetch this from DB
+  const mockDepartments: Department[] = [
+      { id: 'DPT01', name: 'Computer Science' },
+      { id: 'DPT02', name: 'Electrical Engineering' },
+      { id: 'DPT03', name: 'Mechanical Engineering' },
+      { id: 'DPT04', name: 'Civil Engineering' },
+  ];
+
 
   const { login } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoggingIn(true);
 
-    setTimeout(() => {
-        const success = login(loginEmail, loginPassword);
-        if (success) {
-            toast({
-                title: "Login Successful",
-                description: "Redirecting to your dashboard...",
-            });
-            router.push("/dashboard");
-        } else {
-            toast({
-                title: "Login Failed",
-                description: "Invalid email or password.",
-                variant: "destructive",
-            });
-        }
-        setIsLoggingIn(false);
-    }, 1000);
+    const success = await login(loginEmail, loginPassword);
+    
+    if (success) {
+        toast({
+            title: "Login Successful",
+            description: "Redirecting to your dashboard...",
+        });
+        router.push("/dashboard");
+    } else {
+        toast({
+            title: "Login Failed",
+            description: "Invalid email or password.",
+            variant: "destructive",
+        });
+    }
+    setIsLoggingIn(false);
   };
 
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSigningUp(true);
 
@@ -93,8 +100,7 @@ export default function Login() {
       return;
     }
 
-    const newUser: User = {
-        id: `USR${(mockUsers.length + 1).toString().padStart(3, '0')}`,
+    const newUser: Omit<User, 'id'|'imageUrl'> = {
         name: signupName,
         email: signupEmail,
         password: signupRole === 'Student' ? signupRollNumber : signupPassword,
@@ -102,18 +108,28 @@ export default function Login() {
         department: signupRole === 'Admin' ? 'Administration' : signupDepartment,
         rollNumber: signupRole === 'Student' ? signupRollNumber : undefined,
         registerNumber: signupRole === 'Student' ? signupRegisterNumber : undefined,
-        imageUrl: `https://picsum.photos/seed/USR${(mockUsers.length + 1).toString().padStart(3, '0')}/100/100`,
     };
 
-    mockUsers.push(newUser);
-    
-    setTimeout(() => {
-        setIsSigningUp(false);
+    const response = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newUser),
+    });
+
+    if (response.ok) {
         toast({
             title: "Registration Complete",
             description: "You can now log in with your credentials.",
         });
-    }, 1500);
+    } else {
+        toast({
+            title: "Registration Failed",
+            description: "Could not create user.",
+            variant: 'destructive',
+        });
+    }
+    
+    setIsSigningUp(false);
   };
 
   return (

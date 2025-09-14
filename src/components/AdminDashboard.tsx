@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,7 +11,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from './ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { AddUserDialog } from './AddUserDialog';
-import { mockUsers, mockDepartments, mockClasses } from '@/lib/mock-data';
 import type { User, Department, Class } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { ConfirmationDialog } from './ConfirmationDialog';
@@ -22,9 +21,29 @@ export default function AdminDashboard() {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const [users, setUsers] = useState<User[]>(() => [...mockUsers]);
-  const [departments, setDepartments] = useState<Department[]>(() => [...mockDepartments]);
-  const [classes, setClasses] = useState<Class[]>(() => [...mockClasses]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [classes, setClasses] = useState<Class[]>([]);
+  
+  useEffect(() => {
+    // In a real app, you'd fetch these from your DB.
+    // For now we will keep them as mock, but remove other mock data.
+    const mockDepartments: Department[] = [
+        { id: 'DPT01', name: 'Computer Science' },
+        { id: 'DPT02', name: 'Electrical Engineering' },
+        { id: 'DPT03', name: 'Mechanical Engineering' },
+        { id: 'DPT04', name: 'Civil Engineering' },
+    ];
+    const mockClasses: Class[] = [
+        { id: 'CLS01', name: 'II Year, Section A', departmentId: 'DPT01' },
+        { id: 'CLS02', name: 'III Year, Section B', departmentId: 'DPT02' },
+    ];
+    setDepartments(mockDepartments);
+    setClasses(mockClasses);
+
+    fetch('/api/users').then(res => res.json()).then(setUsers);
+  }, [])
+
 
   const [newDepartmentName, setNewDepartmentName] = useState('');
   const [newClassName, setNewClassName] = useState('');
@@ -39,17 +58,23 @@ export default function AdminDashboard() {
     setDialogOpen(true);
   };
 
-  const handleAddUser = (newUser: Omit<User, 'id' | 'imageUrl'>) => {
-    const finalNewUser: User = {
-        ...newUser,
-        id: `USR${(users.length + 1).toString().padStart(3, '0')}`,
-        imageUrl: `https://picsum.photos/seed/USR${(users.length + 1).toString().padStart(3, '0')}/100/100`,
-    };
-    setUsers(currentUsers => [...currentUsers, finalNewUser]);
+  const handleAddUser = async (newUser: Omit<User, 'id' | 'imageUrl'>) => {
+     const response = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newUser)
+    });
+    if (response.ok) {
+        const addedUser = await response.json();
+        setUsers(currentUsers => [...currentUsers, addedUser]);
+    } else {
+        toast({ title: 'Error adding user', variant: 'destructive'})
+    }
   };
   
   const handleRemoveUser = (userId: string) => {
     openConfirmationDialog('Are you sure?', `This will permanently delete the user. This action cannot be undone.`, () => {
+        // TODO: Add API call to delete user
         setUsers(currentUsers => currentUsers.filter(u => u.id !== userId));
         toast({ title: 'User Removed', description: 'The user has been successfully removed.' });
     });
@@ -64,6 +89,7 @@ export default function AdminDashboard() {
       id: `DPT${(departments.length + 1).toString().padStart(2, '0')}`,
       name: newDepartmentName,
     };
+    // TODO: API Call
     setDepartments(currentDepartments => [...currentDepartments, newDepartment]);
     setNewDepartmentName('');
     toast({ title: 'Department Added', description: `Successfully added department "${newDepartmentName}".` });
@@ -71,6 +97,7 @@ export default function AdminDashboard() {
 
   const handleRemoveDepartment = (departmentId: string) => {
      openConfirmationDialog('Are you sure?', `This will permanently delete the department and all associated classes. This action cannot be undone.`, () => {
+        // TODO: API Call
         setDepartments(departments => departments.filter(d => d.id !== departmentId));
         setClasses(classes => classes.filter(c => c.departmentId !== departmentId));
         toast({ title: 'Department Removed', description: 'The department has been successfully removed.' });
@@ -88,6 +115,7 @@ export default function AdminDashboard() {
       name: newClassName,
       departmentId: selectedDepartmentForClass,
     };
+    // TODO: API Call
     setClasses(currentClasses => [...currentClasses, newClass]);
     setNewClassName('');
     setSelectedDepartmentForClass('');
@@ -96,6 +124,7 @@ export default function AdminDashboard() {
 
   const handleRemoveClass = (classId: string) => {
     openConfirmationDialog('Are you sure?', `This will permanently delete the class. This action cannot be undone.`, () => {
+        // TODO: API Call
         setClasses(classes => classes.filter(c => c.id !== classId));
         toast({ title: 'Class Removed', description: 'The class has been successfully removed.' });
     });
