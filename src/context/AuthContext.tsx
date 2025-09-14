@@ -45,6 +45,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setToken(data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
             localStorage.setItem('token', data.token);
+            // Add user cookie for server components
+            document.cookie = `user=${JSON.stringify(data.user)}; path=/; max-age=86400;`;
             return true;
         } catch (error) {
             console.error('Login failed:', error);
@@ -57,6 +59,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setToken(null);
         localStorage.removeItem('user');
         localStorage.removeItem('token');
+        // Remove user cookie
+        document.cookie = 'user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
         // Also force a redirect to login page
         window.location.href = '/login';
     }

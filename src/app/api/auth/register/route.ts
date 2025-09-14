@@ -58,7 +58,6 @@ export async function POST(request: Request) {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${apiKey}`,
-                'Neon-Raw-Array-Result': 'false',
             },
             body: JSON.stringify([newUser]) // Neon API expects an array of objects
         });
