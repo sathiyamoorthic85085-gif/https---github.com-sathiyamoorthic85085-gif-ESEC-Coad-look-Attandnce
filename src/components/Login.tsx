@@ -33,8 +33,8 @@ export default function Login() {
   const [isSigningUp, setIsSigningUp] = useState(false);
   
   // Login State
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
+  const [loginEmail, setLoginEmail] = useState("abhiruben2402@gmail.com");
+  const [loginPassword, setLoginPassword] = useState("123456");
   
   // Signup State
   const [signupName, setSignupName] = useState("");
