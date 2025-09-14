@@ -34,6 +34,8 @@ export async function POST(request: Request) {
         });
 
         if (!findUserResponse.ok) {
+            const errorBody = await findUserResponse.text();
+            console.error('Neon user find failed on register:', errorBody);
             return NextResponse.json({ error: 'Database query failed when checking for user' }, { status: 500 });
         }
 

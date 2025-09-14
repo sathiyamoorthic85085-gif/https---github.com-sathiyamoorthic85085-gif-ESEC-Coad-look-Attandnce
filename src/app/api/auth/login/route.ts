@@ -29,6 +29,8 @@ export async function POST(request: Request) {
     });
 
     if (!findUserResponse.ok) {
+        const errorBody = await findUserResponse.text();
+        console.error('Neon user find failed:', errorBody);
         return NextResponse.json({ error: 'Database query failed' }, { status: 500 });
     }
     
