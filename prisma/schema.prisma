@@ -11,27 +11,26 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String?
-  email     String   @unique
-  images    Image[]
-  createdAt DateTime @default(now())
+  id          String       @id @default(cuid())
+  name        String?
+  email       String?      @unique
+  predictions Prediction[]
 }
 
 model Image {
-  id          String      @id @default(uuid())
+  id          String       @id @default(cuid())
   userId      String
-  user        User        @relation(fields: [userId], references: [id])
   filePath    String
   predictions Prediction[]
-  createdAt   DateTime    @default(now())
 }
 
 model Prediction {
-  id         String   @id @default(uuid())
+  id         String   @id @default(cuid())
   imageId    String
   image      Image    @relation(fields: [imageId], references: [id])
   label      String
   confidence Float
-  createdAt  DateTime @default(now())
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id])
+  created_at DateTime @default(now())
 }

@@ -15,6 +15,7 @@ import { mockUsers, mockDepartments, mockClasses } from '@/lib/mock-data';
 import type { User, Department, Class } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { ConfirmationDialog } from './ConfirmationDialog';
+import AttendanceCard from './AttendanceCard';
 
 
 export default function AdminDashboard() {
@@ -113,8 +114,8 @@ export default function AdminDashboard() {
             </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <Card>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Total Users</CardTitle>
                     <Users className="h-4 w-4 text-muted-foreground" />
@@ -144,6 +145,7 @@ export default function AdminDashboard() {
                     <p className="text-xs text-muted-foreground">Total configured classes</p>
                 </CardContent>
             </Card>
+            <AttendanceCard />
         </div>
         
         <Tabs defaultValue="users" className="w-full">
