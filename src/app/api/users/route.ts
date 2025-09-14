@@ -1,13 +1,12 @@
 
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
-import bcrypt from 'bcrypt';
 import type { UserRole } from '@/lib/types';
 
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { name, email, password, role, department, rollNumber, registerNumber, classId } = body;
+        const { name, email, role, department, rollNumber, registerNumber, classId } = body;
         
         let newUser;
         if (role === 'Student') {
@@ -19,19 +18,15 @@ export async function POST(request: Request) {
                     rollNumber,
                     registerNumber,
                     classId,
-                    imageUrl: `https://picsum.photos/seed/${email}/100/100`,
+                    imageUrl: `https://picsum.photos/seed/${rollNumber}/100/100`,
                 }
             });
         } else { // Faculty, HOD, Admin, Advisor
-            if (!password) {
-                return NextResponse.json({ message: 'Password is required for non-student roles.' }, { status: 400 });
-            }
-            const passwordHash = await bcrypt.hash(password, 10);
+            // No password needed for non-student roles as it's standardized
             newUser = await prisma.faculty.create({
                 data: {
                     name,
                     email,
-                    passwordHash,
                     role: role as Exclude<UserRole, 'Student'>,
                     department,
                     imageUrl: `https://picsum.photos/seed/${email}/100/100`,
@@ -39,8 +34,7 @@ export async function POST(request: Request) {
             });
         }
         
-        const { passwordHash: _, ...userWithoutPassword } = newUser;
-        return NextResponse.json({ ...userWithoutPassword, role }, { status: 201 });
+        return NextResponse.json({ ...newUser, role }, { status: 201 });
 
     } catch (error) {
         console.error(error);

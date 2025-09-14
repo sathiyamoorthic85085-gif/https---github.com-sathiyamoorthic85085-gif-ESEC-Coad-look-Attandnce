@@ -26,6 +26,8 @@ import { LogIn } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import type { Department, User, UserRole } from "@/lib/types";
+import { mockDepartments } from "@/lib/mock-data";
+
 
 export default function Login() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
@@ -37,20 +39,11 @@ export default function Login() {
 
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
-  const [signupPassword, setSignupPassword] = useState("");
   const [signupRole, setSignupRole] = useState<UserRole | "">("");
   const [signupDepartment, setSignupDepartment] = useState("");
   const [signupRollNumber, setSignupRollNumber] = useState("");
   const [signupRegisterNumber, setSignupRegisterNumber] = useState("");
   
-  const mockDepartments: Department[] = [
-      { id: 'DPT01', name: 'Computer Science' },
-      { id: 'DPT02', name: 'Electrical Engineering' },
-      { id: 'DPT03', name: 'Mechanical Engineering' },
-      { id: 'DPT04', name: 'Civil Engineering' },
-  ];
-
-
   const { login } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
@@ -60,7 +53,7 @@ export default function Login() {
     if (!loginEmail || !loginPassword || !loginRole) {
       toast({
         title: "Missing fields",
-        description: "Please provide email, password, and role.",
+        description: "Please provide email, password/roll number, and role.",
         variant: "destructive",
       });
       return;
@@ -92,8 +85,6 @@ export default function Login() {
     let isFormValid = signupName && signupEmail && signupRole;
     if (signupRole === 'Student') {
         isFormValid = isFormValid && signupRollNumber && signupRegisterNumber;
-    } else {
-        isFormValid = isFormValid && signupPassword;
     }
 
     if (signupRole && signupRole !== 'Admin' && !signupDepartment) {
@@ -110,10 +101,9 @@ export default function Login() {
       return;
     }
 
-    const newUser: Omit<User, 'id'|'imageUrl'> & { password?: string } = {
+    const newUser: Omit<User, 'id'|'imageUrl'|'password'> = {
         name: signupName,
         email: signupEmail,
-        password: signupPassword,
         role: signupRole as UserRole,
         department: signupRole === 'Admin' ? 'Administration' : signupDepartment,
         rollNumber: signupRole === 'Student' ? signupRollNumber : undefined,
@@ -248,7 +238,7 @@ export default function Login() {
                     </Select>
                 </div>
               )}
-                {signupRole === 'Student' ? (
+                {signupRole === 'Student' && (
                 <>
                     <div className="space-y-2">
                         <Label htmlFor="register-roll">Roll Number</Label>
@@ -259,11 +249,6 @@ export default function Login() {
                         <Input id="register-reg" placeholder="Your Register Number" required value={signupRegisterNumber} onChange={e => setSignupRegisterNumber(e.target.value)} />
                     </div>
                 </>
-              ) : (
-                <div className="space-y-2">
-                    <Label htmlFor="register-password">Password</Label>
-                    <Input id="register-password" type="password" required value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} />
-                </div>
               )}
             </CardContent>
             <CardFooter>

@@ -1,7 +1,7 @@
 
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
-import bcrypt from 'bcrypt';
+import type { UserRole } from '@/lib/types';
 import jwt from 'jsonwebtoken';
 
 export async function POST(request: Request) {
@@ -16,19 +16,15 @@ export async function POST(request: Request) {
     let isPasswordCorrect = false;
 
     if (role === 'Student') {
-      user = await prisma.student.findUnique({
-        where: { email },
-      });
-      // For students, password is their roll number
+      user = await prisma.student.findUnique({ where: { email } });
       if (user && user.rollNumber === password) {
         isPasswordCorrect = true;
       }
     } else { // Handles Faculty, HOD, Admin, Advisor
-      user = await prisma.faculty.findUnique({
-        where: { email },
-      });
-      if (user && user.passwordHash) {
-        isPasswordCorrect = await bcrypt.compare(password, user.passwordHash);
+      user = await prisma.faculty.findUnique({ where: { email } });
+      // Standard password for all non-student roles
+      if (user && password === 'Welcome@123') {
+        isPasswordCorrect = true;
       }
     }
 
@@ -44,6 +40,7 @@ export async function POST(request: Request) {
       { expiresIn: '8h' }
     );
     
+    // Omit password hash if it exists
     const { passwordHash: _, ...userWithoutPassword } = user;
 
     return NextResponse.json({ token, user: { ...userWithoutPassword, role: userRole } });
