@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect } from 'react';
@@ -11,9 +10,9 @@ export default function SplashPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       router.push('/dashboard');
-    }, 3000); // 3-second delay before redirecting
+    }, 1500); // 1.5-second delay
 
-    return () => clearTimeout(timer); // Cleanup the timer on unmount
+    return () => clearTimeout(timer);
   }, [router]);
 
   return (
@@ -25,11 +24,11 @@ export default function SplashPage() {
         <h1 className="text-5xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-primary-purple to-primary-orange">
           ESEC CHROMA GRADE
         </h1>
-        <p className="text-muted-foreground animate-fade-in-up delay-500">
+        <p className="text-muted-foreground animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
           The future of automated attendance and compliance.
         </p>
       </div>
-      <div className="absolute bottom-6 text-sm text-muted-foreground/50 animate-fade-in-up delay-1000">
+      <div className="absolute bottom-6 text-sm text-muted-foreground/50 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
         Made by ESEC (EIE)
       </div>
       <style jsx>{`
@@ -54,16 +53,10 @@ export default function SplashPage() {
           }
         }
         .animate-fade-in-down {
-          animation: fade-in-down 0.8s ease-out forwards;
+          animation: fade-in-down 0.5s ease-out forwards;
         }
         .animate-fade-in-up {
-          animation: fade-in-up 0.8s ease-out forwards;
-        }
-        .delay-500 {
-          animation-delay: 0.5s;
-        }
-        .delay-1000 {
-          animation-delay: 1s;
+          animation: fade-in-up 0.5s ease-out forwards;
         }
       `}</style>
     </div>

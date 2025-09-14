@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -88,7 +87,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <SidebarContent>
             <SidebarHeader>
               <div className="flex items-center gap-2 p-2">
-                <GraduationCap className="h-8 w-8 text-primary" />
+                <GraduationCap className="h-8 w-8 text-primary-orange" />
                  <h1 className="font-semibold text-xl group-data-[collapsible=icon]:hidden">ChromaGrade</h1>
               </div>
             </SidebarHeader>
@@ -125,12 +124,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </SidebarContent>
         </Sidebar>
         <SidebarInset className="flex flex-col">
-            <header className="flex items-center justify-between p-4 border-b">
-                 <SidebarTrigger />
-                 <div className="flex items-center gap-4">
+            <header className="flex h-14 items-center justify-between p-4 border-b lg:h-auto">
+                 <SidebarTrigger className="lg:hidden" />
+                 <div className="flex items-center gap-2 ml-auto">
                     <Button variant="ghost" size="icon"><Settings /></Button>
                     <Button variant="ghost" size="icon"><Bell /></Button>
-                    <Avatar>
+                    <Avatar className="h-8 w-8">
                         <AvatarImage src={user?.imageUrl} alt={user?.name} />
                         <AvatarFallback>{user?.name?.[0]}</AvatarFallback>
                     </Avatar>
