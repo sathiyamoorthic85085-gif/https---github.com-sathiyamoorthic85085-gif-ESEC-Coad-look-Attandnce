@@ -12,26 +12,29 @@ export async function POST(request: Request) {
     }
 
     let user: any = null;
+    let isPasswordCorrect = false;
+
     if (role === 'Student') {
       user = await prisma.student.findUnique({
         where: { email },
       });
+      // For students, password is their roll number
+      if (user && user.rollNumber === password) {
+        isPasswordCorrect = true;
+      }
     } else { // Handles Faculty, HOD, Admin, Advisor
       user = await prisma.faculty.findUnique({
         where: { email },
       });
+      if (user) {
+        isPasswordCorrect = await bcrypt.compare(password, user.passwordHash);
+      }
     }
 
-    if (!user) {
+    if (!user || !isPasswordCorrect) {
       return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
     }
-
-    const isPasswordCorrect = await bcrypt.compare(password, user.passwordHash);
-
-    if (!isPasswordCorrect) {
-      return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
-    }
-
+    
     const userRole = role === 'Student' ? 'Student' : user.role;
 
     const token = jwt.sign(
