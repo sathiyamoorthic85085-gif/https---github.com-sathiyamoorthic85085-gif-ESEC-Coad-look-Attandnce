@@ -1,6 +1,6 @@
+
 "use client";
 
-import { useUser } from "@stackframe/stack";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
 import AdminDashboard from "@/components/AdminDashboard";
@@ -12,31 +12,9 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { useAuth } from "@/context/AuthContext";
 
 export default function DashboardPage() {
-  const stackAuth = useUser();
-  const isLoading = stackAuth?.isLoading;
-  const stackUser = stackAuth?.user;
-  const { user: authUser, setUser } = useAuth();
+  const { user: authUser, isLoading } = useAuth();
 
-  useEffect(() => {
-    if (!isLoading && stackUser) {
-      const userRole = (stackUser.publicMetadata as any)?.role;
-      if (userRole && (!authUser || authUser.id !== stackUser.id || authUser.role !== userRole)) {
-        setUser({
-          id: stackUser.id,
-          name: stackUser.displayName || stackUser.primaryEmail?.email || "User",
-          email: stackUser.primaryEmail?.email || "",
-          role: userRole,
-          imageUrl: stackUser.avatarUrl || `https://picsum.photos/seed/${stackUser.id}/100/100`,
-          // The following are mock values and should be populated from your DB
-          department: (stackUser.publicMetadata as any)?.department || "Computer Science",
-          classId: (stackUser.publicMetadata as any)?.classId || "CLS01",
-          rollNumber: (stackUser.publicMetadata as any)?.rollNumber || "ES24EIXX",
-        });
-      }
-    }
-  }, [stackUser, isLoading, authUser, setUser]);
-
-  if (isLoading || !authUser) {
+  if (isLoading) {
     return (
        <DashboardLayout>
             <div className="flex h-full items-center justify-center">
@@ -46,7 +24,7 @@ export default function DashboardPage() {
     );
   }
 
-  if (!stackUser) {
+  if (!authUser) {
     redirect("/login");
     return null;
   }

@@ -5,6 +5,7 @@ import { stackServerApp } from "../stack";
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { Inter } from 'next/font/google';
+import { AuthProvider } from '@/context/AuthContext';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -27,12 +28,18 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
       </head>
-      <body className="font-sans antialiased bg-background text-foreground"><StackProvider app={stackServerApp}><StackTheme>
-            <div className="relative flex min-h-screen w-full flex-col">
-            <main className="flex-1">{children}</main>
-            </div>
-            <Toaster />
-      </StackTheme></StackProvider></body>
+      <body className="font-sans antialiased bg-background text-foreground">
+        <StackProvider app={stackServerApp}>
+          <AuthProvider>
+            <StackTheme>
+              <div className="relative flex min-h-screen w-full flex-col">
+                <main className="flex-1">{children}</main>
+              </div>
+              <Toaster />
+            </StackTheme>
+          </AuthProvider>
+        </StackProvider>
+      </body>
     </html>
   );
 }

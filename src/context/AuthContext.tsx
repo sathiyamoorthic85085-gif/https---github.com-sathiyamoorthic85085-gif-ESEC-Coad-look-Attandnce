@@ -3,9 +3,11 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import type { User } from '@/lib/types';
 import { useUser as useStackUser } from '@stackframe/stack';
+import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
     user: User | null;
+    isLoading: boolean;
     logout: () => void;
     setUser: (user: User | null) => void;
 }
@@ -15,11 +17,13 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const { user: stackUser, isLoading: isStackLoading } = useStackUser();
     const [user, setUser] = useState<User | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const router = useRouter();
 
      useEffect(() => {
+        setIsLoading(isStackLoading);
         if (!isStackLoading) {
             if (stackUser) {
-                // User is logged in via Stack, create our app-specific user object
                 const role = (stackUser.publicMetadata as any)?.role || 'Student'; // Default role
                 const department = (stackUser.publicMetadata as any)?.department || 'N/A';
                 const classId = (stackUser.publicMetadata as any)?.classId;
@@ -37,7 +41,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 };
                 setUser(appUser);
             } else {
-                // User is not logged in via Stack
                 setUser(null);
             }
         }
@@ -49,15 +52,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Stack's logout is handled automatically when session ends.
         // For an explicit sign-out, you might need a Stack-specific function
         // This is a simple redirect for now.
-        window.location.href = '/login';
+        router.push('/login');
     }
 
-    // Login and Register are now handled by Stack's UI components, so we remove the functions
-    const login = async () => true;
-    const register = async () => true;
-
     return (
-        <AuthContext.Provider value={{ user, logout, setUser }}>
+        <AuthContext.Provider value={{ user, isLoading, logout, setUser }}>
             {children}
         </AuthContext.Provider>
     );
