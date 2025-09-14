@@ -2,6 +2,7 @@
 "use client";
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import type { User } from '@/lib/types';
+import { mockUsers } from '@/lib/mock-data';
 
 interface AuthContextType {
     user: User | null;
@@ -18,50 +19,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [token, setToken] = useState<string | null>(null);
 
     useEffect(() => {
+        // This is a mock authentication for demonstration purposes.
+        // In a real application, you would validate a session token.
         const storedUser = localStorage.getItem('user');
-        const storedToken = localStorage.getItem('token');
-        if (storedUser && storedToken) {
+        if (storedUser) {
             setUser(JSON.parse(storedUser));
-            setToken(storedToken);
+        } else {
+            // Mock login as the first admin user for demo purposes
+            const adminUser = mockUsers.find(u => u.role === 'Admin');
+            if (adminUser) {
+                setUser(adminUser);
+                localStorage.setItem('user', JSON.stringify(adminUser));
+                document.cookie = `user=${JSON.stringify(adminUser)}; path=/; max-age=86400;`;
+            }
         }
     }, []);
 
     const login = async (email: string, password: string): Promise<boolean> => {
-        try {
-            const response = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
-            });
-
-            if (!response.ok) {
-                return false;
-            }
-
-            const data = await response.json();
-            setUser(data.user);
-            setToken(data.token);
-            localStorage.setItem('user', JSON.stringify(data.user));
-            localStorage.setItem('token', data.token);
-            // Add user cookie for server components
-            document.cookie = `user=${JSON.stringify(data.user)}; path=/; max-age=86400;`;
+        // This function is a placeholder.
+        // The actual login should be handled by your external auth provider's SDK.
+        console.warn("Login function is a placeholder. Integrate your auth provider.");
+        const foundUser = mockUsers.find(u => u.email === email);
+        if(foundUser) {
+            setUser(foundUser);
+            localStorage.setItem('user', JSON.stringify(foundUser));
+            document.cookie = `user=${JSON.stringify(foundUser)}; path=/; max-age=86400;`;
             return true;
-        } catch (error) {
-            console.error('Login failed:', error);
-            return false;
         }
+        return false;
     }
 
     const logout = () => {
         setUser(null);
         setToken(null);
         localStorage.removeItem('user');
-        localStorage.removeItem('token');
-        // Remove user cookie
         document.cookie = 'user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-        // Also force a redirect to login page
         window.location.href = '/login';
     }
 
