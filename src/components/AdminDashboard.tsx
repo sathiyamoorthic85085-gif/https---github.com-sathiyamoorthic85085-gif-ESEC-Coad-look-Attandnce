@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -39,17 +40,19 @@ export default function AdminDashboard() {
     setDialogOpen(true);
   };
 
-  const handleAddUser = async (newUser: Omit<User, 'id' | 'imageUrl'>) => {
-     const response = await fetch('/api/users', {
+  const handleAddUser = async (newUser: Omit<User, 'id' | 'imageUrl' | 'passwordHash'>) => {
+     const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newUser)
     });
     if (response.ok) {
-        const addedUser = await response.json();
+        const { user: addedUser } = await response.json();
         setUsers(currentUsers => [...currentUsers, addedUser]);
+        toast({ title: 'User Added Successfully' });
     } else {
-        toast({ title: 'Error adding user', variant: 'destructive'})
+        const error = await response.json();
+        toast({ title: 'Error adding user', description: error.message, variant: 'destructive'})
     }
   };
   

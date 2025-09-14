@@ -32,17 +32,20 @@ import { mockDepartments } from "@/lib/mock-data";
 export default function Login() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isSigningUp, setIsSigningUp] = useState(false);
+  
+  // Login State
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
-  const [loginRole, setLoginRole] = useState<UserRole | "">("");
-
-
+  
+  // Signup State
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
   const [signupRole, setSignupRole] = useState<UserRole | "">("");
   const [signupDepartment, setSignupDepartment] = useState("");
   const [signupRollNumber, setSignupRollNumber] = useState("");
   const [signupRegisterNumber, setSignupRegisterNumber] = useState("");
+  const [signupClassId, setSignupClassId] = useState("");
   
   const { login } = useAuth();
   const router = useRouter();
@@ -50,17 +53,17 @@ export default function Login() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!loginEmail || !loginPassword || !loginRole) {
+    if (!loginEmail || !loginPassword) {
       toast({
         title: "Missing fields",
-        description: "Please provide email, password/roll number, and role.",
+        description: "Please provide email and password.",
         variant: "destructive",
       });
       return;
     }
     setIsLoggingIn(true);
 
-    const success = await login(loginEmail, loginPassword, loginRole as UserRole);
+    const success = await login(loginEmail, loginPassword);
     
     if (success) {
         toast({
@@ -82,11 +85,10 @@ export default function Login() {
     e.preventDefault();
     setIsSigningUp(true);
 
-    let isFormValid = signupName && signupEmail && signupRole;
+    let isFormValid = signupName && signupEmail && signupPassword && signupRole;
     if (signupRole === 'Student') {
         isFormValid = isFormValid && signupRollNumber && signupRegisterNumber;
     }
-
     if (signupRole && signupRole !== 'Admin' && !signupDepartment) {
         isFormValid = false;
     }
@@ -101,34 +103,43 @@ export default function Login() {
       return;
     }
 
-    const newUser: Omit<User, 'id'|'imageUrl'|'password'> & { classId?: string } = {
+    const newUser = {
         name: signupName,
         email: signupEmail,
-        role: signupRole as UserRole,
-        department: signupRole === 'Admin' ? 'Administration' : signupDepartment,
-        rollNumber: signupRole === 'Student' ? signupRollNumber : undefined,
-        registerNumber: signupRole === 'Student' ? signupRegisterNumber : undefined,
-        // This is a mock value, in a real app you'd have a class selection UI
-        classId: signupRole === 'Student' ? 'CLS01' : undefined
+        password: signupPassword,
+        role: signupRole,
+        department: signupDepartment,
+        rollNumber: signupRollNumber,
+        registerNumber: signupRegisterNumber,
+        classId: signupClassId || (signupRole === 'Student' ? 'CLS01' : undefined),
     };
 
-    const response = await fetch('/api/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newUser),
-    });
+    try {
+      const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newUser),
+      });
 
-    if (response.ok) {
-        toast({
-            title: "Registration Complete",
-            description: "You can now log in with your credentials.",
-        });
-        // Optionally, switch to the login tab
-    } else {
-        const errorData = await response.json();
-        toast({
+      const data = await response.json();
+
+      if (response.ok) {
+          toast({
+              title: "Registration Complete",
+              description: "You can now log in with your credentials.",
+          });
+          // Optionally, switch to the login tab
+      } else {
+          toast({
+              title: "Registration Failed",
+              description: data.message || "Could not create user.",
+              variant: 'destructive',
+          });
+      }
+    } catch (error) {
+       toast({
             title: "Registration Failed",
-            description: errorData.message || "Could not create user.",
+            description: "An unexpected error occurred.",
             variant: 'destructive',
         });
     }
@@ -157,23 +168,8 @@ export default function Login() {
                 <Input id="login-email" type="email" placeholder="m@example.com" required value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="login-password">Password / Roll Number</Label>
+                <Label htmlFor="login-password">Password</Label>
                 <Input id="login-password" type="password" required value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="login-role">Role</Label>
-                 <Select required value={loginRole} onValueChange={(value) => setLoginRole(value as UserRole)}>
-                    <SelectTrigger id="login-role">
-                        <SelectValue placeholder="Select your role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="Student">Student</SelectItem>
-                        <SelectItem value="Faculty">Faculty</SelectItem>
-                        <SelectItem value="HOD">HOD</SelectItem>
-                        <SelectItem value="Admin">Admin</SelectItem>
-                        <SelectItem value="Advisor">Advisor</SelectItem>
-                    </SelectContent>
-                </Select>
               </div>
             </CardContent>
             <CardFooter>
@@ -211,6 +207,10 @@ export default function Login() {
                 />
               </div>
                <div className="space-y-2">
+                <Label htmlFor="register-password">Password</Label>
+                <Input id="register-password" type="password" required value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} />
+              </div>
+               <div className="space-y-2">
                 <Label htmlFor="register-role">Role</Label>
                 <Select required value={signupRole} onValueChange={(value) => setSignupRole(value as UserRole)}>
                     <SelectTrigger id="register-role">
@@ -228,7 +228,7 @@ export default function Login() {
                {signupRole && signupRole !== 'Admin' && (
                 <div className="space-y-2">
                     <Label htmlFor="register-department">Department</Label>
-                    <Select required value={signupDepartment} onValueChange={setSignupDepartment}>
+                    <Select required={signupRole !== 'Admin'} value={signupDepartment} onValueChange={setSignupDepartment}>
                         <SelectTrigger id="register-department">
                             <SelectValue placeholder="Select a department" />
                         </SelectTrigger>

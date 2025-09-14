@@ -1,57 +1,39 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
 }
 
-model Student {
-  id              String   @id @default(uuid())
-  name            String
-  email           String   @unique
-  department      String?
-  rollNumber      String?  @unique
-  registerNumber  String?  @unique
-  classId         String?
-  imageUrl        String?
-  mobileNumber    String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-}
-
-model Faculty {
-  id           String    @id @default(uuid())
+model User {
+  id           String   @id @default(uuid())
   name         String
-  email        String    @unique
+  email        String   @unique
   passwordHash String
-  role         String // Admin, HOD, Faculty, Advisor
+  role         String // Admin, HOD, Faculty, Student, Advisor
   department   String?
+  classId      String?
+  rollNumber   String?  @unique
+  registerNumber String? @unique
   imageUrl     String?
-  classId      String? // For advisors
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
   predictions  Prediction[]
 }
 
-model Image {
-  id        String       @id @default(uuid())
-  filePath  String
-  userId    String
-  user      Faculty      @relation(fields: [userId], references: [id])
-  createdAt DateTime     @default(now())
-  Prediction Prediction?
-}
 
 model Prediction {
   id         String   @id @default(uuid())
-  imageId    String   @unique
-  image      Image    @relation(fields: [imageId], references: [id])
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id])
   label      String
   confidence Float
-  user_id    String
-  user       Faculty    @relation(fields: [user_id], references: [id])
+  imageId    String
   created_at DateTime @default(now())
 }

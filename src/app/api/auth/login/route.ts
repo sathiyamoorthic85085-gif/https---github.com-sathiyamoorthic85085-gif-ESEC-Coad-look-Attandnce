@@ -1,49 +1,38 @@
 
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
-import type { UserRole } from '@/lib/types';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 export async function POST(request: Request) {
   try {
-    const { email, password, role } = await request.json();
+    const { email, password } = await request.json();
     
-    if (!email || !password || !role) {
-      return NextResponse.json({ message: 'Email, password, and role are required' }, { status: 400 });
+    if (!email || !password) {
+      return NextResponse.json({ message: 'Email and password are required' }, { status: 400 });
     }
 
-    let user: any = null;
-    let isPasswordCorrect = false;
+    const user = await prisma.user.findUnique({ where: { email } });
 
-    if (role === 'Student') {
-      user = await prisma.student.findUnique({ where: { email } });
-      if (user && user.rollNumber === password) {
-        isPasswordCorrect = true;
-      }
-    } else { // Handles Faculty, HOD, Admin, Advisor
-      user = await prisma.faculty.findUnique({ where: { email } });
-      // Standard password for all non-student roles
-      if (user && password === 'Welcome@123') {
-        isPasswordCorrect = true;
-      }
+    if (!user) {
+      return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
     }
 
-    if (!user || !isPasswordCorrect) {
+    const isPasswordCorrect = await bcrypt.compare(password, user.passwordHash);
+
+    if (!isPasswordCorrect) {
       return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
     }
     
-    const userRole = role === 'Student' ? 'Student' : user.role;
-
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: userRole },
+      { id: user.id, email: user.email, role: user.role },
       process.env.JWT_SECRET || 'your_super_secret_key_here',
       { expiresIn: '8h' }
     );
     
-    // Omit password hash if it exists
-    const { passwordHash: _, ...userWithoutPassword } = user;
+    const { passwordHash, ...userWithoutPassword } = user;
 
-    return NextResponse.json({ token, user: { ...userWithoutPassword, role: userRole } });
+    return NextResponse.json({ token, user: userWithoutPassword });
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });

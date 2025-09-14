@@ -19,7 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { User, UserRole, Department } from "@/lib/types";
 
 interface AddUserDialogProps {
-  onUserAdd: (user: Omit<User, 'id' | 'imageUrl'>) => void;
+  onUserAdd: (user: any) => void;
   departments: Department[];
 }
 
@@ -46,11 +46,9 @@ export function AddUserDialog({ onUserAdd, departments }: AddUserDialogProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    let isFormValid = name && email && role;
+    let isFormValid = name && email && role && password;
     if (role === 'Student') {
       isFormValid = isFormValid && rollNumber && registerNumber;
-    } else {
-      isFormValid = isFormValid && password;
     }
 
     if (role !== 'Admin' && !department) {
@@ -66,12 +64,10 @@ export function AddUserDialog({ onUserAdd, departments }: AddUserDialogProps) {
       return;
     }
 
-    const userPassword = role === 'Student' ? rollNumber : password;
-
     onUserAdd({
       name,
       email,
-      password: userPassword,
+      password,
       role: role as UserRole,
       department: role === 'Admin' ? 'Administration' : department,
       rollNumber: role === 'Student' ? rollNumber : undefined,
@@ -79,8 +75,8 @@ export function AddUserDialog({ onUserAdd, departments }: AddUserDialogProps) {
     });
 
     toast({
-      title: "User Created",
-      description: `Successfully created user: ${name}`,
+      title: "User Creation Initiated",
+      description: `Attempting to create user: ${name}`,
     });
 
     // Reset form and close dialog
@@ -120,6 +116,10 @@ export function AddUserDialog({ onUserAdd, departments }: AddUserDialogProps) {
               </Label>
               <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="col-span-3" required />
             </div>
+             <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="password" className="text-right">Password</Label>
+                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="col-span-3" required />
+            </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="role" className="text-right">
                 Role
@@ -138,7 +138,7 @@ export function AddUserDialog({ onUserAdd, departments }: AddUserDialogProps) {
               </Select>
             </div>
 
-            {role === 'Student' ? (
+            {role === 'Student' && (
               <>
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="rollNumber" className="text-right">Roll No.</Label>
@@ -149,11 +149,6 @@ export function AddUserDialog({ onUserAdd, departments }: AddUserDialogProps) {
                     <Input id="registerNumber" value={registerNumber} onChange={e => setRegisterNumber(e.target.value)} className="col-span-3" required />
                 </div>
               </>
-            ) : (
-                 <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="password" className="text-right">Password</Label>
-                    <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="col-span-3" required />
-                </div>
             )}
             
             {role && role !== 'Admin' && (
