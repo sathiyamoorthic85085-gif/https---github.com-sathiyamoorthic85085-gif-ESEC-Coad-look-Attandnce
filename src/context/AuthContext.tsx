@@ -1,7 +1,6 @@
 "use client";
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import type { User } from '@/lib/types';
-import { mockUsers } from '@/lib/mock-data'; // Use mock data for login
 
 interface AuthContextType {
     user: User | null;
@@ -15,7 +14,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
 
-    // Persist user state on reload
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
@@ -24,27 +22,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const login = async (email: string, password: string): Promise<boolean> => {
-        // Use mock data for authentication
-        const foundUser = mockUsers.find(u => u.email === email);
-        if (foundUser) {
-            // For students, password is the roll number. For others, it's a password.
-            const isPasswordCorrect = foundUser.role === 'Student'
-                ? password === foundUser.rollNumber
-                : password === 'password123'; // Using a generic password for mock staff
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
 
-            if (isPasswordCorrect) {
-                setUser(foundUser);
-                localStorage.setItem('user', JSON.stringify(foundUser)); // Save to local storage
-                return true;
+            if (!response.ok) {
+                return false;
             }
+
+            const userData = await response.json();
+            setUser(userData);
+            localStorage.setItem('user', JSON.stringify(userData));
+            return true;
+        } catch (error) {
+            console.error('Login failed:', error);
+            return false;
         }
-        return false;
     }
 
     const logout = () => {
         setUser(null);
-        localStorage.removeItem('user'); // Clear from local storage
-        // You might want to redirect to login page here
+        localStorage.removeItem('user');
     }
 
     return (
@@ -61,3 +64,5 @@ export function useAuth() {
     }
     return context;
 }
+
+    

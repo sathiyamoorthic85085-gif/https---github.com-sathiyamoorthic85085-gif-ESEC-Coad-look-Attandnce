@@ -40,7 +40,6 @@ export default function Login() {
   const [signupRollNumber, setSignupRollNumber] = useState("");
   const [signupRegisterNumber, setSignupRegisterNumber] = useState("");
   
-  // In a real app, fetch this from DB
   const mockDepartments: Department[] = [
       { id: 'DPT01', name: 'Computer Science' },
       { id: 'DPT02', name: 'Electrical Engineering' },
@@ -250,3 +249,5 @@ export default function Login() {
     </Tabs>
   );
 }
+
+    
