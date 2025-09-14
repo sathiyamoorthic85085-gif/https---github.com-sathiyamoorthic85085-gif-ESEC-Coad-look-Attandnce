@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -120,10 +121,12 @@ export default function Login() {
             title: "Registration Complete",
             description: "You can now log in with your credentials.",
         });
+        // Optionally, switch to the login tab
     } else {
+        const errorData = await response.json();
         toast({
             title: "Registration Failed",
-            description: "Could not create user.",
+            description: errorData.message || "Could not create user.",
             variant: 'destructive',
         });
     }
@@ -223,7 +226,7 @@ export default function Login() {
                 {signupRole === 'Student' ? (
                 <>
                     <div className="space-y-2">
-                        <Label htmlFor="register-roll">Roll Number (Password)</Label>
+                        <Label htmlFor="register-roll">Roll Number (Used as Password)</Label>
                         <Input id="register-roll" placeholder="Your Roll Number" required value={signupRollNumber} onChange={e => setSignupRollNumber(e.target.value)} />
                     </div>
                     <div className="space-y-2">
@@ -249,5 +252,3 @@ export default function Login() {
     </Tabs>
   );
 }
-
-    

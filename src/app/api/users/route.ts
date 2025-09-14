@@ -1,3 +1,4 @@
+
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import bcrypt from 'bcrypt';
@@ -25,7 +26,7 @@ export async function POST(request: Request) {
             data: {
                 name,
                 email,
-                password: passwordHash,
+                password: passwordHash, // This will be undefined for students, which is correct
                 role,
                 department,
                 rollNumber,
@@ -39,6 +40,9 @@ export async function POST(request: Request) {
 
     } catch (error) {
         console.error(error);
+        if ((error as any).code === 'P2002' && (error as any).meta?.target?.includes('email')) {
+             return NextResponse.json({ message: 'An account with this email already exists.' }, { status: 409 });
+        }
         return NextResponse.json({ message: 'Failed to create user' }, { status: 500 });
     }
 }

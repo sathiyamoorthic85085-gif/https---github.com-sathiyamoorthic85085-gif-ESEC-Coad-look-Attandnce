@@ -20,7 +20,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
     }
 
-    const isPasswordCorrect = user.role === 'Student' ? password === user.rollNumber : await bcrypt.compare(password, user.password!);
+    let isPasswordCorrect = false;
+    if (user.role === 'Student') {
+        // For students, the password is their roll number and is not hashed.
+        isPasswordCorrect = password === user.rollNumber;
+    } else if (user.password) {
+        // For all other users, compare the provided password with the stored hash.
+        isPasswordCorrect = await bcrypt.compare(password, user.password);
+    }
 
     if (!isPasswordCorrect) {
       return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
