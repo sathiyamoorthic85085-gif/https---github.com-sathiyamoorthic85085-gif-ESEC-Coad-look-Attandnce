@@ -2,11 +2,10 @@
 "use client";
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import type { User } from '@/lib/types';
+import { useUser as useStackUser } from '@stackframe/stack';
 
 interface AuthContextType {
     user: User | null;
-    login: (email: string, password: string) => Promise<boolean>;
-    register: (details: Omit<User, 'id' | 'passwordHash' | 'imageUrl' | 'classId' | 'rollNumber' | 'registerNumber' | 'mobileNumber'> & { password: string }) => Promise<boolean>;
     logout: () => void;
     setUser: (user: User | null) => void;
 }
@@ -14,52 +13,51 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+    const { user: stackUser, isLoading: isStackLoading } = useStackUser();
     const [user, setUser] = useState<User | null>(null);
 
-    useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
+     useEffect(() => {
+        if (!isStackLoading) {
+            if (stackUser) {
+                // User is logged in via Stack, create our app-specific user object
+                const role = (stackUser.publicMetadata as any)?.role || 'Student'; // Default role
+                const department = (stackUser.publicMetadata as any)?.department || 'N/A';
+                const classId = (stackUser.publicMetadata as any)?.classId;
+                const rollNumber = (stackUser.publicMetadata as any)?.rollNumber;
+
+                const appUser: User = {
+                    id: stackUser.id,
+                    name: stackUser.displayName || stackUser.primaryIdentifier || 'User',
+                    email: stackUser.primaryEmail?.email || '',
+                    role: role,
+                    department: department,
+                    imageUrl: stackUser.avatarUrl || `https://picsum.photos/seed/${stackUser.id}/100/100`,
+                    classId: classId,
+                    rollNumber: rollNumber,
+                };
+                setUser(appUser);
+            } else {
+                // User is not logged in via Stack
+                setUser(null);
+            }
         }
-    }, []);
+    }, [stackUser, isStackLoading]);
 
-    const login = async (email: string, password: string): Promise<boolean> => {
-       const response = await fetch('/api/auth/login', {
-           method: 'POST',
-           headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ email, password })
-       });
-
-       if (response.ok) {
-           const { user: loggedInUser } = await response.json();
-           setUser(loggedInUser);
-           localStorage.setItem('user', JSON.stringify(loggedInUser));
-           window.location.href = '/dashboard';
-           return true;
-       }
-       return false;
-    }
-
-    const register = async (details: Omit<User, 'id' | 'passwordHash' | 'imageUrl'> & { password: string }): Promise<boolean> => {
-        const response = await fetch('/api/auth/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(details)
-        });
-        
-        return response.ok;
-    }
 
     const logout = () => {
         setUser(null);
-        localStorage.removeItem('user');
-        document.cookie = 'user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-        document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        // Stack's logout is handled automatically when session ends.
+        // For an explicit sign-out, you might need a Stack-specific function
+        // This is a simple redirect for now.
         window.location.href = '/login';
     }
 
+    // Login and Register are now handled by Stack's UI components, so we remove the functions
+    const login = async () => true;
+    const register = async () => true;
+
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, setUser }}>
+        <AuthContext.Provider value={{ user, logout, setUser }}>
             {children}
         </AuthContext.Provider>
     );

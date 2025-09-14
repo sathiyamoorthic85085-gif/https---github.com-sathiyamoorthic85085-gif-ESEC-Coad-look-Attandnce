@@ -1,43 +1,74 @@
-"use server";
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
-import { User } from '@/lib/types';
+"use client";
+
+import { useUser } from "@stackframe/stack";
+import { redirect } from "next/navigation";
+import { useEffect } from "react";
 import AdminDashboard from "@/components/AdminDashboard";
 import AdvisorDashboard from "@/components/AdvisorDashboard";
 import FacultyDashboard from "@/components/FacultyDashboard";
 import HodDashboard from "@/components/HodDashboard";
 import StudentDashboard from "@/components/StudentDashboard";
 import DashboardLayout from "@/components/DashboardLayout";
+import { useAuth } from "@/context/AuthContext";
 
-// This is a server component that will redirect based on role
-export default async function DashboardPage() {
-    const cookieStore = cookies();
-    const userCookie = cookieStore.get('user');
+export default function DashboardPage() {
+  const { user: stackUser, isLoading } = useUser();
+  const { user: authUser, setUser } = useAuth();
 
-    if (!userCookie) {
-        redirect('/login');
+  useEffect(() => {
+    if (!isLoading && stackUser) {
+      const userRole = (stackUser.publicMetadata as any)?.role;
+      if (userRole && (!authUser || authUser.id !== stackUser.id || authUser.role !== userRole)) {
+        setUser({
+          id: stackUser.id,
+          name: stackUser.displayName || stackUser.primaryEmail?.email || "User",
+          email: stackUser.primaryEmail?.email || "",
+          role: userRole,
+          imageUrl: stackUser.avatarUrl || `https://picsum.photos/seed/${stackUser.id}/100/100`,
+          // The following are mock values and should be populated from your DB
+          department: (stackUser.publicMetadata as any)?.department || "Computer Science",
+          classId: (stackUser.publicMetadata as any)?.classId || "CLS01",
+          rollNumber: (stackUser.publicMetadata as any)?.rollNumber || "ES24EIXX",
+        });
+      }
     }
+  }, [stackUser, isLoading, authUser, setUser]);
 
-    try {
-        const user: User = JSON.parse(userCookie.value);
+  if (isLoading || !authUser) {
+    return (
+       <DashboardLayout>
+            <div className="flex h-full items-center justify-center">
+                <p>Loading...</p>
+            </div>
+      </DashboardLayout>
+    );
+  }
 
-        switch (user.role) {
-            case 'Admin':
-                redirect('/dashboard/admin');
-            case 'HOD':
-                redirect('/dashboard/hod');
-            case 'Faculty':
-                redirect('/dashboard/faculty');
-            case 'Student':
-                redirect('/dashboard/student');
-            case 'Advisor':
-                redirect('/dashboard/advisor');
-            default:
-                redirect('/login');
-        }
-    } catch (error) {
-        console.error("Failed to parse user cookie:", error);
-        redirect('/login');
+  if (!stackUser) {
+    redirect("/login");
+    return null;
+  }
+
+  const renderDashboard = () => {
+    switch (authUser?.role) {
+      case "Admin":
+        return <AdminDashboard />;
+      case "HOD":
+        return <HodDashboard />;
+      case "Faculty":
+        return <FacultyDashboard />;
+      case "Student":
+        return <StudentDashboard />;
+      case "Advisor":
+        return <AdvisorDashboard />;
+      default:
+        return <p>No dashboard assigned for your role.</p>;
     }
+  };
 
+  return (
+    <DashboardLayout>
+        {renderDashboard()}
+    </DashboardLayout>
+  )
 }
