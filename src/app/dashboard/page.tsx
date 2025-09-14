@@ -1,58 +1,43 @@
-"use client";
+"use server";
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { User } from '@/lib/types';
 import AdminDashboard from "@/components/AdminDashboard";
 import AdvisorDashboard from "@/components/AdvisorDashboard";
 import FacultyDashboard from "@/components/FacultyDashboard";
 import HodDashboard from "@/components/HodDashboard";
 import StudentDashboard from "@/components/StudentDashboard";
-import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 
+// This is a server component that will redirect based on role
+export default async function DashboardPage() {
+    const cookieStore = cookies();
+    const userCookie = cookieStore.get('user');
 
-export default function DashboardPage() {
-    const { user } = useAuth();
-    const router = useRouter();
+    if (!userCookie) {
+        redirect('/login');
+    }
 
-    useEffect(() => {
-        if (!user) {
-            router.push('/login');
-        }
-    }, [user, router]);
+    try {
+        const user: User = JSON.parse(userCookie.value);
 
-
-    const renderDashboard = () => {
-        if (!user) {
-            return (
-                 <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
-                    <p>Redirecting to login...</p>
-                 </div>
-            );
-        }
         switch (user.role) {
             case 'Admin':
-                return <AdminDashboard />;
+                redirect('/dashboard/admin');
             case 'HOD':
-                return <HodDashboard />;
+                redirect('/dashboard/hod');
             case 'Faculty':
-                return <FacultyDashboard />;
+                redirect('/dashboard/faculty');
             case 'Student':
-                return <StudentDashboard />;
+                redirect('/dashboard/student');
             case 'Advisor':
-                return <AdvisorDashboard />;
+                redirect('/dashboard/advisor');
             default:
-                 router.push('/login');
-                 return null;
+                redirect('/login');
         }
+    } catch (error) {
+        console.error("Failed to parse user cookie:", error);
+        redirect('/login');
     }
 
-    if (!user) {
-        return renderDashboard();
-    }
-
-    return (
-        <DashboardLayout>
-            {renderDashboard()}
-        </DashboardLayout>
-    )
 }
