@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import bcrypt from 'bcrypt';
 
 export async function GET() {
   try {
@@ -15,11 +16,16 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { name, email, password, role, department, rollNumber, registerNumber } = body;
         
+        let passwordHash;
+        if (role !== 'Student' && password) {
+          passwordHash = await bcrypt.hash(password, 10);
+        }
+
         const newUser = await prisma.user.create({
             data: {
                 name,
                 email,
-                password, // Note: In production, hash this password!
+                password: passwordHash,
                 role,
                 department,
                 rollNumber,
@@ -27,7 +33,10 @@ export async function POST(request: Request) {
                 imageUrl: `https://picsum.photos/seed/${rollNumber || email}/100/100`,
             }
         });
-        return NextResponse.json(newUser, { status: 201 });
+        
+        const { password: _, ...userWithoutPassword } = newUser;
+        return NextResponse.json(userWithoutPassword, { status: 201 });
+
     } catch (error) {
         console.error(error);
         return NextResponse.json({ message: 'Failed to create user' }, { status: 500 });

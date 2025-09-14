@@ -1,5 +1,8 @@
+
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 export async function POST(request: Request) {
   try {
@@ -17,21 +20,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
     }
 
-    // In a real app, you would use bcrypt.compare to check the password
-    const isPasswordCorrect = user.role === 'Student' ? password === user.rollNumber : password === user.password;
+    const isPasswordCorrect = user.role === 'Student' ? password === user.rollNumber : await bcrypt.compare(password, user.password!);
 
     if (!isPasswordCorrect) {
       return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
     }
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      process.env.JWT_SECRET!,
+      { expiresIn: '8h' }
+    );
     
-    // Don't send password back to client
     const { password: _, ...userWithoutPassword } = user;
 
-    return NextResponse.json(userWithoutPassword);
+    return NextResponse.json({ token, user: userWithoutPassword });
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
 }
-
-    

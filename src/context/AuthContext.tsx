@@ -1,3 +1,4 @@
+
 "use client";
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import type { User } from '@/lib/types';
@@ -7,17 +8,21 @@ interface AuthContextType {
     login: (email: string, password: string) => Promise<boolean>;
     logout: () => void;
     setUser: (user: User | null) => void;
+    token: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
+    const [token, setToken] = useState<string | null>(null);
 
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
-        if (storedUser) {
+        const storedToken = localStorage.getItem('token');
+        if (storedUser && storedToken) {
             setUser(JSON.parse(storedUser));
+            setToken(storedToken);
         }
     }, []);
 
@@ -35,9 +40,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 return false;
             }
 
-            const userData = await response.json();
-            setUser(userData);
-            localStorage.setItem('user', JSON.stringify(userData));
+            const data = await response.json();
+            setUser(data.user);
+            setToken(data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            localStorage.setItem('token', data.token);
             return true;
         } catch (error) {
             console.error('Login failed:', error);
@@ -47,11 +54,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const logout = () => {
         setUser(null);
+        setToken(null);
         localStorage.removeItem('user');
+        localStorage.removeItem('token');
     }
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, setUser }}>
+        <AuthContext.Provider value={{ user, token, login, logout, setUser }}>
             {children}
         </AuthContext.Provider>
     );
@@ -64,5 +73,3 @@ export function useAuth() {
     }
     return context;
 }
-
-    
