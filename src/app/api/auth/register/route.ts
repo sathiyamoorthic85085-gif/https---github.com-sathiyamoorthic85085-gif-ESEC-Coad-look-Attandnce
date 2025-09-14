@@ -52,7 +52,7 @@ export async function POST(request: Request) {
             passwordHash,
             role: role,
         };
-
+        
         const createUserResponse = await fetch(`${api}/User`, {
             method: 'POST',
             headers: {
@@ -62,17 +62,16 @@ export async function POST(request: Request) {
             body: JSON.stringify([newUser]) // Neon API expects an array of objects
         });
         
-        if (!createUserResponse.ok) {
+        if (createUserResponse.status !== 201) {
             const errorBody = await createUserResponse.text();
             console.error('Neon user creation failed:', errorBody);
             return NextResponse.json({ message: 'Failed to create user in database', details: errorBody }, { status: 500 });
         }
 
-        const createdUser = (await createUserResponse.json())[0];
-        
-        const { passwordHash: _, ...userWithoutPassword } = createdUser;
+        // On success, Neon returns 201 Created with an empty body.
+        // We don't need to parse the response, just confirm the status.
+        return NextResponse.json({ message: "✅ Registered successfully" }, { status: 201 });
 
-        return NextResponse.json({ user: userWithoutPassword, message: "✅ Registered successfully" }, { status: 201 });
     } catch (error) {
         console.error('Registration error:', error);
         return NextResponse.json({ message: '❌ Registration failed' }, { status: 500 });
