@@ -40,7 +40,7 @@ export default function Login() {
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
-  const [signupRole, setSignupRole] = useState<"student" | "faculty" | "admin" | "">("");
+  const [signupRole, setSignupRole] = useState<UserRole | "">("");
 
   
   const { login } = useAuth();
@@ -196,14 +196,16 @@ export default function Login() {
               </div>
                <div className="space-y-2">
                 <Label htmlFor="register-role">Role</Label>
-                <Select required value={signupRole} onValueChange={(value) => setSignupRole(value as "student" | "faculty" | "admin" | "")}>
+                <Select required value={signupRole} onValueChange={(value) => setSignupRole(value as UserRole | "")}>
                     <SelectTrigger id="register-role">
                         <SelectValue placeholder="Select a role" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="student">Student</SelectItem>
-                        <SelectItem value="faculty">Faculty</SelectItem>
-                        <SelectItem value="admin">Admin</SelectItem>
+                        <SelectItem value="Student">Student</SelectItem>
+                        <SelectItem value="Faculty">Faculty</SelectItem>
+                        <SelectItem value="HOD">HOD</SelectItem>
+                        <SelectItem value="Advisor">Advisor</SelectItem>
+                        <SelectItem value="Admin">Admin</SelectItem>
                     </SelectContent>
                 </Select>
               </div>

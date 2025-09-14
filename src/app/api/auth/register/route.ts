@@ -13,6 +13,11 @@ export async function POST(request: Request) {
             return NextResponse.json({ message: 'Name, email, password, and role are required' }, { status: 400 });
         }
 
+        const allowedRoles: UserRole[] = ['Admin', 'HOD', 'Faculty', 'Student', 'Advisor'];
+        if (!allowedRoles.includes(role)) {
+            return NextResponse.json({ message: 'Invalid role specified' }, { status: 400 });
+        }
+
         const existingUser = await prisma.user.findUnique({ where: { email } });
         if (existingUser) {
             return NextResponse.json({ message: 'User with this email already exists' }, { status: 409 });
@@ -25,7 +30,7 @@ export async function POST(request: Request) {
                 name,
                 email,
                 passwordHash,
-                role: role || 'student',
+                role: role,
             },
         });
 
