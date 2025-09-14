@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useRef, useEffect } from 'react';
+import { useState, useTransition, useRef, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { Camera, X, CheckCircle, XCircle, Wand2, Loader2 } from 'lucide-react';
 
@@ -10,8 +10,8 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { generateDressCodeRecommendations } from '@/ai/flows/generate-dress-code-recommendations';
 import ResultsTable from './ResultsTable';
-import type { AttendanceRecord, PeriodAttendance } from '@/lib/types';
-import { mockAttendanceData, mockViolations } from '@/lib/mock-data';
+import type { AttendanceRecord } from '@/lib/types';
+import { mockViolations } from '@/lib/mock-data';
 import { useAuth } from '@/context/AuthContext';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
@@ -20,6 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 interface DetectionResult {
   compliant: boolean;
   violation?: string;
+  confidence: number;
 }
 
 export default function CodeCheck() {
@@ -28,14 +29,24 @@ export default function CodeCheck() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [detectionResult, setDetectionResult] = useState<DetectionResult | null>(null);
   const [recommendations, setRecommendations] = useState<string | null>(null);
-  const [attendanceData, setAttendanceData] = useState<AttendanceRecord[]>(mockAttendanceData);
+  const [attendanceData, setAttendanceData] = useState<AttendanceRecord[]>([]);
   const [isPending, startTransition] = useTransition();
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<string>("1");
 
   const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
+
+   const fetchAttendance = useCallback(async () => {
+    // This function will need to be implemented to fetch real attendance data
+    // For now, it will be empty as we populate via predictions.
+    // In a real app, you'd fetch today's attendance state from your DB.
+    console.log("Fetching attendance...");
+  }, []);
+
+  useEffect(() => {
+    fetchAttendance();
+  }, [fetchAttendance]);
 
   useEffect(() => {
     const getCameraPermission = async () => {
@@ -51,10 +62,10 @@ export default function CodeCheck() {
       }
       try {
         const stream = await navigator.mediaDevices.getUserMedia({video: true});
-        setHasCameraPermission(true);
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
+        setHasCameraPermission(true);
       } catch (error) {
         console.error('Error accessing camera:', error);
         setHasCameraPermission(false);
@@ -76,11 +87,7 @@ export default function CodeCheck() {
 
   const handleCaptureAndDetect = async () => {
     if (!videoRef.current || !user) {
-      toast({
-        title: 'Error',
-        description: 'Camera or user not available.',
-        variant: 'destructive',
-      });
+      toast({ title: 'Error', description: 'Camera or user not available.', variant: 'destructive' });
       return;
     }
 
@@ -88,11 +95,7 @@ export default function CodeCheck() {
     setDetectionResult(null);
     setRecommendations(null);
 
-    const canvas = canvasRef.current ?? document.createElement('canvas');
-    if (!canvasRef.current) {
-        canvasRef.current = canvas;
-    }
-
+    const canvas = document.createElement('canvas');
     const video = videoRef.current;
     const context = canvas.getContext('2d');
     
@@ -102,55 +105,68 @@ export default function CodeCheck() {
 
     const capturedImage = canvas.toDataURL('image/jpeg');
     setImagePreview(capturedImage);
-
-    // This is where you would call your actual ML model API.
-    // For now, we simulate the detection process.
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    const isCompliant = Math.random() > 0.4; // Simulate compliance check
     
-    const userAttendanceIndex = attendanceData.findIndex(record => record.userId === user.id);
+    const fetchRes = await fetch(capturedImage);
+    const blob = await fetchRes.blob();
 
-    if (userAttendanceIndex === -1) {
-        toast({ title: "User not in attendance list", variant: "destructive" });
-        setIsProcessing(false);
-        return;
-    }
+    const formData = new FormData();
+    formData.append("file", blob, 'capture.jpg');
+    formData.append("user_id", user.id);
 
-    // Create a deep copy to avoid direct state mutation
-    const newAttendanceData = JSON.parse(JSON.stringify(attendanceData));
-    const userRecord = newAttendanceData[userAttendanceIndex];
-    const periodIndex = userRecord.periods.findIndex((p: PeriodAttendance) => p.period === parseInt(selectedPeriod, 10));
-
-    if (periodIndex === -1) {
-        toast({ title: "Selected period not found for this user", variant: "destructive" });
-        setIsProcessing(false);
-        return;
-    }
-
-    if (isCompliant) {
-      setDetectionResult({ compliant: true });
-      userRecord.periods[periodIndex].status = 'Compliant';
-      userRecord.periods[periodIndex].violation = undefined;
-    } else {
-      const violation = mockViolations[Math.floor(Math.random() * mockViolations.length)];
-      setDetectionResult({ compliant: false, violation });
-      userRecord.periods[periodIndex].status = 'Non-Compliant';
-      userRecord.periods[periodIndex].violation = violation;
-
-      startTransition(async () => {
-        try {
-          const result = await generateDressCodeRecommendations({ detectedViolations: violation });
-          setRecommendations(result.recommendations);
-        } catch (error) {
-          console.error("AI recommendation failed:", error);
-          setRecommendations("Could not generate recommendations at this time.");
-        }
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/predict`, {
+        method: "POST",
+        body: formData,
+        headers: { "X-APP-KEY": process.env.NEXT_PUBLIC_APP_KEY! },
       });
-    }
 
-    setAttendanceData(newAttendanceData);
-    setIsProcessing(false);
+      if (!res.ok) throw new Error(`Server responded with ${res.status}`);
+      
+      const data = await res.json();
+      const isCompliant = data.prediction === 'compliant';
+      const violation = isCompliant ? undefined : (data.violation || mockViolations[Math.floor(Math.random() * mockViolations.length)]);
+
+      setDetectionResult({
+          compliant: isCompliant,
+          violation: violation,
+          confidence: data.confidence
+      });
+      
+      // Save prediction to our own DB
+      await fetch('/api/predictions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+              userId: user.id,
+              label: data.prediction,
+              confidence: data.confidence,
+              imageId: 'live_capture' // In a real app, you'd upload the image and get an ID
+          })
+      });
+
+      // Refetch attendance to update the table
+      fetchAttendance();
+      
+      toast({ title: "Analysis Complete", description: "Dress code compliance has been checked." });
+
+      if (!isCompliant) {
+        startTransition(async () => {
+          try {
+            const result = await generateDressCodeRecommendations({ detectedViolations: violation });
+            setRecommendations(result.recommendations);
+          } catch (error) {
+            console.error("AI recommendation failed:", error);
+            setRecommendations("Could not generate recommendations at this time.");
+          }
+        });
+      }
+
+    } catch (error: any) {
+      console.error("Upload failed:", error);
+      toast({ title: "Analysis Failed", description: error.message || "An unknown error occurred.", variant: "destructive" });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
