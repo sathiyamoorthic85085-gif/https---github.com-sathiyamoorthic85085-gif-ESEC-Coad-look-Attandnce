@@ -44,6 +44,7 @@ export const mockUsers: User[] = [
     { id: 'USR007', name: 'Prof. Vikram Rao', email: 'vikram.rao@example.com', role: 'HOD', department: 'Electrical Engineering', imageUrl: 'https://picsum.photos/seed/USR007/100/100' },
     { id: 'USR008', name: 'Dr. Nisha Iyer', email: 'nisha.iyer@example.com', role: 'Advisor', department: 'Computer Science', imageUrl: 'https://picsum.photos/seed/USR008/100/100', classId: 'CLS01' },
     { id: 'USR009', name: 'Mr. Alok Verma', email: 'alok.verma@example.com', role: 'Advisor', department: 'Electrical Engineering', imageUrl: 'https://picsum.photos/seed/USR009/100/100', classId: 'CLS02' },
+    { id: 'USR010', name: 'Sathiyamoorthi C', email: 'sathiyamoorthi.c4546@gmail.com', role: 'Admin', department: 'Administration', imageUrl: 'https://picsum.photos/seed/USR010/100/100' },
 ];
 
 export const mockDepartments: Department[] = [
