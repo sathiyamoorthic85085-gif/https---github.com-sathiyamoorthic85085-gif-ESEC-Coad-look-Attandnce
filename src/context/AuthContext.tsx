@@ -5,7 +5,7 @@ import type { User } from '@/lib/types';
 
 interface AuthContextType {
     user: User | null;
-    login: (email: string, password: string) => Promise<boolean>;
+    login: (email: string, password: string, role: User['role']) => Promise<boolean>;
     logout: () => void;
     setUser: (user: User | null) => void;
     token: string | null;
@@ -26,14 +26,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }, []);
 
-    const login = async (email: string, password: string): Promise<boolean> => {
+    const login = async (email: string, password: string, role: User['role']): Promise<boolean> => {
         try {
             const response = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ email, password, role }),
             });
 
             if (!response.ok) {

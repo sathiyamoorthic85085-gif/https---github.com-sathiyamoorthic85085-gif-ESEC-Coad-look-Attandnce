@@ -10,88 +10,102 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id              String    @id @default(uuid())
+model Student {
+  id              String   @id @default(uuid())
   name            String
-  email           String    @unique
-  password        String?
-  role            String // 'Admin', 'HOD', 'Faculty', 'Student', 'Advisor'
+  email           String   @unique
+  passwordHash    String
   department      String?
-  classId         String?
-  rollNumber      String?   @unique
-  registerNumber  String?
-  mobileNumber    String?
+  classId         String?  @map("class")
+  rollNumber      String?  @unique
+  registerNumber  String?  @unique
   imageUrl        String?
-  created_at      DateTime  @default(now())
+  createdAt       DateTime @default(now()) @map("created_at")
 
-  predictions     Prediction[]
-  leaveRequests   LeaveRequest[]
-  attendance      AttendanceRecord[]
+  @@map("students")
+}
+
+model Faculty {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  department   String?
+  role         String // HOD, Lecturer, Admin, Advisor
+  imageUrl     String?
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("faculty")
+}
+
+
+model Image {
+  id        String       @id @default(uuid())
+  filePath  String       @map("file_path")
+  createdAt DateTime     @default(now()) @map("created_at")
+  userId    String       @map("user_id")
+  user      User         @relation(fields: [userId], references: [id])
+  Prediction Prediction[]
+
+  @@map("images")
+}
+
+model Prediction {
+  id         String   @id @default(uuid())
+  label      String
+  confidence Float
+  createdAt  DateTime @default(now()) @map("created_at")
+  imageId    String   @unique @map("image_id")
+  image      Image    @relation(fields: [imageId], references: [id])
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id])
+
+  @@map("predictions")
+}
+
+model User {
+  id           String       @id @default(cuid())
+  name         String?
+  email        String?      @unique
+  emailVerified DateTime?    @map("email_verified")
+  image        String?
+  predictions  Prediction[]
+  Image        Image[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
   @@map("users")
 }
 
 model Department {
-  id      String @id
-  name    String @unique
-  classes Class[]
+    id String @id @default(uuid())
+    name String @unique
 }
 
 model Class {
-  id           String @id
-  name         String
-  departmentId String
-  department   Department @relation(fields: [departmentId], references: [id])
+    id String @id @default(uuid())
+    name String
+    departmentId String
 }
-
-
-model Prediction {
-  id          String   @id @default(uuid())
-  user_id     String
-  label       String
-  confidence  Float
-  imageId     String
-  created_at  DateTime @default(now())
-  user        User     @relation(fields: [user_id], references: [id])
-
-  @@map("predictions")
-}
-
-model Image {
-  id         String   @id @default(uuid())
-  userId     String
-  filePath   String
-  created_at DateTime @default(now())
-
-  @@map("images")
-}
-
 
 model LeaveRequest {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  type      String // 'Leave' or 'OD'
-  startDate DateTime
-  endDate   DateTime
-  reason    String
-  status    String   @default("Pending Advisor")
-  aiSummary String?
-  createdAt DateTime @default(now())
-
-  @@map("leave_requests")
+    id String @id @default(uuid())
+    userId String
+    userName String
+    userRole String
+    type String
+    startDate DateTime
+    endDate DateTime
+    reason String
+    status String
+    aiSummary String?
+    substitutionAssignedTo String?
 }
 
 model AttendanceRecord {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  date      DateTime
-  period    Int
-  subject   String
-  status    String // 'Compliant', 'Non-Compliant', 'Absent'
-  violation String?
-
-  @@unique([userId, date, period])
-  @@map("attendance_records")
+    id String @id @default(uuid())
+    name String
+    date DateTime
+    userId String
+    imageUrl String
 }

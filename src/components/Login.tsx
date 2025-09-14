@@ -32,6 +32,8 @@ export default function Login() {
   const [isSigningUp, setIsSigningUp] = useState(false);
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const [loginRole, setLoginRole] = useState<UserRole | "">("");
+
 
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
@@ -55,9 +57,17 @@ export default function Login() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!loginEmail || !loginPassword || !loginRole) {
+      toast({
+        title: "Missing fields",
+        description: "Please provide email, password, and role.",
+        variant: "destructive",
+      });
+      return;
+    }
     setIsLoggingIn(true);
 
-    const success = await login(loginEmail, loginPassword);
+    const success = await login(loginEmail, loginPassword, loginRole as UserRole);
     
     if (success) {
         toast({
@@ -79,11 +89,9 @@ export default function Login() {
     e.preventDefault();
     setIsSigningUp(true);
 
-    let isFormValid = signupName && signupEmail && signupRole;
+    let isFormValid = signupName && signupEmail && signupRole && signupPassword;
     if (signupRole === 'Student') {
         isFormValid = isFormValid && signupRollNumber && signupRegisterNumber;
-    } else {
-        isFormValid = isFormValid && signupPassword;
     }
 
     if (signupRole && signupRole !== 'Admin' && !signupDepartment) {
@@ -100,10 +108,10 @@ export default function Login() {
       return;
     }
 
-    const newUser: Omit<User, 'id'|'imageUrl'> = {
+    const newUser: Omit<User, 'id'|'imageUrl'> & { password?: string } = {
         name: signupName,
         email: signupEmail,
-        password: signupRole === 'Student' ? signupRollNumber : signupPassword,
+        password: signupPassword,
         role: signupRole as UserRole,
         department: signupRole === 'Admin' ? 'Administration' : signupDepartment,
         rollNumber: signupRole === 'Student' ? signupRollNumber : undefined,
@@ -155,8 +163,23 @@ export default function Login() {
                 <Input id="login-email" type="email" placeholder="m@example.com" required value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="login-password">Password or Roll Number</Label>
+                <Label htmlFor="login-password">Password</Label>
                 <Input id="login-password" type="password" required value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="login-role">Role</Label>
+                 <Select required value={loginRole} onValueChange={(value) => setLoginRole(value as UserRole)}>
+                    <SelectTrigger id="login-role">
+                        <SelectValue placeholder="Select your role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="Student">Student</SelectItem>
+                        <SelectItem value="Faculty">Faculty</SelectItem>
+                        <SelectItem value="HOD">HOD</SelectItem>
+                        <SelectItem value="Admin">Admin</SelectItem>
+                        <SelectItem value="Advisor">Advisor</SelectItem>
+                    </SelectContent>
+                </Select>
               </div>
             </CardContent>
             <CardFooter>
@@ -226,12 +249,16 @@ export default function Login() {
                 {signupRole === 'Student' ? (
                 <>
                     <div className="space-y-2">
-                        <Label htmlFor="register-roll">Roll Number (Used as Password)</Label>
+                        <Label htmlFor="register-roll">Roll Number</Label>
                         <Input id="register-roll" placeholder="Your Roll Number" required value={signupRollNumber} onChange={e => setSignupRollNumber(e.target.value)} />
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="register-reg">Register Number</Label>
                         <Input id="register-reg" placeholder="Your Register Number" required value={signupRegisterNumber} onChange={e => setSignupRegisterNumber(e.target.value)} />
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="register-password">Password</Label>
+                        <Input id="register-password" type="password" required value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} />
                     </div>
                 </>
               ) : (

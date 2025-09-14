@@ -1,42 +1,44 @@
-
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import bcrypt from 'bcrypt';
-
-export async function GET() {
-  try {
-    const users = await prisma.user.findMany();
-    return NextResponse.json(users);
-  } catch (error) {
-    return NextResponse.json({ message: 'Failed to fetch users' }, { status: 500 });
-  }
-}
+import type { UserRole } from '@/lib/types';
 
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { name, email, password, role, department, rollNumber, registerNumber } = body;
+        const { name, email, password, role, department, rollNumber, registerNumber, classId } = body;
         
-        let passwordHash;
-        if (role !== 'Student' && password) {
-          passwordHash = await bcrypt.hash(password, 10);
-        }
+        const passwordHash = await bcrypt.hash(password, 10);
 
-        const newUser = await prisma.user.create({
-            data: {
-                name,
-                email,
-                password: passwordHash, // This will be undefined for students, which is correct
-                role,
-                department,
-                rollNumber,
-                registerNumber,
-                imageUrl: `https://picsum.photos/seed/${rollNumber || email}/100/100`,
-            }
-        });
+        let newUser;
+        if (role === 'Student') {
+            newUser = await prisma.student.create({
+                data: {
+                    name,
+                    email,
+                    passwordHash,
+                    department,
+                    rollNumber,
+                    registerNumber,
+                    classId,
+                    imageUrl: `https://picsum.photos/seed/${email}/100/100`,
+                }
+            });
+        } else { // Faculty, HOD, Admin, Advisor
+            newUser = await prisma.faculty.create({
+                data: {
+                    name,
+                    email,
+                    passwordHash,
+                    role: role as Exclude<UserRole, 'Student'>,
+                    department,
+                    imageUrl: `https://picsum.photos/seed/${email}/100/100`,
+                }
+            });
+        }
         
-        const { password: _, ...userWithoutPassword } = newUser;
-        return NextResponse.json(userWithoutPassword, { status: 201 });
+        const { passwordHash: _, ...userWithoutPassword } = newUser;
+        return NextResponse.json({ ...userWithoutPassword, role }, { status: 201 });
 
     } catch (error) {
         console.error(error);
