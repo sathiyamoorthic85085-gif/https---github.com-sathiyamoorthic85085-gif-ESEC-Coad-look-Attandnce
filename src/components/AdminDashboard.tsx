@@ -15,36 +15,17 @@ import type { User, Department, Class } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { ConfirmationDialog } from './ConfirmationDialog';
 import AttendanceCard from './AttendanceCard';
+import { mockUsers, mockDepartments, mockClasses } from '@/lib/mock-data';
 
 
 export default function AdminDashboard() {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const [users, setUsers] = useState<User[]>([]);
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [classes, setClasses] = useState<Class[]>([]);
+  const [users, setUsers] = useState<User[]>(mockUsers);
+  const [departments, setDepartments] = useState<Department[]>(mockDepartments);
+  const [classes, setClasses] = useState<Class[]>(mockClasses);
   
-  useEffect(() => {
-    // In a real app, you'd fetch these from your DB.
-    // For now we will keep them as mock, but remove other mock data.
-    const mockDepartments: Department[] = [
-        { id: 'DPT01', name: 'Computer Science' },
-        { id: 'DPT02', name: 'Electrical Engineering' },
-        { id: 'DPT03', name: 'Mechanical Engineering' },
-        { id: 'DPT04', name: 'Civil Engineering' },
-    ];
-    const mockClasses: Class[] = [
-        { id: 'CLS01', name: 'II Year, Section A', departmentId: 'DPT01' },
-        { id: 'CLS02', name: 'III Year, Section B', departmentId: 'DPT02' },
-    ];
-    setDepartments(mockDepartments);
-    setClasses(mockClasses);
-
-    fetch('/api/users').then(res => res.json()).then(setUsers);
-  }, [])
-
-
   const [newDepartmentName, setNewDepartmentName] = useState('');
   const [newClassName, setNewClassName] = useState('');
   const [selectedDepartmentForClass, setSelectedDepartmentForClass] = useState('');
@@ -74,7 +55,7 @@ export default function AdminDashboard() {
   
   const handleRemoveUser = (userId: string) => {
     openConfirmationDialog('Are you sure?', `This will permanently delete the user. This action cannot be undone.`, () => {
-        // TODO: Add API call to delete user
+        // In a real app this would be an API call
         setUsers(currentUsers => currentUsers.filter(u => u.id !== userId));
         toast({ title: 'User Removed', description: 'The user has been successfully removed.' });
     });

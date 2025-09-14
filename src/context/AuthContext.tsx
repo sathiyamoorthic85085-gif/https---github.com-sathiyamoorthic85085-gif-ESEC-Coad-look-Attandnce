@@ -1,7 +1,7 @@
 "use client";
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import type { User } from '@/lib/types';
-// Removed mockUsers import
+import { mockUsers } from '@/lib/mock-data'; // Use mock data for login
 
 interface AuthContextType {
     user: User | null;
@@ -24,25 +24,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const login = async (email: string, password: string): Promise<boolean> => {
-        try {
-            const response = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
-            });
+        // Use mock data for authentication
+        const foundUser = mockUsers.find(u => u.email === email);
+        if (foundUser) {
+            // For students, password is the roll number. For others, it's a password.
+            const isPasswordCorrect = foundUser.role === 'Student'
+                ? password === foundUser.rollNumber
+                : password === 'password123'; // Using a generic password for mock staff
 
-            if (!response.ok) {
-                return false;
+            if (isPasswordCorrect) {
+                setUser(foundUser);
+                localStorage.setItem('user', JSON.stringify(foundUser)); // Save to local storage
+                return true;
             }
-
-            const foundUser = await response.json();
-            setUser(foundUser);
-            localStorage.setItem('user', JSON.stringify(foundUser)); // Save to local storage
-            return true;
-        } catch (error) {
-            console.error("Login failed:", error);
-            return false;
         }
+        return false;
     }
 
     const logout = () => {
