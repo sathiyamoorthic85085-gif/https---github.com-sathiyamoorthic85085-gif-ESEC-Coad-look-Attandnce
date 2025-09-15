@@ -65,6 +65,7 @@ export default function UploadPage() {
     formData.append("user_id", user.id);
 
     try {
+      // 1. Get prediction from external service
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/predict`, {
         method: "POST",
         body: formData,
@@ -72,16 +73,33 @@ export default function UploadPage() {
       });
 
       if (!res.ok) {
-        throw new Error(`Server responded with ${res.status}`);
+        throw new Error(`Prediction server responded with ${res.status}`);
       }
 
-      const data = await res.json();
+      const data: CheckResult = await res.json();
       setResult(data);
-       toast({ title: "Analysis Complete", description: "Dress code compliance has been checked." });
+      toast({ title: "Analysis Complete", description: "Dress code compliance has been checked." });
+
+      // 2. Save the prediction to our own database via our API
+      const saveResponse = await fetch('/api/predictions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+              userId: user.id,
+              label: data.prediction,
+              confidence: data.confidence,
+              imageId: 'upload_' + file.name // In a real app, you'd upload the image to storage and get an ID
+          })
+      });
+
+      if (!saveResponse.ok) {
+          throw new Error('Failed to save the prediction to the database.');
+      }
+
 
     } catch (error: any) {
-      console.error("Upload failed:", error);
-      toast({ title: "Upload Failed", description: error.message || "An unknown error occurred.", variant: "destructive" });
+      console.error("Upload process failed:", error);
+      toast({ title: "Process Failed", description: error.message || "An unknown error occurred.", variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
@@ -137,7 +155,7 @@ export default function UploadPage() {
                     <CardTitle>Analysis Result</CardTitle>
                     <CardDescription>The results of the compliance check will appear here.</CardDescription>
                 </CardHeader>
-                <CardContent className="flex items-center justify-center h-full">
+                <CardContent className="flex items-center justify-center h-full min-h-[300px]">
                     {isLoading && <Loader2 className="h-16 w-16 animate-spin text-primary" />}
                     
                     {!isLoading && result && (
@@ -147,8 +165,8 @@ export default function UploadPage() {
                             ) : (
                                 <XCircle className="h-20 w-20 text-red-500" />
                             )}
-                            <h3 className="font-semibold text-2xl">
-                                {result.prediction === 'compliant' ? "Dress Code Compliant" : "Dress Code Violation"}
+                            <h3 className="font-semibold text-2xl capitalize">
+                                {result.prediction.replace('_', ' ')}
                             </h3>
                             <p className="text-sm text-muted-foreground">
                                 {result.prediction === 'non_compliant' && result.violation ? result.violation : `Confidence: ${Math.round(result.confidence * 100)}%`}
@@ -158,7 +176,7 @@ export default function UploadPage() {
                     )}
 
                     {!isLoading && !result && (
-                        <div className="text-muted-foreground">
+                        <div className="text-muted-foreground text-center">
                             <p>Awaiting upload...</p>
                         </div>
                     )}

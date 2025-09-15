@@ -69,7 +69,7 @@ export default function StudentDashboard({ isPreview = false }: StudentDashboard
                     <AvatarFallback>{userName?.[0]}</AvatarFallback>
                 </Avatar>
             </div>
-             <Alert variant="destructive">
+             <Alert variant="default" className="bg-primary/10 border-primary/20">
                 <Bell className="h-4 w-4" />
                 <AlertTitle>Class Notification</AlertTitle>
                 <AlertDescription>
@@ -83,10 +83,10 @@ export default function StudentDashboard({ isPreview = false }: StudentDashboard
                         <CardTitle>⏳ My Attendance</CardTitle>
                     </CardHeader>
                     <CardContent className="flex items-center justify-around gap-4">
-                        <ProgressRing value={overallAttendance} />
-                        <div className="space-y-2 text-center">
+                        <ProgressRing value={overallAttendance} label={`${Math.round(overallAttendance)}%`} />
+                        <div className="space-y-1 text-center">
                             <p className="text-4xl font-bold">{Math.round(overallAttendance)}%</p>
-                            <p className="text-sm text-muted-foreground">Present</p>
+                            <p className="text-sm text-muted-foreground">Overall Present</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -96,10 +96,10 @@ export default function StudentDashboard({ isPreview = false }: StudentDashboard
                         <CardTitle>👕 Style Status</CardTitle>
                     </CardHeader>
                     <CardContent className="flex items-center justify-around gap-4">
-                        <ProgressRing value={overallCompliance} />
-                        <div className="flex items-center justify-center gap-2">
+                        <ProgressRing value={overallCompliance} label={`${Math.round(overallCompliance)}%`} />
+                        <div className="space-y-1 text-center">
                            <p className="text-4xl font-bold">{Math.round(overallCompliance)}%</p>
-                            <p className="text-sm text-muted-foreground self-end pb-1">Compliance</p>
+                            <p className="text-sm text-muted-foreground">Compliance</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -110,10 +110,10 @@ export default function StudentDashboard({ isPreview = false }: StudentDashboard
                          <CardDescription>Latest alerts and updates.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                       <div className="flex items-center gap-4 p-3 rounded-lg bg-white/5">
+                       <div className="flex items-center gap-4 p-3 rounded-lg bg-muted/50">
                          <Bell className="h-6 w-6 text-yellow-400 drop-shadow-[0_0_5px_rgba(255,255,0,0.7)]"/>
                          <div>
-                            <p className="font-semibold text-white/80">Assignment Due</p>
+                            <p className="font-semibold text-foreground/80">Assignment Due</p>
                             <p className="text-xs text-muted-foreground">Your "Data Structures" assignment is due tomorrow.</p>
                          </div>
                        </div>
@@ -128,7 +128,7 @@ export default function StudentDashboard({ isPreview = false }: StudentDashboard
                        {timetable ? (
                            <div className="w-full space-y-2">
                                {timetable.schedule.map(period => (
-                                   <div key={period.period} className="flex items-center justify-between p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+                                   <div key={period.period} className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted/80 transition-colors">
                                        <div className="flex items-center gap-4">
                                             {getStatusIcon(studentAttendance?.periods.find(p => p.period === period.period)?.status || 'Pending')}
                                             <div>

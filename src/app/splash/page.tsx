@@ -29,7 +29,7 @@ export default function SplashPage() {
         </p>
       </div>
       <div className="absolute bottom-6 text-sm text-muted-foreground/50 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
-        Made by ESEC (EIE)
+        Powered by ChromaGrade
       </div>
       <style jsx>{`
         @keyframes fade-in-down {
