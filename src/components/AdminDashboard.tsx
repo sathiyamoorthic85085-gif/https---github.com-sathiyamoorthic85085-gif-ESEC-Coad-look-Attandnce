@@ -57,10 +57,20 @@ export default function AdminDashboard() {
   };
   
   const handleRemoveUser = (userId: string) => {
-    openConfirmationDialog('Are you sure?', `This will permanently delete the user. This action cannot be undone.`, () => {
-        // In a real app this would be an API call
-        setUsers(currentUsers => currentUsers.filter(u => u.id !== userId));
-        toast({ title: 'User Removed', description: 'The user has been successfully removed.' });
+    openConfirmationDialog('Are you sure?', 'This will permanently delete the user. This action cannot be undone.', async () => {
+        const response = await fetch('/api/auth/delete', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId })
+        });
+
+        if(response.ok) {
+            setUsers(currentUsers => currentUsers.filter(u => u.id !== userId));
+            toast({ title: 'User Removed', description: 'The user has been successfully removed.' });
+        } else {
+            const error = await response.json();
+            toast({ title: 'Error removing user', description: error.message, variant: 'destructive'});
+        }
     });
   };
 
@@ -73,7 +83,6 @@ export default function AdminDashboard() {
       id: `DPT${(departments.length + 1).toString().padStart(2, '0')}`,
       name: newDepartmentName,
     };
-    // TODO: API Call
     setDepartments(currentDepartments => [...currentDepartments, newDepartment]);
     setNewDepartmentName('');
     toast({ title: 'Department Added', description: `Successfully added department "${newDepartmentName}".` });
@@ -81,7 +90,6 @@ export default function AdminDashboard() {
 
   const handleRemoveDepartment = (departmentId: string) => {
      openConfirmationDialog('Are you sure?', `This will permanently delete the department and all associated classes. This action cannot be undone.`, () => {
-        // TODO: API Call
         setDepartments(departments => departments.filter(d => d.id !== departmentId));
         setClasses(classes => classes.filter(c => c.departmentId !== departmentId));
         toast({ title: 'Department Removed', description: 'The department has been successfully removed.' });
@@ -99,7 +107,6 @@ export default function AdminDashboard() {
       name: newClassName,
       departmentId: selectedDepartmentForClass,
     };
-    // TODO: API Call
     setClasses(currentClasses => [...currentClasses, newClass]);
     setNewClassName('');
     setSelectedDepartmentForClass('');
@@ -108,7 +115,6 @@ export default function AdminDashboard() {
 
   const handleRemoveClass = (classId: string) => {
     openConfirmationDialog('Are you sure?', `This will permanently delete the class. This action cannot be undone.`, () => {
-        // TODO: API Call
         setClasses(classes => classes.filter(c => c.id !== classId));
         toast({ title: 'Class Removed', description: 'The class has been successfully removed.' });
     });
