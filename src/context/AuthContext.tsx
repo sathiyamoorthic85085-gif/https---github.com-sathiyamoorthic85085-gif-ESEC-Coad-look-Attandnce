@@ -3,8 +3,6 @@ import React, { createContext, useContext, useState, ReactNode, useEffect, useCa
 import { useRouter, usePathname } from 'next/navigation';
 import type { User } from '@/lib/types';
 import { mockUsers } from '@/lib/mock-data';
-import { auth } from '@/lib/firebase';
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut, type User as FirebaseUser } from 'firebase/auth';
 
 interface AuthContextType {
     user: User | null;
@@ -26,19 +24,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const router = useRouter();
     const pathname = usePathname();
     
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
-            if (firebaseUser && firebaseUser.email) {
-                 // Find the user from mock data that matches the authenticated user's email
-                const matchedUser = mockUsers.find(u => u.email.toLowerCase() === firebaseUser.email!.toLowerCase());
-                setUser(matchedUser || null);
-            } else {
-                setUser(null);
-            }
-            setIsLoading(false);
-        });
-
-        return () => unsubscribe();
+     useEffect(() => {
+        // Simulate loading user from a session
+        const sessionUserEmail = sessionStorage.getItem('user_email');
+        if (sessionUserEmail) {
+            const matchedUser = mockUsers.find(u => u.email.toLowerCase() === sessionUserEmail.toLowerCase());
+            setUser(matchedUser || null);
+        }
+        setIsLoading(false);
     }, []);
 
 
@@ -49,37 +42,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
      }, [isLoading, user, pathname, router]);
 
     const login = async (email: string, password?: string): Promise<User | null> => {
-        if (!password) {
-            // This might be a session restoration case, handled by onAuthStateChanged
-            const matchedUser = mockUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
-            if (matchedUser) {
-                setUser(matchedUser);
-                return matchedUser;
-            }
-            return null;
+        const matchedUser = mockUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+        // In a mock setup, we can check for a password if provided, or just log in.
+        if (matchedUser && (!password || matchedUser.password === password)) {
+            setUser(matchedUser);
+            sessionStorage.setItem('user_email', matchedUser.email);
+            return matchedUser;
         }
 
-        try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            const firebaseUser = userCredential.user;
-            if (firebaseUser.email) {
-                const matchedUser = mockUsers.find(u => u.email.toLowerCase() === firebaseUser.email!.toLowerCase());
-                if (matchedUser) {
-                    setUser(matchedUser);
-                    return matchedUser;
-                }
-            }
-            return null;
-        } catch (error) {
-            console.error("Firebase login error:", error);
-            return null;
-        }
+        return null;
     };
 
 
     const logout = async () => {
-        await signOut(auth);
         setUser(null);
+        sessionStorage.removeItem('user_email');
         router.push('/login');
     };
 
