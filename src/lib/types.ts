@@ -4,7 +4,7 @@ export interface User {
     id: string;
     name: string;
     email: string;
-    passwordHash?: string;
+    password?: string;
     role: UserRole;
     department?: string;
     imageUrl?: string;
@@ -74,5 +74,3 @@ export interface Timetable {
     departmentId?: string;
     classId?: string;
 }
-
-    

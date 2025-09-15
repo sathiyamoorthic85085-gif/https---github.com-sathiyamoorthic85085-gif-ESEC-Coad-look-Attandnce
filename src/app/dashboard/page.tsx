@@ -2,7 +2,6 @@
 "use client";
 
 import { redirect } from "next/navigation";
-import { useEffect } from "react";
 import AdminDashboard from "@/components/AdminDashboard";
 import AdvisorDashboard from "@/components/AdvisorDashboard";
 import FacultyDashboard from "@/components/FacultyDashboard";

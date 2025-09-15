@@ -1,8 +1,11 @@
 
 import { NextResponse } from 'next/server';
+// Note: In a real app, you would have a database connection here.
+// Modifying mockUsers won't persist across requests in a stateless environment.
+// This is for simulation purposes only.
 import { mockUsers } from '@/lib/mock-data';
 
-export async function DELETE(request: Request) {
+export async function POST(request: Request) {
     try {
         const { userId } = await request.json();
 

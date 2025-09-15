@@ -1,6 +1,5 @@
 
 import { NextResponse } from 'next/server';
-import { stackServerApp } from '@/stack';
 import { mockUsers } from '@/lib/mock-data';
 import type { User } from '@/lib/types';
 
@@ -13,18 +12,17 @@ export async function POST(request: Request) {
         if (!name || !email || !password || !role) {
             return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
         }
+
+        if (mockUsers.some(u => u.email.toLowerCase() === email.toLowerCase())) {
+            return NextResponse.json({ message: 'User with this email already exists.' }, { status: 409 });
+        }
         
-        // In a real application, you might use Stack to create the user.
-        // const stackUser = await stackServerApp.users.create({
-        //     email: email,
-        //     password: password,
-        //     displayName: name,
-        // });
 
         const newUser: User = {
-            id: `USR${Math.floor(Math.random() * 1000)}`, // Or use stackUser.id
+            id: `USR${Math.floor(Math.random() * 1000)}`,
             name,
             email,
+            password, // In a real app, this should be hashed. Storing for local auth simulation.
             role,
             department: role === 'Admin' ? 'Administration' : department,
             imageUrl: `https://picsum.photos/seed/USR${Math.floor(Math.random() * 1000)}/100/100`,
@@ -33,6 +31,8 @@ export async function POST(request: Request) {
             classId: role === 'Student' ? 'CLS01' : undefined, // Assign a default class for simplicity
         };
 
+        // Note: This only adds to the in-memory array for the purpose of the API.
+        // The frontend state in AuthContext also needs to be updated.
         mockUsers.push(newUser);
 
         return NextResponse.json({ user: newUser }, { status: 201 });

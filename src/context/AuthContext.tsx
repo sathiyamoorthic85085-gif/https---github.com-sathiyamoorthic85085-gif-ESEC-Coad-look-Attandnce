@@ -1,54 +1,96 @@
-
 "use client";
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import type { User, UserRole } from '@/lib/types';
-import { useUser as useStackUser } from '@stackframe/stack';
-import { useRouter } from 'next/navigation';
+import { mockUsers } from '@/lib/mock-data';
 
 interface AuthContextType {
     user: User | null;
     isLoading: boolean;
+    login: (identifier: string, password?: string) => Promise<User | null>;
     logout: () => void;
     setUser: (user: User | null) => void;
+    users: User[];
+    addUser: (user: User) => void;
+    removeUser: (userId: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    // const { user: stackUser, isLoading: isStackLoading } = useStackUser();
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUserState] = useState<User | null>(null);
+    const [users, setUsers] = useState<User[]>(mockUsers);
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
+    const pathname = usePathname();
 
-     useEffect(() => {
-        // To test different dashboards, change the role value below.
-        // Available roles: 'Admin', 'HOD', 'Faculty', 'Student', 'Advisor'
-        const role: UserRole = 'Admin'; 
-
-        const mockUser: User = {
-            id: 'dev-user',
-            name: `${role} User`,
-            email: `${role.toLowerCase()}@example.com`,
-            role: role,
-            department: 'Development',
-            imageUrl: `https://picsum.photos/seed/dev-user/100/100`,
-            classId: 'CLS01',
-            rollNumber: 'DEV001',
-        };
-
-        setUser(mockUser);
+    useEffect(() => {
+        const storedUser = localStorage.getItem('chromagrade_user');
+        if (storedUser) {
+            setUserState(JSON.parse(storedUser));
+        }
         setIsLoading(false);
     }, []);
 
+     useEffect(() => {
+        if (!isLoading && !user && pathname !== '/login' && pathname !== '/register' && pathname !== '/splash' && pathname !== '/') {
+            router.push('/login');
+        }
+     }, [isLoading, user, pathname, router]);
+
+    const setUser = (user: User | null) => {
+        setUserState(user);
+        if (user) {
+            localStorage.setItem('chromagrade_user', JSON.stringify(user));
+        } else {
+            localStorage.removeItem('chromagrade_user');
+        }
+    };
+
+    const login = async (identifier: string, password?: string): Promise<User | null> => {
+        let foundUser: User | undefined;
+
+        if(identifier === 'sathiyamoorthi.c85085@gmail.com' && password === 'pasworad1234567890') {
+             foundUser = users.find(u => u.email === identifier);
+        } else {
+             foundUser = users.find(u => 
+                (u.email.toLowerCase() === identifier.toLowerCase() || u.rollNumber?.toLowerCase() === identifier.toLowerCase()) &&
+                (u.role === 'Student' ? u.rollNumber === password : true)
+            );
+        }
+
+        if (foundUser) {
+            setUser(foundUser);
+            return foundUser;
+        }
+        return null;
+    };
 
     const logout = () => {
         setUser(null);
-        // In a real scenario, you'd also sign out from Stack
         router.push('/login');
+    };
+
+    const addUser = (newUser: User) => {
+        setUsers(prev => [...prev, newUser]);
+    };
+    
+    const removeUser = (userId: string) => {
+        setUsers(prev => prev.filter(u => u.id !== userId));
+    };
+
+    const value = { user, isLoading, login, logout, setUser, users, addUser, removeUser };
+
+    if (isLoading) {
+        return (
+            <div className="flex h-screen w-full items-center justify-center bg-background">
+                <p>Loading application...</p>
+            </div>
+        )
     }
 
     return (
-        <AuthContext.Provider value={{ user, isLoading, logout, setUser }}>
+        <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     );

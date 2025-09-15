@@ -36,12 +36,22 @@ export function AddUserDialog({ onUserAdd, departments }: AddUserDialogProps) {
 
   const handleRoleChange = (value: UserRole | "") => {
     setRole(value);
-    // Reset student-specific fields when role changes
     if (value !== 'Student') {
       setRollNumber("");
       setRegisterNumber("");
+    } else {
+        // If student, password can be pre-filled with roll number
+        setPassword(rollNumber);
     }
   }
+
+  const handleRollNumberChange = (value: string) => {
+      setRollNumber(value);
+      if (role === 'Student') {
+          setPassword(value);
+      }
+  }
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,10 +126,6 @@ export function AddUserDialog({ onUserAdd, departments }: AddUserDialogProps) {
               </Label>
               <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="col-span-3" required />
             </div>
-             <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="password" className="text-right">Password</Label>
-                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="col-span-3" required />
-            </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="role" className="text-right">
                 Role
@@ -142,13 +148,20 @@ export function AddUserDialog({ onUserAdd, departments }: AddUserDialogProps) {
               <>
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="rollNumber" className="text-right">Roll No.</Label>
-                    <Input id="rollNumber" value={rollNumber} onChange={e => setRollNumber(e.target.value)} className="col-span-3" required />
+                    <Input id="rollNumber" value={rollNumber} onChange={e => handleRollNumberChange(e.target.value)} className="col-span-3" required />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="registerNumber" className="text-right">Reg. No.</Label>
                     <Input id="registerNumber" value={registerNumber} onChange={e => setRegisterNumber(e.target.value)} className="col-span-3" required />
                 </div>
               </>
+            )}
+            
+            {role && role !== 'Student' && (
+                 <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="password" className="text-right">Password</Label>
+                    <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="col-span-3" required />
+                </div>
             )}
             
             {role && role !== 'Admin' && (
@@ -168,6 +181,9 @@ export function AddUserDialog({ onUserAdd, departments }: AddUserDialogProps) {
                     </Select>
                 </div>
             )}
+             <p className="text-xs text-muted-foreground col-span-4 px-1">
+                {role === 'Student' ? 'Password will be set to the Roll Number.' : 'Choose a secure password.'}
+             </p>
           </div>
           <DialogFooter>
             <Button type="submit">Create User</Button>

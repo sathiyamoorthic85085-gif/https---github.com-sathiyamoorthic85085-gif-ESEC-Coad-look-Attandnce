@@ -16,14 +16,13 @@ import type { User, Department, Class } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { ConfirmationDialog } from './ConfirmationDialog';
 import AttendanceCard from './AttendanceCard';
-import { mockUsers, mockDepartments, mockClasses } from '@/lib/mock-data';
+import { mockDepartments, mockClasses } from '@/lib/mock-data';
 
 
 export default function AdminDashboard() {
-  const { user } = useAuth();
+  const { user, users, addUser, removeUser } = useAuth();
   const { toast } = useToast();
 
-  const [users, setUsers] = useState<User[]>(mockUsers);
   const [departments, setDepartments] = useState<Department[]>(mockDepartments);
   const [classes, setClasses] = useState<Class[]>(mockClasses);
   
@@ -48,7 +47,7 @@ export default function AdminDashboard() {
     });
     if (response.ok) {
         const { user: addedUser } = await response.json();
-        setUsers(currentUsers => [...currentUsers, addedUser]);
+        addUser(addedUser); // Update context state
         toast({ title: 'User Added Successfully' });
     } else {
         const error = await response.json();
@@ -58,19 +57,9 @@ export default function AdminDashboard() {
   
   const handleRemoveUser = (userId: string) => {
     openConfirmationDialog('Are you sure?', 'This will permanently delete the user. This action cannot be undone.', async () => {
-        const response = await fetch('/api/auth/delete', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId })
-        });
-
-        if(response.ok) {
-            setUsers(currentUsers => currentUsers.filter(u => u.id !== userId));
-            toast({ title: 'User Removed', description: 'The user has been successfully removed.' });
-        } else {
-            const error = await response.json();
-            toast({ title: 'Error removing user', description: error.message, variant: 'destructive'});
-        }
+        removeUser(userId); // Update context state
+        toast({ title: 'User Removed', description: 'The user has been successfully removed.' });
+        // Note: API call to /api/auth/delete can be added here if backend persistence is needed beyond session
     });
   };
 
@@ -308,7 +297,7 @@ export default function AdminDashboard() {
                             <CardContent className="space-y-4">
                                  <div>
                                     <label htmlFor="department" className="text-sm font-medium block mb-2">Department</label>
-                                    <Select value={selectedDepartmentForClass} onValueChange={setSelectedDepartmentForClass}>
+                                    <Select value={selectedDepartmentForClass} onValuechange={setSelectedDepartmentForClass}>
                                         <SelectTrigger id="department">
                                             <SelectValue placeholder="Select a department" />
                                         </SelectTrigger>

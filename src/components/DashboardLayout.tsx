@@ -23,7 +23,7 @@ import type { UserRole } from "@/lib/types";
 
 const menuConfig = {
     Admin: [
-        { href: '/dashboard/admin', label: 'Admin Dashboard', icon: <Shield /> },
+        { href: '/dashboard', label: 'Admin Dashboard', icon: <Shield /> },
         { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
         { href: '/dashboard/messages', label: 'Messages', icon: <MessageSquare /> },
         { href: '/dashboard/leave-management', label: 'Leave Management', icon: <CalendarCheck />},
@@ -37,14 +37,14 @@ const menuConfig = {
         { href: '/dashboard/advisor-view', label: 'Advisor View', icon: <BookUser /> },
     ],
     HOD: [
-        { href: '/dashboard/hod', label: 'HOD Dashboard', icon: <Building /> },
+        { href: '/dashboard', label: 'HOD Dashboard', icon: <Building /> },
         { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
         { href: '/dashboard/messages', label: 'Messages', icon: <MessageSquare /> },
         { href: '/dashboard/leave-management', label: 'Leave Management', icon: <CalendarCheck />},
         { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
     ],
     Faculty: [
-        { href: '/dashboard/faculty', label: 'Mentor Dashboard', icon: <User /> },
+        { href: '/dashboard', label: 'Mentor Dashboard', icon: <User /> },
         { href: '/dashboard/assignments', label: 'Assignments', icon: <FolderKanban /> },
         { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
         { href: '/dashboard/messages', label: 'Messages', icon: <MessageSquare /> },
@@ -52,7 +52,7 @@ const menuConfig = {
         { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
     ],
     Student: [
-        { href: '/dashboard/student', label: 'My Status', icon: <LayoutDashboard /> },
+        { href: '/dashboard', label: 'My Status', icon: <LayoutDashboard /> },
         { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
         { href: '/dashboard/messages', label: 'Messages', icon: <MessageSquare /> },
         { href: '/dashboard/attendance', label: 'My Attendance', icon: <Calendar /> },
@@ -60,7 +60,7 @@ const menuConfig = {
         { href: '/dashboard-settings', label: 'Profile & Settings', icon: <Settings /> },
     ],
     Advisor: [
-        { href: '/dashboard/advisor', label: 'Advisor Dashboard', icon: <BookUser /> },
+        { href: '/dashboard', label: 'Advisor Dashboard', icon: <BookUser /> },
         { href: '/dashboard/students', label: 'Manage Students', icon: <Users /> },
         { href: '/uniform-check', label: 'Uniform Check', icon: <Shirt /> },
         { href: '/dashboard/messages', label: 'Messages', icon: <MessageSquare /> },
@@ -127,7 +127,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <header className="flex h-14 items-center justify-between p-4 border-b lg:h-auto">
                  <SidebarTrigger className="lg:hidden" />
                  <div className="flex items-center gap-2 ml-auto">
-                    <Button variant="ghost" size="icon"><Settings /></Button>
+                    <Button variant="ghost" size="icon" asChild>
+                      <Link href="/dashboard-settings"><Settings /></Link>
+                    </Button>
                     <Button variant="ghost" size="icon"><Bell /></Button>
                     <Avatar className="h-8 w-8">
                         <AvatarImage src={user?.imageUrl} alt={user?.name} />
