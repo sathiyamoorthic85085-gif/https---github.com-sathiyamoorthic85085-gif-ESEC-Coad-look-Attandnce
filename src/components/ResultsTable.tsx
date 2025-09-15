@@ -51,8 +51,9 @@ export default function ResultsTable({ attendanceData }: ResultsTableProps) {
   return (
     <Card>
       <CardContent className="p-0">
+        <div className="max-h-[60vh] overflow-auto">
         <Table>
-          <TableHeader>
+          <TableHeader className="sticky top-0 bg-card">
             <TableRow>
               <TableHead className="w-[30%]">User</TableHead>
               <TableHead className="text-center">Period 1</TableHead>
@@ -102,8 +103,16 @@ export default function ResultsTable({ attendanceData }: ResultsTableProps) {
                 ))}
               </TableRow>
             ))}
+             {attendanceData.length === 0 && (
+                <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center">
+                    No attendance records found for today.
+                    </TableCell>
+                </TableRow>
+             )}
           </TableBody>
         </Table>
+        </div>
       </CardContent>
     </Card>
   );

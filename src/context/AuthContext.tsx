@@ -1,15 +1,14 @@
 "use client";
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import type { User, UserRole } from '@/lib/types';
+import type { User } from '@/lib/types';
 import { mockUsers } from '@/lib/mock-data';
 
 interface AuthContextType {
     user: User | null;
     isLoading: boolean;
-    login: (identifier: string, password?: string) => Promise<User | null>;
+    login: (email: string, password?: string) => User | null;
     logout: () => void;
-    setUser: (user: User | null) => void;
     users: User[];
     addUser: (user: User) => void;
     removeUser: (userId: string) => void;
@@ -17,57 +16,66 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Helper to manage a mock session
+const getSession = (): User | null => {
+    try {
+        const session = sessionStorage.getItem('chromagrade-user');
+        return session ? JSON.parse(session) : null;
+    } catch (error) {
+        return null;
+    }
+};
+
+const setSession = (user: User | null) => {
+    if (user) {
+        sessionStorage.setItem('chromagrade-user', JSON.stringify(user));
+    } else {
+        sessionStorage.removeItem('chromagrade-user');
+    }
+};
+
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUserState] = useState<User | null>(null);
+    const [user, setUser] = useState<User | null>(null);
     const [users, setUsers] = useState<User[]>(mockUsers);
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
     const pathname = usePathname();
-
+    
     useEffect(() => {
-        const storedUser = localStorage.getItem('chromagrade_user');
-        if (storedUser) {
-            setUserState(JSON.parse(storedUser));
+        const sessionUser = getSession();
+        if (sessionUser) {
+            // Re-validate user from our mock list in case data changed
+            const liveUser = mockUsers.find(u => u.id === sessionUser.id);
+            setUser(liveUser || null);
         }
         setIsLoading(false);
     }, []);
 
      useEffect(() => {
-        if (!isLoading && !user && pathname !== '/login' && pathname !== '/register' && pathname !== '/splash' && pathname !== '/') {
+        if (!isLoading && !user && !['/login', '/register', '/splash', '/'].includes(pathname)) {
             router.push('/login');
         }
      }, [isLoading, user, pathname, router]);
 
-    const setUser = (user: User | null) => {
-        setUserState(user);
-        if (user) {
-            localStorage.setItem('chromagrade_user', JSON.stringify(user));
-        } else {
-            localStorage.removeItem('chromagrade_user');
-        }
-    };
-
-    const login = async (identifier: string, password?: string): Promise<User | null> => {
-        let foundUser: User | undefined;
-
-        if(identifier === 'sathiyamoorthi.c85085@gmail.com' && password === 'pasworad1234567890') {
-             foundUser = users.find(u => u.email === identifier);
-        } else {
-             foundUser = users.find(u => 
-                (u.email.toLowerCase() === identifier.toLowerCase() || u.rollNumber?.toLowerCase() === identifier.toLowerCase()) &&
-                (u.role === 'Student' ? u.rollNumber === password : true)
-            );
-        }
-
-        if (foundUser) {
-            setUser(foundUser);
-            return foundUser;
+    const login = (email: string, password?: string): User | null => {
+        // Find the user from mock data that matches the authenticated user's email
+        const matchedUser = mockUsers.find(u => 
+            u.email.toLowerCase() === email.toLowerCase() &&
+            (password ? u.password === password : true) // Simple check, bypass for session restore
+        );
+        if (matchedUser) {
+            setUser(matchedUser);
+            setSession(matchedUser);
+            return matchedUser;
         }
         return null;
     };
 
+
     const logout = () => {
         setUser(null);
+        setSession(null);
         router.push('/login');
     };
 
@@ -79,15 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUsers(prev => prev.filter(u => u.id !== userId));
     };
 
-    const value = { user, isLoading, login, logout, setUser, users, addUser, removeUser };
-
-    if (isLoading) {
-        return (
-            <div className="flex h-screen w-full items-center justify-center bg-background">
-                <p>Loading application...</p>
-            </div>
-        )
-    }
+    const value = { user, isLoading, login, logout, users, addUser, removeUser };
 
     return (
         <AuthContext.Provider value={value}>

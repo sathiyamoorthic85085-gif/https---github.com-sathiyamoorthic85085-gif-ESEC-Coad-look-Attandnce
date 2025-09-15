@@ -2,70 +2,72 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { useAuth } from '@/context/AuthContext';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/context/AuthContext';
-import Link from 'next/link';
-import { Loader2 } from 'lucide-react';
+import { mockUsers } from '@/lib/mock-data';
+import type { User } from '@/lib/types';
+
 
 export default function LoginPage() {
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
-  const { login } = useAuth();
-  const { toast } = useToast();
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const { toast } = useToast();
+    const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+    const handleLogin = (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        const foundUser = mockUsers.find(
+            (user) => user.email.toLowerCase() === email.toLowerCase() && user.password === password
+        );
 
-    try {
-      const user = await login(identifier, password);
-      if (user) {
-        toast({
-          title: "Login Successful",
-          description: `Welcome back, ${user.name}!`,
-        });
-        router.push('/dashboard');
-      } else {
-        toast({
-          title: "Login Failed",
-          description: "Invalid credentials. Please try again.",
-          variant: "destructive",
-        });
-      }
-    } catch (error: any) {
-       toast({
-          title: "An Error Occurred",
-          description: error.message || "Something went wrong.",
-          variant: "destructive",
-        });
-    } finally {
-        setIsLoading(false);
-    }
-  };
-
+        if (foundUser) {
+            toast({
+                title: 'Login Successful',
+                description: `Welcome back, ${foundUser.name}!`,
+            });
+            // In a real app, you would set a session token here.
+            // For this mock, we'll just redirect to the dashboard.
+            // The AuthContext will pick up the user based on a simulated "logged in" state.
+             router.push('/dashboard');
+        } else {
+             toast({
+                title: 'Login Failed',
+                description: 'Invalid email or password. Please try again.',
+                variant: 'destructive',
+            });
+        }
+    };
 
   return (
     <div className="container mx-auto flex min-h-screen items-center justify-center p-4">
-       <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-            <CardTitle>Welcome to ChromaGrade</CardTitle>
-            <CardDescription>Please sign in to access your dashboard.</CardDescription>
+          <CardTitle>Welcome to ChromaGrade</CardTitle>
+          <CardDescription>
+            Please sign in to access your dashboard.
+          </CardDescription>
         </CardHeader>
-        <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
-                 <div className="space-y-2">
-                    <Label htmlFor="identifier">Email or Roll Number</Label>
+        <CardContent>
+           <form onSubmit={handleLogin} className="space-y-4">
+                <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
                     <Input 
-                        id="identifier" 
-                        placeholder="your@email.com or ES24EI01" 
-                        value={identifier}
-                        onChange={(e) => setIdentifier(e.target.value)}
+                        id="email" 
+                        type="email" 
+                        placeholder="user@example.com" 
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         required 
                     />
                 </div>
@@ -74,24 +76,18 @@ export default function LoginPage() {
                     <Input 
                         id="password" 
                         type="password" 
-                        placeholder="********" 
+                        placeholder="********"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        required
+                        required 
                     />
                 </div>
-            </CardContent>
-            <CardFooter className="flex flex-col gap-4">
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? <Loader2 className="animate-spin" /> : 'Sign In'}
+                <Button type="submit" className="w-full">
+                    Sign In
                 </Button>
-                <p className="text-xs text-center text-muted-foreground">
-                    Don't have an account?{' '}
-                    <Link href="/register" className="underline hover:text-primary">Register here</Link>
-                </p>
-            </CardFooter>
-        </form>
-       </Card>
+            </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

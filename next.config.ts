@@ -2,7 +2,6 @@ import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
-  envPrefix: 'NEXT_PUBLIC_',
   typescript: {
     ignoreBuildErrors: true,
   },

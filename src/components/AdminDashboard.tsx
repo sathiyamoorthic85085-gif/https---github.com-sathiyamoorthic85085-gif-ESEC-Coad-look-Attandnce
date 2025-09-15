@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,7 +20,7 @@ import { mockDepartments, mockClasses } from '@/lib/mock-data';
 
 
 export default function AdminDashboard() {
-  const { user, users, addUser, removeUser } = useAuth();
+  const { users, addUser, removeUser } = useAuth();
   const { toast } = useToast();
 
   const [departments, setDepartments] = useState<Department[]>(mockDepartments);
@@ -296,9 +296,9 @@ export default function AdminDashboard() {
                             <CardHeader><CardTitle>Add New Class</CardTitle></CardHeader>
                             <CardContent className="space-y-4">
                                  <div>
-                                    <label htmlFor="department" className="text-sm font-medium block mb-2">Department</label>
-                                    <Select value={selectedDepartmentForClass} onValuechange={setSelectedDepartmentForClass}>
-                                        <SelectTrigger id="department">
+                                    <label htmlFor="department-class" className="text-sm font-medium block mb-2">Department</label>
+                                    <Select value={selectedDepartmentForClass} onValueChange={setSelectedDepartmentForClass}>
+                                        <SelectTrigger id="department-class">
                                             <SelectValue placeholder="Select a department" />
                                         </SelectTrigger>
                                         <SelectContent>
