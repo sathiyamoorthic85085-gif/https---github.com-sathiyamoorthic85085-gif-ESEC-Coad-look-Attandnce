@@ -14,32 +14,29 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { mockUsers } from '@/lib/mock-data';
-import type { User } from '@/lib/types';
+import { Loader2 } from 'lucide-react';
 
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const { toast } = useToast();
     const router = useRouter();
+    const { login } = useAuth();
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsLoading(true);
         
-        const foundUser = mockUsers.find(
-            (user) => user.email.toLowerCase() === email.toLowerCase() && user.password === password
-        );
+        const loggedInUser = await login(email, password);
 
-        if (foundUser) {
+        if (loggedInUser) {
             toast({
                 title: 'Login Successful',
-                description: `Welcome back, ${foundUser.name}!`,
+                description: `Welcome back, ${loggedInUser.name}!`,
             });
-            // In a real app, you would set a session token here.
-            // For this mock, we'll just redirect to the dashboard.
-            // The AuthContext will pick up the user based on a simulated "logged in" state.
-             router.push('/dashboard');
+            router.push('/dashboard');
         } else {
              toast({
                 title: 'Login Failed',
@@ -47,6 +44,7 @@ export default function LoginPage() {
                 variant: 'destructive',
             });
         }
+        setIsLoading(false);
     };
 
   return (
@@ -82,7 +80,8 @@ export default function LoginPage() {
                         required 
                     />
                 </div>
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Sign In
                 </Button>
             </form>

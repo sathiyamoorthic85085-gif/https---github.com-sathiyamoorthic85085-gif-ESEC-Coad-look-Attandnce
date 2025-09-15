@@ -3,11 +3,13 @@ import React, { createContext, useContext, useState, ReactNode, useEffect, useCa
 import { useRouter, usePathname } from 'next/navigation';
 import type { User } from '@/lib/types';
 import { mockUsers } from '@/lib/mock-data';
+import { auth } from '@/lib/firebase';
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut, type User as FirebaseUser } from 'firebase/auth';
 
 interface AuthContextType {
     user: User | null;
     isLoading: boolean;
-    login: (email: string, password?: string) => User | null;
+    login: (email: string, password?: string) => Promise<User | null>;
     logout: () => void;
     users: User[];
     addUser: (user: User) => void;
@@ -15,24 +17,6 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// Helper to manage a mock session
-const getSession = (): User | null => {
-    try {
-        const session = sessionStorage.getItem('chromagrade-user');
-        return session ? JSON.parse(session) : null;
-    } catch (error) {
-        return null;
-    }
-};
-
-const setSession = (user: User | null) => {
-    if (user) {
-        sessionStorage.setItem('chromagrade-user', JSON.stringify(user));
-    } else {
-        sessionStorage.removeItem('chromagrade-user');
-    }
-};
 
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -43,14 +27,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const pathname = usePathname();
     
     useEffect(() => {
-        const sessionUser = getSession();
-        if (sessionUser) {
-            // Re-validate user from our mock list in case data changed
-            const liveUser = mockUsers.find(u => u.id === sessionUser.id);
-            setUser(liveUser || null);
-        }
-        setIsLoading(false);
+        const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
+            if (firebaseUser && firebaseUser.email) {
+                 // Find the user from mock data that matches the authenticated user's email
+                const matchedUser = mockUsers.find(u => u.email.toLowerCase() === firebaseUser.email!.toLowerCase());
+                setUser(matchedUser || null);
+            } else {
+                setUser(null);
+            }
+            setIsLoading(false);
+        });
+
+        return () => unsubscribe();
     }, []);
+
 
      useEffect(() => {
         if (!isLoading && !user && !['/login', '/register', '/splash', '/'].includes(pathname)) {
@@ -58,24 +48,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
      }, [isLoading, user, pathname, router]);
 
-    const login = (email: string, password?: string): User | null => {
-        // Find the user from mock data that matches the authenticated user's email
-        const matchedUser = mockUsers.find(u => 
-            u.email.toLowerCase() === email.toLowerCase() &&
-            (password ? u.password === password : true) // Simple check, bypass for session restore
-        );
-        if (matchedUser) {
-            setUser(matchedUser);
-            setSession(matchedUser);
-            return matchedUser;
+    const login = async (email: string, password?: string): Promise<User | null> => {
+        if (!password) {
+            // This might be a session restoration case, handled by onAuthStateChanged
+            const matchedUser = mockUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+            if (matchedUser) {
+                setUser(matchedUser);
+                return matchedUser;
+            }
+            return null;
         }
-        return null;
+
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const firebaseUser = userCredential.user;
+            if (firebaseUser.email) {
+                const matchedUser = mockUsers.find(u => u.email.toLowerCase() === firebaseUser.email!.toLowerCase());
+                if (matchedUser) {
+                    setUser(matchedUser);
+                    return matchedUser;
+                }
+            }
+            return null;
+        } catch (error) {
+            console.error("Firebase login error:", error);
+            return null;
+        }
     };
 
 
-    const logout = () => {
+    const logout = async () => {
+        await signOut(auth);
         setUser(null);
-        setSession(null);
         router.push('/login');
     };
 
