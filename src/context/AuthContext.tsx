@@ -1,3 +1,4 @@
+
 "use client";
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
@@ -103,3 +104,5 @@ export function useAuth() {
     }
     return context;
 }
+
+    
