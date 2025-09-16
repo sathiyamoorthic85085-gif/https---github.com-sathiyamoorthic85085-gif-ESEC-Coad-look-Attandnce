@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useRef } from 'react';
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
@@ -23,6 +23,7 @@ interface AdvisorDashboardProps {
 export default function AdvisorDashboard({ isPreview = false }: AdvisorDashboardProps) {
     const { user } = useAuth();
     const { toast } = useToast();
+    const timetableInputRef = useRef<HTMLInputElement>(null);
 
     const [report, setReport] = useState<string>('');
     const [reportData, setReportData] = useState<AttendanceRecord[]>([]);
@@ -53,6 +54,30 @@ export default function AdvisorDashboard({ isPreview = false }: AdvisorDashboard
                 });
             }
         });
+    };
+
+    const handleTimetableUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file && timetable) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const newImageUrl = e.target?.result as string;
+                const updatedTimetable = { ...timetable, imageUrl: newImageUrl };
+                setTimetable(updatedTimetable);
+
+                // Update the mock data source for this session
+                const ttIndex = mockTimetables.findIndex(t => t.id === timetable.id);
+                if (ttIndex !== -1) {
+                    mockTimetables[ttIndex].imageUrl = newImageUrl;
+                }
+
+                toast({
+                    title: 'Timetable Updated',
+                    description: 'The class timetable has been successfully updated.',
+                });
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     if (!user && !isPreview) {
@@ -112,7 +137,8 @@ export default function AdvisorDashboard({ isPreview = false }: AdvisorDashboard
                     <CardContent>
                         <p className="text-muted-foreground">Upload and update the class timetable.</p>
                          {timetable && <Image src={timetable.imageUrl} alt="Class timetable" width={200} height={100} className="rounded-md my-2" />}
-                         <Button className="mt-4 w-full">Upload Timetable</Button>
+                         <input type="file" ref={timetableInputRef} onChange={handleTimetableUpload} className="hidden" accept="image/*" />
+                         <Button className="mt-4 w-full" onClick={() => timetableInputRef.current?.click()}>Upload Timetable</Button>
                     </CardContent>
                 </Card>
                  <Card className="lg:col-span-3">
