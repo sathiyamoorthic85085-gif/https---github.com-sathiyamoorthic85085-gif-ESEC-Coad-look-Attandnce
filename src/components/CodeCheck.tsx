@@ -11,11 +11,11 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { generateDressCodeRecommendations } from '@/ai/flows/generate-dress-code-recommendations';
 import ResultsTable from './ResultsTable';
-import type { AttendanceRecord } from '@/lib/types';
+import type { AttendanceRecord, Timetable } from '@/lib/types';
 import { useAuth } from '@/context/AuthContext';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { mockTimetables } from '@/lib/mock-data';
+import { mockTimetables, mockDepartments } from '@/lib/mock-data';
 
 // Roboflow has been removed as it's not a standard library.
 // We will simulate the detection result.
@@ -40,9 +40,16 @@ export default function CodeCheck() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
 
-  const timetable = useMemo(() => {
-    if (!user) return null;
-    return mockTimetables.find(t => t.classId === user.classId || t.departmentId === (user.department && mockDepartments.find(d => d.name === user.department)?.id));
+  const timetable = useMemo<Timetable | undefined>(() => {
+    if (!user) return undefined;
+    
+    // An admin or faculty might be checking for a specific department, not just their own class
+    if (user.role === 'Admin' || user.role === 'HOD' || user.role === 'Faculty') {
+        const departmentId = mockDepartments.find(d => d.name === user.department)?.id;
+        if(departmentId) return mockTimetables.find(t => t.departmentId === departmentId);
+    }
+    // Student or Advisor will have a class-specific timetable
+    return mockTimetables.find(t => t.classId === user.classId);
   }, [user]);
 
    const fetchAttendance = useCallback(async () => {

@@ -56,7 +56,7 @@ export const mockDepartments: Department[] = [
 ];
 
 export const mockClasses: Class[] = [
-    { id: 'CLS01', name: 'II Year, Section A', departmentId: 'DPT01' },
+    { id: 'CLS01', name: 'II Year, Section A', departmentId: 'DPT05' },
     { id: 'CLS02', name: 'III Year, Section B', departmentId: 'DPT02' },
 ];
 
@@ -128,7 +128,7 @@ export const mockAttendanceData: AttendanceRecord[] = [
 export const mockTimetables: Timetable[] = [
     {
         id: 'TT01',
-        departmentId: 'DPT01',
+        departmentId: 'DPT01', // Computer Science
         imageUrl: 'https://picsum.photos/seed/TT01/1200/600',
         schedule: [
             { period: 1, day: 'Monday', subject: 'Data Structures', faculty: 'Dr. Sameer Verma', time: '09:00 - 10:00' },
@@ -140,19 +140,20 @@ export const mockTimetables: Timetable[] = [
     },
     {
         id: 'TT02',
-        classId: 'CLS01',
+        classId: 'CLS01', // ECE II Year, Section A
+        departmentId: 'DPT05',
         imageUrl: 'https://picsum.photos/seed/TT02/1200/600',
          schedule: [
-            { period: 1, day: 'Monday', subject: 'Data Structures', faculty: 'Dr. Sameer Verma', time: '09:00 - 10:00' },
-            { period: 2, day: 'Monday', subject: 'Algorithms', faculty: 'Dr. Sameer Verma', time: '10:00 - 11:00' },
-            { period: 3, day: 'Monday', subject: 'Database Systems', faculty: 'Guest Lecturer', time: '11:15 - 12:15' },
-            { period: 4, day: 'Monday', subject: 'Operating Systems', faculty: 'Prof. Aditi Rao', time: '01:00 - 02:00' },
-            { period: 5, day: 'Tuesday', subject: 'Data Structures', faculty: 'Dr. Sameer Verma', time: '09:00 - 10:00' },
+            { period: 1, day: 'Monday', subject: 'Network Theory', faculty: 'Prof. ECE1', time: '09:00 - 10:00' },
+            { period: 2, day: 'Monday', subject: 'Digital Logic', faculty: 'Prof. ECE2', time: '10:00 - 11:00' },
+            { period: 3, day: 'Monday', subject: 'EMF Theory', faculty: 'Prof. ECE3', time: '11:15 - 12:15' },
+            { period: 4, day: 'Monday', subject: 'Signals & Systems', faculty: 'Prof. ECE4', time: '01:00 - 02:00' },
+            { period: 5, day: 'Tuesday', subject: 'Network Theory', faculty: 'Prof. ECE1', time: '09:00 - 10:00' },
         ]
     },
      {
         id: 'TT03',
-        classId: 'CLS02',
+        classId: 'CLS02', // EE III Year, Section B
         departmentId: 'DPT02',
         imageUrl: 'https://picsum.photos/seed/TT03/1200/600',
          schedule: [
@@ -161,6 +162,18 @@ export const mockTimetables: Timetable[] = [
             { period: 3, day: 'Monday', subject: 'Signal Processing', faculty: 'Prof. Vikram Rao', time: '11:15 - 12:15' },
             { period: 4, day: 'Monday', subject: 'Control Systems', faculty: 'Guest Lecturer', time: '01:00 - 02:00' },
             { period: 5, day: 'Tuesday', subject: 'Circuit Theory', faculty: 'Ms. Sunita Reddy', time: '09:00 - 10:00' },
+        ]
+    },
+    {
+        id: 'TT04',
+        departmentId: 'DPT05', // ECE
+        imageUrl: 'https://picsum.photos/seed/TT04/1200/600',
+        schedule: [
+            { period: 1, day: 'Monday', subject: 'Network Theory', faculty: 'Prof. ECE1', time: '09:00 - 10:00' },
+            { period: 2, day: 'Monday', subject: 'Digital Logic', faculty: 'Prof. ECE2', time: '10:00 - 11:00' },
+            { period: 3, day: 'Monday', subject: 'EMF Theory', faculty: 'Prof. ECE3', time: '11:15 - 12:15' },
+            { period: 4, day: 'Monday', subject: 'Signals & Systems', faculty: 'Prof. ECE4', time: '01:00 - 02:00' },
+            { period: 5, day: 'Tuesday', subject: 'Network Theory', faculty: 'Prof. ECE1', time: '09:00 - 10:00' },
         ]
     }
 ];

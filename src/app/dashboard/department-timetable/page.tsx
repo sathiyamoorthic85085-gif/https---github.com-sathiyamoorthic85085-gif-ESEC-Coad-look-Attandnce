@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useMemo } from 'react';
@@ -35,7 +36,7 @@ export default function DepartmentTimetablePage() {
                         <h2 className="text-3xl font-bold tracking-tight">Department Timetable</h2>
                         <p className="text-muted-foreground">View and manage timetables for different departments.</p>
                     </div>
-                    {user?.role === 'Admin' && (
+                    {(user?.role === 'Admin' || user?.role === 'HOD') && (
                          <div className="w-full md:w-64">
                             <Select value={selectedDepartmentId} onValueChange={setSelectedDepartmentId}>
                                 <SelectTrigger>

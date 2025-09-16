@@ -4,10 +4,10 @@ import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/card";
 import { Button } from "./ui/button";
 import { Bell, BellRing, FilePen, Loader2, BarChart2, Download, Shield, CalendarDays } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useMemo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { summarizeAttendanceReport } from "@/ai/flows/summarize-attendance-report";
-import { mockAttendanceData, mockTimetables } from "@/lib/mock-data";
+import { mockAttendanceData, mockTimetables, mockDepartments } from "@/lib/mock-data";
 import { exportToCSV, exportToExcel, exportToPDF } from "@/lib/report-utils";
 import { AttendanceRecord, Timetable } from "@/lib/types";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
@@ -29,12 +29,19 @@ export default function FacultyDashboard({ isPreview = false }: FacultyDashboard
 
     const currentUser = isPreview ? { name: 'Admin Preview', department: 'Computer Science', role: 'Faculty' } : user;
 
-    if (!currentUser || (currentUser.role !== 'Faculty' && currentUser.role !== 'Admin')) {
+    if (!currentUser || (currentUser.role !== 'Faculty' && !isPreview)) {
         return <p>You do not have access to this page.</p>;
     }
     
-    const department = currentUser.department || 'All Departments';
-    const timetable = mockTimetables.find(t => t.departmentId === (mockDepartments.find(d => d.name === currentUser?.department)?.id));
+    const departmentName = currentUser.department || 'All Departments';
+
+    const timetable = useMemo<Timetable | undefined>(() => {
+        if (!currentUser?.department) return undefined;
+        const departmentId = mockDepartments.find(d => d.name === currentUser.department)?.id;
+        if (!departmentId) return undefined;
+        // Find timetable for the faculty's department
+        return mockTimetables.find(t => t.departmentId === departmentId);
+    }, [currentUser]);
 
 
     const handleGenerateReport = () => {
@@ -80,7 +87,7 @@ export default function FacultyDashboard({ isPreview = false }: FacultyDashboard
             <div className="flex items-center justify-between">
                  <div>
                     <h1 className="text-3xl font-bold tracking-tight">Mentors Dashboard</h1>
-                    <p className="text-muted-foreground">Department: {department}</p>
+                    <p className="text-muted-foreground">Department: {departmentName}</p>
                 </div>
                 {currentUser && <p className="text-muted-foreground">Welcome, {currentUser.name}</p>}
             </div>
@@ -146,15 +153,15 @@ export default function FacultyDashboard({ isPreview = false }: FacultyDashboard
                                 <CardContent className="space-y-4">
                                     <p className="text-sm text-muted-foreground whitespace-pre-wrap">{report}</p>
                                     <div className="flex items-center justify-end gap-2">
-                                        <Button variant="outline" size="sm" onClick={() => exportToPDF(reportData, `Attendance Report - ${department}`)}>
+                                        <Button variant="outline" size="sm" onClick={() => exportToPDF(reportData, `Attendance Report - ${departmentName}`)}>
                                             <Download className="mr-2 h-3 w-3" />
                                             PDF
                                         </Button>
-                                        <Button variant="outline" size="sm" onClick={() => exportToExcel(reportData, `Attendance Report - ${department}`)}>
+                                        <Button variant="outline" size="sm" onClick={() => exportToExcel(reportData, `Attendance Report - ${departmentName}`)}>
                                             <Download className="mr-2 h-3 w-3" />
                                             Excel
                                         </Button>
-                                        <Button variant="outline" size="sm" onClick={() => exportToCSV(reportData, `Attendance Report - ${department}`)}>
+                                        <Button variant="outline" size="sm" onClick={() => exportToCSV(reportData, `Attendance Report - ${departmentName}`)}>
                                             <Download className="mr-2 h-3 w-3" />
                                             CSV
                                         </Button>

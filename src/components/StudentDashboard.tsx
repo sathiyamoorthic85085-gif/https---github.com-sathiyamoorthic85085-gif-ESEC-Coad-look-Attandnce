@@ -7,9 +7,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Check, Bell, Shield, CalendarDays, X, AlertCircle } from "lucide-react";
 import { ProgressRing } from "./ProgressRing";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
-import { mockTimetables, mockAttendanceData } from "@/lib/mock-data";
-import { PeriodAttendance } from "@/lib/types";
+import { mockTimetables, mockAttendanceData, mockDepartments } from "@/lib/mock-data";
+import { PeriodAttendance, Timetable } from "@/lib/types";
 import { Badge } from "./ui/badge";
+import { useMemo } from "react";
 
 interface StudentDashboardProps {
     isPreview?: boolean;
@@ -18,15 +19,20 @@ interface StudentDashboardProps {
 export default function StudentDashboard({ isPreview = false }: StudentDashboardProps) {
     const { user } = useAuth();
     
-    const currentUser = isPreview ? { name: 'Admin Preview', imageUrl: '', role: 'Student', classId: 'CLS01', id: 'STU001' } : user;
+    const currentUser = isPreview ? { name: 'Admin Preview', imageUrl: '', role: 'Student', classId: 'CLS01', id: 'STU001', department: 'Computer Science' } : user;
 
-    if (!currentUser || (currentUser.role !== 'Student' && currentUser.role !== 'Admin')) {
+    if (!currentUser || (currentUser.role !== 'Student' && !isPreview)) {
         return <p>You do not have access to this page.</p>;
     }
     
     const userName = currentUser ? currentUser.name.split(' ')[0] : 'Student';
     const userImage = currentUser ? currentUser.imageUrl : '';
-    const timetable = mockTimetables.find(t => t.classId === currentUser.classId);
+    
+    const timetable = useMemo<Timetable | undefined>(() => {
+        if (!currentUser) return undefined;
+        // Find timetable specific to the student's class
+        return mockTimetables.find(t => t.classId === currentUser.classId);
+    }, [currentUser]);
     
     const studentAttendance = mockAttendanceData.find(att => att.userId === currentUser.id);
 
