@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import type { User } from '@/lib/types';
 import { mockUsers } from '@/lib/mock-data';
@@ -10,6 +10,7 @@ interface AuthContextType {
     login: (email: string, password?: string) => Promise<User | null>;
     logout: () => void;
     users: User[];
+    setUser: (user: User | null) => void;
     addUser: (user: User) => void;
     removeUser: (userId: string) => void;
 }
@@ -26,13 +27,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
      useEffect(() => {
         // Simulate loading user from a session
-        const sessionUserEmail = sessionStorage.getItem('user_email');
-        if (sessionUserEmail) {
-            const matchedUser = mockUsers.find(u => u.email.toLowerCase() === sessionUserEmail.toLowerCase());
-            setUser(matchedUser || null);
+        try {
+            const sessionUserEmail = sessionStorage.getItem('user_email');
+            if (sessionUserEmail) {
+                const matchedUser = users.find(u => u.email.toLowerCase() === sessionUserEmail.toLowerCase());
+                setUser(matchedUser || null);
+            }
+        } catch (e) {
+            console.error("Could not access session storage.");
+        } finally {
+            setIsLoading(false);
         }
-        setIsLoading(false);
-    }, []);
+    }, [users]);
 
 
      useEffect(() => {
@@ -42,12 +48,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
      }, [isLoading, user, pathname, router]);
 
     const login = async (email: string, password?: string): Promise<User | null> => {
-        const matchedUser = mockUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+        const matchedUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
 
         // In a mock setup, we can check for a password if provided, or just log in.
         if (matchedUser && (!password || matchedUser.password === password)) {
             setUser(matchedUser);
-            sessionStorage.setItem('user_email', matchedUser.email);
+             try {
+                sessionStorage.setItem('user_email', matchedUser.email);
+            } catch (e) {
+                console.error("Could not access session storage.");
+            }
             return matchedUser;
         }
 
@@ -57,19 +67,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const logout = async () => {
         setUser(null);
-        sessionStorage.removeItem('user_email');
+        try {
+            sessionStorage.removeItem('user_email');
+        } catch (e) {
+             console.error("Could not access session storage.");
+        }
         router.push('/login');
     };
 
     const addUser = (newUser: User) => {
         setUsers(prev => [...prev, newUser]);
+        // Also update mockUsers so it's reflected across sessions if needed for mock purposes
+        if(!mockUsers.find(u => u.id === newUser.id)) {
+            mockUsers.push(newUser);
+        }
     };
     
     const removeUser = (userId: string) => {
         setUsers(prev => prev.filter(u => u.id !== userId));
     };
 
-    const value = { user, isLoading, login, logout, users, addUser, removeUser };
+    const value = { user, setUser, isLoading, login, logout, users, addUser, removeUser };
 
     return (
         <AuthContext.Provider value={value}>
