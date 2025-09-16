@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from 'next/image';
@@ -19,6 +20,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { useMemo } from 'react';
+import { mockTimetables } from '@/lib/mock-data';
 
 
 interface ResultsTableProps {
@@ -26,6 +29,30 @@ interface ResultsTableProps {
 }
 
 export default function ResultsTable({ attendanceData }: ResultsTableProps) {
+
+    const timetableForClass = useMemo(() => {
+        // In a real app with more complex logic, this might be passed as a prop
+        // or fetched based on the user's role and context. For now, we'll find
+        // a relevant timetable from the mock data.
+        return mockTimetables.find(t => t.classId === 'CLS01' || t.departmentId === 'DPT01');
+    }, []);
+
+    const periodHeaders = useMemo(() => {
+        if (timetableForClass?.schedule) {
+            return timetableForClass.schedule.slice(0, 4).map(p => ({
+                period: p.period,
+                subject: p.subject
+            }));
+        }
+        return [
+            { period: 1, subject: 'Period 1' },
+            { period: 2, subject: 'Period 2' },
+            { period: 3, subject: 'Period 3' },
+            { period: 4, subject: 'Period 4' },
+        ]
+    }, [timetableForClass]);
+
+
     const getStatusVariant = (status: PeriodAttendance['status']): "default" | "destructive" | "secondary" | "outline" => {
         switch (status) {
         case 'Compliant':
@@ -56,10 +83,7 @@ export default function ResultsTable({ attendanceData }: ResultsTableProps) {
           <TableHeader className="sticky top-0 bg-card">
             <TableRow>
               <TableHead className="w-[30%]">User</TableHead>
-              <TableHead className="text-center">Period 1</TableHead>
-              <TableHead className="text-center">Period 2</TableHead>
-              <TableHead className="text-center">Period 3</TableHead>
-              <TableHead className="text-center">Period 4</TableHead>
+              {periodHeaders.map(h => <TableHead key={h.period} className="text-center">{h.subject}</TableHead>)}
             </TableRow>
           </TableHeader>
           <TableBody>

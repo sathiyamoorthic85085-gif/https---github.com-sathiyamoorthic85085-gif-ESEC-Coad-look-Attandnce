@@ -1,3 +1,4 @@
+
 export type UserRole = 'Admin' | 'HOD' | 'Faculty' | 'Student' | 'Advisor';
 
 export interface User {
@@ -63,6 +64,7 @@ export interface LeaveRequest {
 
 export interface TimetableEntry {
     period: number;
+    day: string;
     subject: string;
     faculty: string;
     time: string;

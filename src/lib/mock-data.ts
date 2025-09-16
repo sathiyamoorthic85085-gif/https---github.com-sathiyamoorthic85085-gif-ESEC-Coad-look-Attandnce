@@ -131,10 +131,11 @@ export const mockTimetables: Timetable[] = [
         departmentId: 'DPT01',
         imageUrl: 'https://picsum.photos/seed/TT01/1200/600',
         schedule: [
-            { period: 1, subject: 'Data Structures', faculty: 'Dr. Sameer Verma', time: '09:00 - 10:00' },
-            { period: 2, subject: 'Algorithms', faculty: 'Dr. Sameer Verma', time: '10:00 - 11:00' },
-            { period: 3, subject: 'Database Systems', faculty: 'Guest Lecturer', time: '11:15 - 12:15' },
-            { period: 4, subject: 'Operating Systems', faculty: 'Prof. Aditi Rao', time: '01:00 - 02:00' },
+            { period: 1, day: 'Monday', subject: 'Data Structures', faculty: 'Dr. Sameer Verma', time: '09:00 - 10:00' },
+            { period: 2, day: 'Monday', subject: 'Algorithms', faculty: 'Dr. Sameer Verma', time: '10:00 - 11:00' },
+            { period: 3, day: 'Monday', subject: 'Database Systems', faculty: 'Guest Lecturer', time: '11:15 - 12:15' },
+            { period: 4, day: 'Monday', subject: 'Operating Systems', faculty: 'Prof. Aditi Rao', time: '01:00 - 02:00' },
+            { period: 5, day: 'Tuesday', subject: 'Data Structures', faculty: 'Dr. Sameer Verma', time: '09:00 - 10:00' },
         ]
     },
     {
@@ -142,21 +143,24 @@ export const mockTimetables: Timetable[] = [
         classId: 'CLS01',
         imageUrl: 'https://picsum.photos/seed/TT02/1200/600',
          schedule: [
-            { period: 1, subject: 'Data Structures', faculty: 'Dr. Sameer Verma', time: '09:00 - 10:00' },
-            { period: 2, subject: 'Algorithms', faculty: 'Dr. Sameer Verma', time: '10:00 - 11:00' },
-            { period: 3, subject: 'Database Systems', faculty: 'Guest Lecturer', time: '11:15 - 12:15' },
-            { period: 4, subject: 'Operating Systems', faculty: 'Prof. Aditi Rao', time: '01:00 - 02:00' },
+            { period: 1, day: 'Monday', subject: 'Data Structures', faculty: 'Dr. Sameer Verma', time: '09:00 - 10:00' },
+            { period: 2, day: 'Monday', subject: 'Algorithms', faculty: 'Dr. Sameer Verma', time: '10:00 - 11:00' },
+            { period: 3, day: 'Monday', subject: 'Database Systems', faculty: 'Guest Lecturer', time: '11:15 - 12:15' },
+            { period: 4, day: 'Monday', subject: 'Operating Systems', faculty: 'Prof. Aditi Rao', time: '01:00 - 02:00' },
+            { period: 5, day: 'Tuesday', subject: 'Data Structures', faculty: 'Dr. Sameer Verma', time: '09:00 - 10:00' },
         ]
     },
      {
         id: 'TT03',
         classId: 'CLS02',
+        departmentId: 'DPT02',
         imageUrl: 'https://picsum.photos/seed/TT03/1200/600',
          schedule: [
-            { period: 1, subject: 'Circuit Theory', faculty: 'Ms. Sunita Reddy', time: '09:00 - 10:00' },
-            { period: 2, subject: 'Digital Electronics', faculty: 'Ms. Sunita Reddy', time: '10:00 - 11:00' },
-            { period: 3, subject: 'Signal Processing', faculty: 'Prof. Vikram Rao', time: '11:15 - 12:15' },
-            { period: 4, subject: 'Control Systems', faculty: 'Guest Lecturer', time: '01:00 - 02:00' },
+            { period: 1, day: 'Monday', subject: 'Circuit Theory', faculty: 'Ms. Sunita Reddy', time: '09:00 - 10:00' },
+            { period: 2, day: 'Monday', subject: 'Digital Electronics', faculty: 'Ms. Sunita Reddy', time: '10:00 - 11:00' },
+            { period: 3, day: 'Monday', subject: 'Signal Processing', faculty: 'Prof. Vikram Rao', time: '11:15 - 12:15' },
+            { period: 4, day: 'Monday', subject: 'Control Systems', faculty: 'Guest Lecturer', time: '01:00 - 02:00' },
+            { period: 5, day: 'Tuesday', subject: 'Circuit Theory', faculty: 'Ms. Sunita Reddy', time: '09:00 - 10:00' },
         ]
     }
 ];

@@ -34,7 +34,7 @@ export default function FacultyDashboard({ isPreview = false }: FacultyDashboard
     }
     
     const department = currentUser.department || 'All Departments';
-    const timetable = mockTimetables.find(t => t.departmentId === currentUser?.department);
+    const timetable = mockTimetables.find(t => t.departmentId === (mockDepartments.find(d => d.name === currentUser?.department)?.id));
 
 
     const handleGenerateReport = () => {
@@ -118,7 +118,7 @@ export default function FacultyDashboard({ isPreview = false }: FacultyDashboard
                         <CardTitle className="flex items-center gap-2"><CalendarDays /> Today's Schedule</CardTitle>
                     </CardHeader>
                     <CardContent className="flex flex-col items-center">
-                        {timetable ? (
+                        {timetable && timetable.imageUrl ? (
                             <Image src={timetable.imageUrl} alt="Department timetable" width={250} height={150} className="rounded-lg" />
                         ) : (
                             <p className="text-sm text-muted-foreground">No timetable uploaded for this department yet.</p>

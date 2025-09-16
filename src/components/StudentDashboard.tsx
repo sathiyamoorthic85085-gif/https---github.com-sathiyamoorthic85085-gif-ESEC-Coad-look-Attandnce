@@ -125,22 +125,25 @@ export default function StudentDashboard({ isPreview = false }: StudentDashboard
                         <CardTitle className="flex items-center gap-2"><CalendarDays /> Today's Schedule</CardTitle>
                     </CardHeader>
                     <CardContent className="flex justify-center">
-                       {timetable ? (
+                       {timetable && timetable.schedule ? (
                            <div className="w-full space-y-2">
-                               {timetable.schedule.map(period => (
-                                   <div key={period.period} className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted/80 transition-colors">
+                               {timetable.schedule.slice(0, 4).map(period => {
+                                   const attendancePeriod = studentAttendance?.periods.find(p => p.period === period.period);
+                                   const status = attendancePeriod?.status || 'Pending';
+                                   return (
+                                     <div key={period.period} className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted/80 transition-colors">
                                        <div className="flex items-center gap-4">
-                                            {getStatusIcon(studentAttendance?.periods.find(p => p.period === period.period)?.status || 'Pending')}
+                                            {getStatusIcon(status)}
                                             <div>
                                                 <p className="font-semibold">{period.subject}</p>
                                                 <p className="text-xs text-muted-foreground">{period.faculty} • {period.time}</p>
                                             </div>
                                        </div>
-                                       <Badge variant={studentAttendance?.periods.find(p => p.period === period.period)?.status === 'Compliant' ? 'default' : 'secondary'}>
-                                            {studentAttendance?.periods.find(p => p.period === period.period)?.status}
+                                       <Badge variant={status === 'Compliant' ? 'default' : 'secondary'}>
+                                            {status}
                                        </Badge>
                                    </div>
-                               ))}
+                                )})}
                            </div>
                        ) : (
                            <p className="text-muted-foreground text-center py-8">Your advisor has not uploaded the timetable yet.</p>

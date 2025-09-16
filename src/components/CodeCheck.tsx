@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState, useTransition, useRef, useEffect, useCallback } from 'react';
+import { useState, useTransition, useRef, useEffect, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import { Camera, X, CheckCircle, XCircle, Wand2, Loader2 } from 'lucide-react';
 
@@ -14,6 +15,7 @@ import type { AttendanceRecord } from '@/lib/types';
 import { useAuth } from '@/context/AuthContext';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { mockTimetables } from '@/lib/mock-data';
 
 // Roboflow has been removed as it's not a standard library.
 // We will simulate the detection result.
@@ -37,6 +39,11 @@ export default function CodeCheck() {
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
+
+  const timetable = useMemo(() => {
+    if (!user) return null;
+    return mockTimetables.find(t => t.classId === user.classId || t.departmentId === (user.department && mockDepartments.find(d => d.name === user.department)?.id));
+  }, [user]);
 
    const fetchAttendance = useCallback(async () => {
     try {
@@ -177,6 +184,21 @@ export default function CodeCheck() {
     }
   };
 
+  const periodOptions = useMemo(() => {
+    if (timetable?.schedule) {
+      return timetable.schedule.slice(0, 4).map(p => ({
+        value: p.period.toString(),
+        label: `Period ${p.period}: ${p.subject}`
+      }));
+    }
+    return [
+      { value: "1", label: "Period 1" },
+      { value: "2", label: "Period 2" },
+      { value: "3", label: "Period 3" },
+      { value: "4", label: "Period 4" },
+    ];
+  }, [timetable]);
+
   return (
     <div className="grid gap-8 md:grid-cols-2">
       <Card className="flex flex-col">
@@ -227,10 +249,9 @@ export default function CodeCheck() {
                       <SelectValue placeholder="Select a period" />
                   </SelectTrigger>
                   <SelectContent>
-                      <SelectItem value="1">Period 1</SelectItem>
-                      <SelectItem value="2">Period 2</SelectItem>
-                      <SelectItem value="3">Period 3</SelectItem>
-                      <SelectItem value="4">Period 4</SelectItem>
+                      {periodOptions.map(opt => (
+                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                      ))}
                   </SelectContent>
               </Select>
             </div>
