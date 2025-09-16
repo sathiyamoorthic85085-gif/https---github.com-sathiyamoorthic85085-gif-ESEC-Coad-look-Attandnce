@@ -57,9 +57,19 @@ export default function AdminDashboard() {
   
   const handleRemoveUser = (userId: string) => {
     openConfirmationDialog('Are you sure?', 'This will permanently delete the user. This action cannot be undone.', async () => {
-        removeUser(userId); // Update context state
-        toast({ title: 'User Removed', description: 'The user has been successfully removed.' });
         // Note: API call to /api/auth/delete can be added here if backend persistence is needed beyond session
+        const response = await fetch('/api/auth/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId }),
+        });
+        if(response.ok) {
+            removeUser(userId); // Update context state
+            toast({ title: 'User Removed', description: 'The user has been successfully removed.' });
+        } else {
+            const error = await response.json();
+            toast({ title: 'Error removing user', description: error.message, variant: 'destructive'})
+        }
     });
   };
 
@@ -331,3 +341,5 @@ export default function AdminDashboard() {
     </>
   );
 }
+
+    
