@@ -106,7 +106,7 @@ export default function FacultyDashboard({ isPreview = false }: FacultyDashboard
                 </Card>
                 <Card>
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><BellRing /> Upcoming Classes</CardTitle>
+                        <CardTitle className="flex items-center gap-2"><Bell /> Upcoming Classes</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="border-l-4 border-primary pl-4">

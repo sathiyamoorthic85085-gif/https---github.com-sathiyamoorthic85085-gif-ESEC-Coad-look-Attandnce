@@ -234,8 +234,8 @@ export default function CodeCheck() {
                     </Button>
                 </>
             ) : (
-                <div className="w-full aspect-square bg-muted rounded-lg flex items-center justify-center">
-                    <video ref={videoRef} className="w-full aspect-video rounded-md" autoPlay muted playsInline />
+                <div className="w-full aspect-square bg-muted rounded-lg flex items-center justify-center overflow-hidden">
+                    <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
                 </div>
             )}
              {hasCameraPermission === false && (

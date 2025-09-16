@@ -57,7 +57,6 @@ export default function AdminDashboard() {
   
   const handleRemoveUser = (userId: string) => {
     openConfirmationDialog('Are you sure?', 'This will permanently delete the user. This action cannot be undone.', async () => {
-        // Note: API call to /api/auth/delete can be added here if backend persistence is needed beyond session
         const response = await fetch('/api/auth/delete', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
