@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -28,7 +29,7 @@ export default function AttendanceCard() {
             return res.json()
           })
           .then(data => {
-            if(data) setPredictions(data)
+            if(data && Array.isArray(data)) setPredictions(data)
           })
           .catch(err => console.error("Failed to fetch predictions:", err));
     };

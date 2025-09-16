@@ -1,17 +1,14 @@
+
 import { NextResponse } from 'next/server';
+import { mockUsers } from '@/lib/mock-data';
 
 const DATA_API_ENDPOINT = process.env.NEON_DATA_API_ENDPOINT;
 const API_KEY = process.env.NEON_API_KEY;
 
-if (!DATA_API_ENDPOINT || !API_KEY) {
-  // This will not throw during build time, but at runtime if the vars are not set.
-  // It's better to handle this gracefully in the request.
-  console.error("Neon Data API endpoint or API key is not defined. Please check environment variables.");
-}
-
 export async function GET(request: Request) {
+  // If the database isn't configured, return an empty array to prevent crashing.
   if (!DATA_API_ENDPOINT || !API_KEY) {
-    return NextResponse.json({ message: 'Database is not configured.' }, { status: 500 });
+    return NextResponse.json([]);
   }
 
   try {
@@ -32,7 +29,8 @@ export async function GET(request: Request) {
     if (!res.ok) {
         const errorText = await res.text();
         console.error('Failed to fetch predictions from Neon:', errorText);
-        return NextResponse.json({ message: 'Failed to fetch predictions', error: errorText }, { status: res.status });
+        // Return empty array on fetch failure to avoid breaking the UI
+        return NextResponse.json([]);
     }
 
     const records = await res.json();
@@ -40,12 +38,14 @@ export async function GET(request: Request) {
 
   } catch (error: any) {
     console.error('Failed to fetch predictions:', error);
-    return NextResponse.json({ message: 'Failed to fetch predictions', error: error.message }, { status: 500 });
+     // Return empty array on general error
+    return NextResponse.json([]);
   }
 }
 
 export async function POST(request: Request) {
     if (!DATA_API_ENDPOINT || !API_KEY) {
+        // Return a clear error if the database is not configured for POST requests
         return NextResponse.json({ message: 'Database is not configured.' }, { status: 500 });
     }
 
@@ -56,6 +56,12 @@ export async function POST(request: Request) {
         return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
     }
 
+    // Find the user in mock data to associate with the prediction
+    const user = mockUsers.find(u => u.id === userId);
+    if (!user) {
+         return NextResponse.json({ message: 'User not found' }, { status: 404 });
+    }
+
     const newPrediction = {
         user_id: userId,
         label,
@@ -63,7 +69,6 @@ export async function POST(request: Request) {
         imageId, // This could be an ID from an image storage service
     };
     
-    // Neon's API expects an array of objects for bulk insertion, so we wrap our object in an array.
     const res = await fetch(`${DATA_API_ENDPOINT}/prediction`, {
         method: 'POST',
         headers: {
@@ -79,9 +84,21 @@ export async function POST(request: Request) {
         return NextResponse.json({ message: 'Failed to save prediction', error: errorText }, { status: res.status });
     }
     
-    const createdPrediction = (await res.json())[0];
+    // The response from Neon for an insert is an array of the inserted records.
+    const createdPredictionArray = await res.json();
+    const createdPrediction = createdPredictionArray[0];
 
-    return NextResponse.json(createdPrediction, { status: 201 });
+    // To make the response useful for the client, let's include the user details.
+    const responsePayload = {
+      ...createdPrediction,
+      user: {
+        name: user.name,
+        imageUrl: user.imageUrl,
+      }
+    };
+
+
+    return NextResponse.json(responsePayload, { status: 201 });
 
   } catch (error: any) {
     console.error('Failed to save prediction:', error);
