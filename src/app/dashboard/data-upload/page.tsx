@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useCallback } from 'react';
@@ -29,7 +30,7 @@ export default function DataUploadPage() {
   });
 
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!file) {
       toast({
         title: "No File Selected",
@@ -39,8 +40,13 @@ export default function DataUploadPage() {
       return;
     }
 
+    // Dynamically import xlsx only when needed
+    const XLSX = await import('xlsx');
+
     // In a real application, you would process the file here.
     // For now, we'll just simulate a successful upload.
+    console.log('Simulating file processing with XLSX:', XLSX.version);
+    
     toast({
       title: "Upload Successful",
       description: `File "${file.name}" has been processed.`,
