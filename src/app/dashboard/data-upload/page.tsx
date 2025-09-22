@@ -5,12 +5,13 @@ import React, { useState, useCallback } from 'react';
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { UploadCloud, File as FileIcon, X } from "lucide-react";
+import { UploadCloud, File as FileIcon, X, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useDropzone } from 'react-dropzone';
 
 export default function DataUploadPage() {
   const [file, setFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -29,7 +30,6 @@ export default function DataUploadPage() {
     maxFiles: 1,
   });
 
-
   const handleUpload = async () => {
     if (!file) {
       toast({
@@ -40,19 +40,37 @@ export default function DataUploadPage() {
       return;
     }
 
-    // Dynamically import xlsx only when needed
-    const XLSX = await import('xlsx');
+    setIsUploading(true);
 
-    // In a real application, you would process the file here.
-    // For now, we'll just simulate a successful upload.
-    console.log('Simulating file processing with XLSX:', XLSX.version);
-    
-    toast({
-      title: "Upload Successful",
-      description: `File "${file.name}" has been processed.`,
-    });
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
 
-    setFile(null); // Clear the file after "upload"
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        toast({
+          title: "Upload Successful",
+          description: result.message || `File "${file.name}" has been processed.`,
+        });
+        setFile(null); // Clear the file after successful upload
+      } else {
+        throw new Error(result.message || 'File upload failed.');
+      }
+    } catch (error: any) {
+      toast({
+        title: "Upload Failed",
+        description: error.message || "An unknown error occurred.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -93,8 +111,12 @@ export default function DataUploadPage() {
             )}
           </CardContent>
           <CardFooter>
-            <Button className="w-full" onClick={handleUpload} disabled={!file}>
-              Upload Data
+            <Button className="w-full" onClick={handleUpload} disabled={!file || isUploading}>
+              {isUploading ? (
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Uploading...</>
+              ) : (
+                "Upload Data"
+              )}
             </Button>
           </CardFooter>
         </Card>
