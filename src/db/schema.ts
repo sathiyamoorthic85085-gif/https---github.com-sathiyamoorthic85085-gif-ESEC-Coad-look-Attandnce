@@ -1,11 +1,10 @@
+
 import {
   pgTable,
   varchar,
   text,
   timestamp,
-  boolean,
   real,
-  primaryKey,
   pgEnum,
 } from 'drizzle-orm/pg-core';
 
