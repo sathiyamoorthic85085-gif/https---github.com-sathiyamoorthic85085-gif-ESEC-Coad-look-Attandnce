@@ -1,51 +1,48 @@
-
+import { neon } from '@neondatabase/serverless';
 import { NextResponse } from 'next/server';
 import { mockUsers } from '@/lib/mock-data';
 
-const DATA_API_ENDPOINT = process.env.NEON_DATA_API_ENDPOINT;
-const API_KEY = process.env.NEON_API_KEY;
+// Initialize the database connection
+const sql = neon(process.env.DATABASE_URL!);
 
 export async function GET(request: Request) {
   // If the database isn't configured, return an empty array to prevent crashing.
-  if (!DATA_API_ENDPOINT || !API_KEY) {
+  if (!process.env.DATABASE_URL) {
+    console.error('DATABASE_URL is not set.');
     return NextResponse.json([]);
   }
 
   try {
     // Fetch latest 10 predictions, joining with the user table to get user names
-    const res = await fetch(`${DATA_API_ENDPOINT}/prediction?select=*,user:user_id(*)&order=created_at.desc&limit=10`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`,
-        'Neon-Raw-Array-Result': 'false',
-      },
-      // Ensure we always get the latest data
-      next: {
-        revalidate: 0 
-      }
+    // Note: The neon serverless driver does not support JOINs in this format.
+    // We will fetch predictions and then enrich them with user data.
+    const predictions = await sql`
+        SELECT id, user_id, label, confidence, "imageId", created_at
+        FROM prediction
+        ORDER BY created_at DESC
+        LIMIT 10;
+    `;
+    
+    // Enrich predictions with user data from mockUsers
+    const enrichedPredictions = predictions.map(p => {
+        const user = mockUsers.find(u => u.id === p.user_id);
+        return {
+            ...p,
+            user: user ? { name: user.name, imageUrl: user.imageUrl } : { name: 'Unknown User', imageUrl: '' }
+        };
     });
 
-    if (!res.ok) {
-        const errorText = await res.text();
-        console.error('Failed to fetch predictions from Neon:', errorText);
-        // Return empty array on fetch failure to avoid breaking the UI
-        return NextResponse.json([]);
-    }
-
-    const records = await res.json();
-    return NextResponse.json(records);
+    return NextResponse.json(enrichedPredictions);
 
   } catch (error: any) {
     console.error('Failed to fetch predictions:', error);
-     // Return empty array on general error
+    // Return empty array on general error
     return NextResponse.json([]);
   }
 }
 
 export async function POST(request: Request) {
-    if (!DATA_API_ENDPOINT || !API_KEY) {
-        // Return a clear error if the database is not configured for POST requests
+    if (!process.env.DATABASE_URL) {
         return NextResponse.json({ message: 'Database is not configured.' }, { status: 500 });
     }
 
@@ -62,31 +59,14 @@ export async function POST(request: Request) {
          return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
 
-    const newPrediction = {
-        user_id: userId,
-        label,
-        confidence,
-        imageId, // This could be an ID from an image storage service
-    };
-    
-    const res = await fetch(`${DATA_API_ENDPOINT}/prediction`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${API_KEY}`,
-        },
-        body: JSON.stringify([newPrediction]) 
-    });
+    // Insert the new prediction and return it
+    const newPrediction = await sql`
+        INSERT INTO prediction (user_id, label, confidence, "imageId")
+        VALUES (${userId}, ${label}, ${confidence}, ${imageId})
+        RETURNING id, user_id, label, confidence, "imageId", created_at;
+    `;
 
-    if (!res.ok) {
-        const errorText = await res.text();
-        console.error('Failed to save prediction to Neon:', errorText);
-        return NextResponse.json({ message: 'Failed to save prediction', error: errorText }, { status: res.status });
-    }
-    
-    // The response from Neon for an insert is an array of the inserted records.
-    const createdPredictionArray = await res.json();
-    const createdPrediction = createdPredictionArray[0];
+    const createdPrediction = newPrediction[0];
 
     // To make the response useful for the client, let's include the user details.
     const responsePayload = {
@@ -96,7 +76,6 @@ export async function POST(request: Request) {
         imageUrl: user.imageUrl,
       }
     };
-
 
     return NextResponse.json(responsePayload, { status: 201 });
 
